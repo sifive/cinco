@@ -1,0 +1,16 @@
+diff --git a/src/target/riscv/riscv.c b/src/target/riscv/riscv.c
+index c21cbcf..63a8d97 100644
+--- a/src/target/riscv/riscv.c
++++ b/src/target/riscv/riscv.c
+@@ -1164,10 +1164,9 @@ static int resume(struct target *target, int current, uint32_t address,
+ 		LOG_ERROR("TODO: current is false");
+ 		return ERROR_FAIL;
+ 	}
+-
+ 	if (handle_breakpoints) {
+ 		LOG_ERROR("TODO: handle_breakpoints is true");
+-		return ERROR_FAIL;
++//		return ERROR_FAIL;
+ 	}
+ 
+ 	if (debug_execution) {

@@ -1,0 +1,13 @@
+#! /bin/bash
+
+FNAME_ELF=`cat /tmp/debug_filename.txt`
+
+sudo /home/rimas/install/riscv-tools-c173fd6/bin/riscv32-unknown-elf-gdb \
+  -ex "target extended-remote | /opt/openocd/bin/openocd -c \"gdb_port pipe; log_output openocd.log; \" -f \"/home/rimas/SiFive/fpga-work/openocd.cfg\" -l /tmp/openocd.log" \
+  -ex "monitor load_image ${FNAME_ELF}" \
+  -x "/home/rimas/SiFive/fpga-work/gdb.dbg" \
+  --args ${FNAME_ELF}
+
+
+
+
