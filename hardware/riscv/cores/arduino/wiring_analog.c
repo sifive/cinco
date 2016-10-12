@@ -2,10 +2,11 @@
 #include "wiring_analog.h"
 
 #include <guava/platform/platform.h>
-#define PWM_REG(offset) (*(volatile uint32_t*)(PWM0_BASE_ADDR + (offset)))
-#define GPIO_REG(offset) (*(volatile uint32_t*)(GPIO_BASE_ADDR + (offset)))
 
 __BEGIN_DECLS
+
+#define PWM_REG(offset) (*(volatile uint32_t*)(PWM1_BASE_ADDR + (offset)))
+#define GPIO_REG(offset) (*(volatile uint32_t*)(GPIO_BASE_ADDR + (offset)))
 
 /* old arduino uses 490 Hz */
 /* new arduino uses 980 Hz */
@@ -67,7 +68,8 @@ static uint32_t PWMPeriod = 0;
 void analogWrite(uint32_t ulPin, uint32_t ulValue)
 {
 
-  if (ulPin < 1 || ulPin > 3)
+ // if (ulPin < 1 || ulPin > 3)
+  if (ulPin < 19 || ulPin > 22)
     return;
 
   if (!PWMEnabled)
@@ -78,7 +80,7 @@ void analogWrite(uint32_t ulPin, uint32_t ulValue)
     PWMEnabled = 1;
   }
 
-  if (!PWMEnabledPins[ulPin]) 
+  if (!PWMEnabledPins[ulPin-19]) 
   {
     GPIO_REG(GPIO_input_en)   &= ~(1<<ulPin);
     GPIO_REG(GPIO_pullup_en)  &= ~(1<<ulPin);
@@ -86,12 +88,12 @@ void analogWrite(uint32_t ulPin, uint32_t ulValue)
     GPIO_REG(GPIO_output_en)  |= (1<<ulPin);
     GPIO_REG(GPIO_iof_sel)    |= (1<<ulPin);
     GPIO_REG(GPIO_iof_en)     |= (1<<ulPin);
-    PWMEnabledPins[ulPin] = 1;
+    PWMEnabledPins[ulPin-19] = 1;
   }
 
 //  ulValue = mapResolution(ulValue, _writeResolution, 16);
   
-  PWM_REG(PWM_CMP0 + (4*ulPin)) = ulValue > PWMPeriod ? PWMPeriod : ulValue;
+  PWM_REG(PWM_CMP0 + (4*(ulPin-19))) = ulValue > PWMPeriod ? PWMPeriod : ulValue;
 
 }
   

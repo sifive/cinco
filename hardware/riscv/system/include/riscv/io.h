@@ -116,7 +116,7 @@
 		: "=r" (var)			/* outputs */	\
 		: )				/* inputs */
 
-#define	DELAY(ticks) 						\
+#define	DELAYTICKS(ticks) 						\
 	__asm __volatile__ (					\
 		"	li	x1, -4;"			\
 		"	and	x1, x1, %0;"			\

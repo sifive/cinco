@@ -73,4 +73,14 @@
   [63] = { PIN_TYPE_GPIO,    31,  OCP_NONE, ICP_NONE }, \
 }
 
+/*
+ * SPI Interfaces
+ */
+#define SPI_INTERFACES_COUNT 1
+
+//#define SPI_INTERFACE        SPI0
+#define SPI_INTERFACE_ID    0
+#define SPI_CHANNELS_NUM 1
+#define BOARD_SPI_DEFAULT_SS (2)
+
 #endif

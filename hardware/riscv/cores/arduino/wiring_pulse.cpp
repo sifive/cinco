@@ -86,59 +86,62 @@ call this function after setting digtalWriteFrequency()
 icpFilter() and similar functions which alter timer 
 registers that control ICP.
 */
-extern void pulseListen(uint32_t pin1, uint32_t pin2, bool state)
-{
-  /* TODO: input parameters pin1 and pin2 currently ignored
-   * as there's only one timer with 2 icp units, ICP1 and ICP2
-   */
-  /* completely open ICP Filter - captures every incoming pulse edge */
-  (void)pin1; (void)pin2;	/* warning fix */
-  EMARD_TIMER[TC_ICP1_START] = 0;
-  EMARD_TIMER[TC_ICP1_STOP] = 0;
 
-  EMARD_TIMER[TC_ICP2_START] = 0;
-  EMARD_TIMER[TC_ICP2_STOP] = 0;
 
-  EMARD_TIMER[TC_CONTROL] &= ~(
-    (1<<TCTRL_AND_OR_ICP1)
-  | (1<<TCTRL_AND_OR_ICP2)
-  | (1<<TCTRL_XOR_ICP1)
-  | (1<<TCTRL_XOR_ICP2)
-  );
-  
-  EMARD_TIMER[TC_CONTROL] |= 
-    (0<<TCTRL_AND_OR_ICP1) 
-  | (0<<TCTRL_AND_OR_ICP2)
-  | ((state == HIGH ? 0 : 1)<<TCTRL_XOR_ICP1)
-  | ((state == HIGH ? 1 : 0)<<TCTRL_XOR_ICP2)
-  ;
-  
-  EMARD_TIMER[TC_APPLY] = 
-    (1<<TC_CONTROL)
-  | (1<<TC_ICP1_START)
-  | (1<<TC_ICP1_STOP)
-  | (1<<TC_ICP2_START)
-  | (1<<TC_ICP2_STOP)
-  ;
-}
 
-/* reads measured pulse width (in timer ticks)
- * by subtracting timer input capture values and
- * wrapping them to bitsize of the timer counter
- */
-extern uint32_t pulseRead(void)
-{
-  return (EMARD_TIMER[TC_ICP2] - EMARD_TIMER[TC_ICP1]) & ((1<<TIMER_BITS)-1);
-}
-
-/*
-** convert timer ticks to microseconds
-*/
-extern uint32_t timerTicks2us(uint32_t t)
-{
-  return
-    ( 
-      ((uint64_t) t) << PRESCALER_BITS
-    ) * 1000000 / ( EMARD_TIMER[TC_INCREMENT] * TIMER_CLOCK)
-    ;
-}
+//extern void pulseListen(uint32_t pin1, uint32_t pin2, bool state)
+//{
+//  /* TODO: input parameters pin1 and pin2 currently ignored
+//   * as there's only one timer with 2 icp units, ICP1 and ICP2
+//   */
+//  /* completely open ICP Filter - captures every incoming pulse edge */
+//  (void)pin1; (void)pin2;	/* warning fix */
+//  EMARD_TIMER[TC_ICP1_START] = 0;
+//  EMARD_TIMER[TC_ICP1_STOP] = 0;
+//
+//  EMARD_TIMER[TC_ICP2_START] = 0;
+//  EMARD_TIMER[TC_ICP2_STOP] = 0;
+//
+//  EMARD_TIMER[TC_CONTROL] &= ~(
+//    (1<<TCTRL_AND_OR_ICP1)
+//  | (1<<TCTRL_AND_OR_ICP2)
+//  | (1<<TCTRL_XOR_ICP1)
+//  | (1<<TCTRL_XOR_ICP2)
+//  );
+//  
+//  EMARD_TIMER[TC_CONTROL] |= 
+//    (0<<TCTRL_AND_OR_ICP1) 
+//  | (0<<TCTRL_AND_OR_ICP2)
+//  | ((state == HIGH ? 0 : 1)<<TCTRL_XOR_ICP1)
+//  | ((state == HIGH ? 1 : 0)<<TCTRL_XOR_ICP2)
+//  ;
+//  
+//  EMARD_TIMER[TC_APPLY] = 
+//    (1<<TC_CONTROL)
+//  | (1<<TC_ICP1_START)
+//  | (1<<TC_ICP1_STOP)
+//  | (1<<TC_ICP2_START)
+//  | (1<<TC_ICP2_STOP)
+//  ;
+//}
+//
+///* reads measured pulse width (in timer ticks)
+// * by subtracting timer input capture values and
+// * wrapping them to bitsize of the timer counter
+// */
+//extern uint32_t pulseRead(void)
+//{
+//  return (EMARD_TIMER[TC_ICP2] - EMARD_TIMER[TC_ICP1]) & ((1<<TIMER_BITS)-1);
+//}
+//
+///*
+//** convert timer ticks to microseconds
+//*/
+//extern uint32_t timerTicks2us(uint32_t t)
+//{
+//  return
+//    ( 
+//      ((uint64_t) t) << PRESCALER_BITS
+//    ) * 1000000 / ( EMARD_TIMER[TC_INCREMENT] * TIMER_CLOCK)
+//    ;
+//}
