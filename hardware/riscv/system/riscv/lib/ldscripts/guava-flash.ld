@@ -62,8 +62,11 @@ SECTIONS
     PROVIDE( _data_lma = . );
   } >flash AT>flash :flash
 
-  . = ALIGN(4);
-  PROVIDE( _data = . );
+  .dalign         :
+  {
+    . = ALIGN(4);
+    PROVIDE( _data = . );
+  } >ram AT>flash :ram_init
 
   .preinit_array  :
   {
