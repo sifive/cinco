@@ -15,21 +15,6 @@
 #include "variant.h"
 #include <stdio.h>
 
-#define SPI_BASE_ADDR   SPI1_BASE_ADDR
-#define INT_SPI         INT_SPI1_BASE
-
-//#define IOF_MASK        IOF0_SPI1_MASK // AC(0x000007FC,UL)
-// we only want to use 3 HW SPI pins (SCK,MOSI,MISO) and bit bang CS
-#define IOF_MASK        (0x00000038)
-#define OE_MASK         (0x00000028)
-#define IE_MASK         (0x00000010)
-#define PUE_MASK        (0x00000010)
-
-#define _REG32(p, i)    (*(volatile uint32_t *)((p) + (i)))
-#define SPI_REG(i)      _REG32(SPI_BASE_ADDR, (i))
-#define GPIO_REG(i)     _REG32(GPIO_BASE_ADDR, (i))
-#define PLIC_REG(i)     _REG32(PLIC_BASE_ADDR, (i))
-
 // SPI_HAS_TRANSACTION means SPI has
 //   - beginTransaction()
 //   - endTransaction()
@@ -53,10 +38,13 @@
 #define SPI_MODE2 0x03
 #define SPI_MODE3 0x01
 
+// don't think we need this
+/*
 enum SPITransferMode {
 	SPI_CONTINUE,
 	SPI_LAST
 };
+*/
 
 class SPISettings {
 public:
@@ -78,24 +66,26 @@ private:
 		} else if (clock >= (F_CPU / 2)) {
 			sckdiv = 0;
 		} else {
-			sckdiv = (F_CPU / (clock + 1)) - 1; // FIXME
+			sckdiv = (F_CPU / (2*clock)) - 1;
 		}
-                fmt = SPI_FMT_PROTO(SPI_PROTO_S) | SPI_FMT_ENDIAN(bitOrder ? SPI_ENDIAN_LSB : SPI_ENDIAN_MSB) | SPI_FMT_DIR(SPI_DIR_RX) | SPI_FMT_LEN(8);
                 sckmode = 0;
                 csid = 0;
                 csdef = 0xFFFF;
                 csmode = SPI_CSMODE_AUTO;
 	}
-        uint8_t sckmode; // mode bits to set polarity and phase of spi clock
-        uint8_t sckdiv; // spi clock frequency = F_CPU/2*(sckdiv-1), maximum is half of F_CPU 
-        uint8_t csid;   // csid = index of chip select aka slave select pin, should be set to 0 for now
-        uint16_t csdef; // inactive state of chip select pins (high or low)
-        uint8_t csmode; // chip select mode (0 =auto = CS toggles with frame)
-//         delay0,1 = behavior of cs @ frame start, end, between frames
-        uint32_t fmt; // 1/2/4 ch, endianness, dir (whether or not to enq rx data)
-         //txdata = when read, bit 31 signals full.  write data to xmit
-         //rxdata = bit 31 signals empty + data if there is any
-         //others regs :txmark, rxmark, ie, ip, plus non PIO mode sttuff
+        uint8_t   sckmode; // mode bits to set polarity and phase of spi clock
+        uint8_t   sckdiv;  // spi clock frequency = F_CPU/2*(sckdiv-1), maximum is half of F_CPU 
+        uint8_t   csid;    // csid = index of chip select aka slave select pin, valid values are 0,2,3
+        uint16_t  csdef;   // inactive state of chip select pins (high or low)
+        uint8_t   csmode;  // chip select mode (0 = auto, 1 = CS toggles with frame)
+
+        // to read/write data over SPI interface, use next two FIFO ports 
+        //   txdata = when read, bit 31 signals full.  write data to xmit
+        //   rxdata = bit 31 signals empty, otherwise data in bits [7:0] is valid
+
+        // currently unused SPI control registers:
+        //   interrupt related : txmark, rxmark, ie, ip, plus non PIO mode stuff
+        //   delay0,1 : behavior of cs @ frame start, end, between frames
 
 	friend class SPIClass;
 };
