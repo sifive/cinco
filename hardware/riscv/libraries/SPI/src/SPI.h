@@ -38,13 +38,11 @@
 #define SPI_MODE2 0x03
 #define SPI_MODE3 0x01
 
-// don't think we need this
-/*
+// don't think we need this, keeping it temporarily b/c i'm lazy
 enum SPITransferMode {
 	SPI_CONTINUE,
 	SPI_LAST
 };
-*/
 
 class SPISettings {
 public:
@@ -72,12 +70,14 @@ private:
                 csid = 0;
                 csdef = 0xFFFF;
                 csmode = SPI_CSMODE_AUTO;
+                border = bitOrder;
 	}
         uint8_t   sckmode; // mode bits to set polarity and phase of spi clock
         uint8_t   sckdiv;  // spi clock frequency = F_CPU/2*(sckdiv-1), maximum is half of F_CPU 
         uint8_t   csid;    // csid = index of chip select aka slave select pin, valid values are 0,2,3
         uint16_t  csdef;   // inactive state of chip select pins (high or low)
         uint8_t   csmode;  // chip select mode (0 = auto, 1 = CS toggles with frame)
+        BitOrder  border;  // bit ordering : 0 = LSB first, 1 = MSB first (common case)
 
         // to read/write data over SPI interface, use next two FIFO ports 
         //   txdata = when read, bit 31 signals full.  write data to xmit

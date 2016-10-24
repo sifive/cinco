@@ -26,8 +26,8 @@ void SPIClass::begin() {
         // rimas - NPCS = negative polarity chip select?
 	// NPCS control is left to the user
 
-	// Default speed set to 4Mhz
-	setClockDivider(BOARD_SPI_DEFAULT_SS, 8);
+	// Default speed set to ~1Mhz
+	setClockDivider(BOARD_SPI_DEFAULT_SS, 31);
 	setDataMode(BOARD_SPI_DEFAULT_SS, SPI_MODE0);
 	setBitOrder(BOARD_SPI_DEFAULT_SS, MSBFIRST);
 }
@@ -43,7 +43,7 @@ void SPIClass::begin(uint8_t _pin) {
         GPIO_REG(GPIO_iof_en)   |=  iof_mask;
 
 	// Default speed set to ~1Mhz
-	setClockDivider(_pin, 32);
+	setClockDivider(_pin, 31);
 	setDataMode(_pin, SPI_MODE0);
 	setBitOrder(_pin, MSBFIRST);
 }
@@ -146,17 +146,15 @@ void SPIClass::beginTransaction(uint8_t pin, SPISettings settings)
         divider[ch] = settings.sckdiv;
         mode[ch] = settings.sckmode;
 
-        SPI_REG(SPI_REG_FMT) = SPI_FMT_PROTO(SPI_PROTO_S) | \ // single channel SPI
-                               SPI_FMT_ENDIAN(settings.border ? SPI_ENDIAN_MSB : SPI_ENDIAN_LSB) | \
-                               SPI_FMT_DIR(SPI_DIR_RX) | \ // don't ignore incoming data
-                               SPI_FMT_LEN(8); // 8 bit transactions 
+        SPI_REG(SPI_REG_FMT) = SPI_FMT_PROTO(SPI_PROTO_S) | SPI_FMT_ENDIAN(settings.border ? SPI_ENDIAN_LSB : SPI_ENDIAN_MSB) |  SPI_FMT_DIR(SPI_DIR_RX) | SPI_FMT_LEN(8);
 
         SPI_REG(SPI_REG_SCKDIV)  = settings.sckdiv; 
         SPI_REG(SPI_REG_SCKMODE) = settings.sckmode; 
 // FIXME: deal with these properly
-        SPI_REG(SPI_REG_CSID)    = settings.csid; 
-        SPI_REG(SPI_REG_CSDEF)   = settings.csdef; 
-        SPI_REG(SPI_REG_CSMODE)  = settings.csmode; 
+
+        //SPI_REG(SPI_REG_CSID)    = settings.csid; 
+        //SPI_REG(SPI_REG_CSDEF)   = settings.csdef; 
+        //SPI_REG(SPI_REG_CSMODE)  = settings.csmode; 
 }
 
 void SPIClass::endTransaction(void)
@@ -210,14 +208,16 @@ void SPIClass::setClockDivider(uint8_t _pin, uint8_t _divider) {
 }
 
 byte SPIClass::transfer(byte _pin, uint8_t _data, SPITransferMode _mode) {
-	uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(_pin);
+  // FIXME: broken for channels other than 0 for now
+//	uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(_pin);
+ 
 
 //	if (_mode == SPI_LAST)
 //		d |= SPI_TDR_LASTXFER;
 
 	// SPI_Write(spi, _channel, _data);
 	while (SPI_REG(SPI_REG_TXFIFO) < 0) ;
-        SPI_REG(SPI_REG_TXFIFO) = d;
+        SPI_REG(SPI_REG_TXFIFO) = _data;
 
 	// return SPI_Read(spi);
         volatile int32_t x;
@@ -252,17 +252,16 @@ void SPIClass::transfer(byte _pin, void *_buf, size_t _count, SPITransferMode _m
 		return;
 	}
 
-//	uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(_pin);
-//	bool reverse = (bitOrder[ch] == LSBFIRST);
+	uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(_pin);
+	bool reverse = (bitOrder[ch] == LSBFIRST);
 
 	// Send the first byte
-//	while (((int32_t)SPI_REG(SPI_REG_TXFIFO)) < 0)
-//		;
         while (SPI_REG_TXFIFO_FULL) ;
+//	while (((int32_t)SPI_REG(SPI_REG_TXFIFO)) < 0) //		;
         SPI_REG(SPI_REG_TXFIFO) = *buffer;
 
-//        volatile int32_t x;
-        uint8_t r;
+        volatile int32_t x;
+        uint8_t r,d;
 	while (_count > 1) {
 		// Prepare next byte
 		d = *(buffer+1);
@@ -272,16 +271,13 @@ void SPIClass::transfer(byte _pin, void *_buf, size_t _count, SPITransferMode _m
 			d |= SPI_TDR_LASTXFER; */
 
 		// Read transferred byte and send next one straight away
-//	        while ((x = SPI_REG(SPI_REG_RXFIFO)) < 0)
-//	        	;
-                while ((x = SPI_REG(SPI_REG_RXFIFO)) < 0) ;
+                while ((x = SPI_REG(SPI_REG_RXFIFO)) < 0)
+                  ;
 		r = x & 0xFF;
-
+  // should prob verify that there's room in FIFO first
                 SPI_REG(SPI_REG_TXFIFO) = d;
 
 		// Save read byte
-//		if (reverse)
-//			r = __REV(__RBIT(r));
 		*buffer = r;
 		buffer++;
 		_count--;

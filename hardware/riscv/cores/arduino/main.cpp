@@ -20,8 +20,6 @@
 #define ARDUINO_MAIN
 #include "Arduino.h"
 
-#define PWM_REG(offset) (*(volatile uint32_t*)(PWM0_BASE_ADDR + (offset)))
-#define GPIO_REG(offset) (*(volatile uint32_t*)(GPIO_BASE_ADDR + (offset)))
 void guava_specific_initialization(void)
 {
   // set things to a known state before running program
@@ -34,7 +32,9 @@ void guava_specific_initialization(void)
   GPIO_REG(GPIO_fall_ie) = 0;
   GPIO_REG(GPIO_high_ie) = 0;
   GPIO_REG(GPIO_low_ie) = 0;
-  PWM_REG(PWM_CFG) = 0;
+  PWM0_REG(PWM_CFG) = 0;
+  PWM1_REG(PWM_CFG) = 0;
+  PWM2_REG(PWM_CFG) = 0;
 }
 
 /*
