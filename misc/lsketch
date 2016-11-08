@@ -1,9 +1,0 @@
-#! /bin/bash
-
-sudo /home/rimas/install/riscv-tools-c173fd6/bin/riscv32-unknown-elf-gdb -batch \
-  -ex "target extended-remote | /opt/openocd/bin/openocd -c \"gdb_port pipe; log_output openocd.log\" -f \"/home/rimas/SiFive/fpga-work/openocd.cfg\" -l /tmp/openocd.log" \
-  -ex "monitor load_image ${1}" \
-  -ex "set \$pc = 0x80000000" \
-  -ex "monitor resume" ${1}
-
-echo "${1}" > /tmp/debug_filename.txt

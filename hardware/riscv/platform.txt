@@ -9,24 +9,12 @@ version=1.6.0
 # ----------------------
 
 
-#compiler.c.flags=-c -Os -m32 -msoft-float -fpeel-loops -ffreestanding -Wall -nostdinc "-I{build.system.path}/include" -include sys/param.h -include sys/stdint.h
 compiler.c.flags=-c -Os -m32 -msoft-float -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -Wall -nostdinc "-I{build.system.path}/include" -include sys/param.h -include sys/stdint.h
 
 compiler.cpp.flags=-c -Os -m32 -msoft-float -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -fpermissive -Wall -nostdinc "-I{build.system.path}/include" -include sys/param.h -fno-rtti  -fno-exceptions -include sys/stdint.h
 
-#compiler.ld.flags=-T /home/rimas/arduino.ld -N -EL -melf32lriscv "--library-path={build.system.path}/riscv/lib"
 compiler.ld.flags=-T {build.system.path}/riscv/lib/ldscripts/guava-flash.ld -N -EL -melf32lriscv --gc-sections "--library-path={build.system.path}/riscv/lib"
-#compiler.ld.flags=-N -EL -melf32lriscv --gc-sections "--library-path={build.system.path}/riscv/lib"
-#"--library-path={build.system.path}/riscv/lib"
 
-#compiler.ld.flags=-Wl,-gc-sections,-u,main 
-#"--library-path={build.system.path}/riscv/lib"
-
-
-# toolchain extracted in arduino-1.6.x/hardware/tools/
-#compiler.path={runtime.ide.path}/hardware/tools/guava/bin/
-
-# FIXME: hardcoded path
 compiler.path=
 compiler.c.cmd=riscv32-unknown-elf-gcc
 compiler.S.flags=-c -g -x assembler-with-cpp
@@ -43,7 +31,6 @@ compiler.define=-DARDUINO=
 
 # this can be overriden in boards.txt
 build.extra_flags=
-#build.extra_flags=--section-start=.init=0x80000000
 
 # recommended sdata sizes
 # small RAM <64K: 32768
@@ -98,11 +85,9 @@ recipe.size.regex=\s*[0-9]+\s+[0-9]+\s+[0-9]+\s+([0-9]+).*
 # Uploader tools
 # -------------------
 
-#
-# lattice (bootloader FLASH)
-#
-tools.lsketch.path=/home/rimas/SiFive/fpga-work/
-tools.lsketch.cmd.path={path}/lsketch
+tools.lsketch.path=
+#tools.lsketch.cmd.path=hifive_lsketch
+tools.lsketch.cmd.path=openocd_lsketch
 tools.lsketch.upload.params.verbose=-v
 tools.lsketch.upload.params.quiet=-q
 tools.lsketch.program.params.verbose=-v

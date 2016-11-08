@@ -1,0 +1,7 @@
+#! /bin/bash -x
+
+echo "${1}" > /tmp/debug_filename.txt
+
+openocd -f /home/megan/hifive-arduino/misc/openocd.cfg \
+	-c "flash protect 0 0 last off; program ${1} verify reset exit" \
+	-d
