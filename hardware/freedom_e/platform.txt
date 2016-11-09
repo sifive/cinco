@@ -1,32 +1,41 @@
-#
-# guava risc-v core and platform
-#
-
-name=Guava Arty (RISC-V SoC)
+name= SiFive Freedom E300 Boards
 version=1.6.0
 
 # Compile variables
 # ----------------------
 
-
-compiler.c.flags=-c -Os -m32 -msoft-float -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -Wall -nostdinc "-I{build.system.path}/include" -include sys/param.h -include sys/stdint.h
-
-compiler.cpp.flags=-c -Os -m32 -msoft-float -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -fpermissive -Wall -nostdinc "-I{build.system.path}/include" -include sys/param.h -fno-rtti  -fno-exceptions -include sys/stdint.h
-
-compiler.ld.flags=-T {build.system.path}/riscv/lib/ldscripts/guava-flash.ld -N -EL -melf32lriscv --gc-sections "--library-path={build.system.path}/riscv/lib"
-
 compiler.path=
 compiler.c.cmd=riscv32-unknown-elf-gcc
-compiler.S.flags=-c -g -x assembler-with-cpp
 compiler.cpp.cmd=riscv32-unknown-elf-g++
 compiler.ld.cmd=riscv32-unknown-elf-ld
 compiler.ar.cmd=riscv32-unknown-elf-ar
-compiler.ar.flags=rcs
 compiler.objcopy.cmd=riscv32-unknown-elf-objcopy
-compiler.objcopy.eep.flags=-O srec
-compiler.elf2hex.flags=-R .rel.dyn
 compiler.elf2hex.cmd=riscv32-unknown-elf-objcopy
 compiler.size.cmd=riscv32-unknown-elf-size
+
+compiler.c.flags=-c -Os -m32 -msoft-float -fpeel-loops \
+		    -ffreestanding -ffunction-sections \
+		    -fdata-sections -Wall -nostdinc "-I{build.system.path}/include" \
+		    -include sys/param.h -include sys/stdint.h
+
+compiler.cpp.flags=-c -Os -m32 -msoft-float -fpeel-loops -ffreestanding \
+		      -ffunction-sections -fdata-sections -fpermissive \
+		      -Wall -nostdinc "-I{build.system.path}/include" \
+		      -include sys/param.h -fno-rtti  -fno-exceptions \
+		      -include sys/stdint.h
+
+compiler.ld.flags=-T {build.system.path}/riscv/lib/ldscripts/freedom-e300-flash.ld \
+		     -N -EL -melf32lriscv \
+		     --gc-sections "--library-path={build.system.path}/riscv/lib"
+
+compiler.S.flags=-c -g -x assembler-with-cpp
+
+compiler.ar.flags=rcs
+
+compiler.objcopy.eep.flags=-O srec
+
+compiler.elf2hex.flags=-R .rel.dyn
+
 compiler.define=-DARDUINO=
 
 # this can be overriden in boards.txt
@@ -44,8 +53,6 @@ compiler.c.elf.extra_flags=
 compiler.cpp.extra_flags=-DF_CPU={build.f_cpu}L
 compiler.ar.extra_flags=
 compiler.elf2hex.extra_flags=
-
-#compiler.ld.flags=
 
 # USB Flags
 # ---------
@@ -86,7 +93,6 @@ recipe.size.regex=\s*[0-9]+\s+[0-9]+\s+[0-9]+\s+([0-9]+).*
 # -------------------
 
 tools.lsketch.path=
-#tools.lsketch.cmd.path=hifive_lsketch
 tools.lsketch.cmd.path=openocd_lsketch
 tools.lsketch.upload.params.verbose=-v
 tools.lsketch.upload.params.quiet=-q

@@ -1,0 +1,16 @@
+freedom_e300_arty_devkit.name=Freedom E300 Arty DevKit
+freedom_e300_arty_devkit.build.f_cpu=65000000L
+#Point to the file for ./variants/<variant>/pins_arduino.h
+freedom_e300_arty_devkit.build.variant=standard
+freedom_e300_arty_devkit.build.mcu=rv32imaf
+#"The 'core' file directory for this board, in ./cores
+freedom_e300_arty_devkit.build.core=arduino
+# This sets a define for use in the compiled code.
+freedom_e300_arty_devkit.build.board=FREEDOM_E300_ARTY_DEVKIT
+freedom_e300_arty_devkit.build.sdata.size=4096
+#This selects the tool from "programmers.txt"
+freedom_e300_arty_devkit.upload.tool=lsketch
+freedom_e300_arty_devkit.upload.maximum_size=15360
+
+#TODO:
+#Write a new board for hifive
