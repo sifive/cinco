@@ -2,6 +2,8 @@
 
 echo "${1}" > /tmp/debug_filename.txt
 
+cp ${1} /home/megan/ARDUINO.elf
+
 openocd -f /home/megan/hifive-arduino/misc/openocd.cfg \
-	-c "flash protect 0 0 last off; program ${1} verify reset exit" \
-	-d
+	-c "flash protect 0 64 last off; program ${1} verify reset exit" \
+	2>&1 | tee openocd_lsketch.log
