@@ -1,12 +1,12 @@
 
-#ifndef _VARIANT_FREEDOM_E300_GUAVA_
-#define _VARIANT_FREEDOM_E300_GUAVA_
+#ifndef _VARIANT_FREEDOM_E300_
+#define _VARIANT_FREEDOM_E300_
 
 
 #include <stdint.h>
 
-#define SIFIVE_GUAVA_PLATFORM
-#include <guava/platform/platform.h>
+#define FREEDOM_E300_PLATFORM
+#include <freedom_e300/platform/platform.h>
 
 // helper macros
 #define _REG32(p, i)    (*(volatile uint32_t *)((p) + (i)))

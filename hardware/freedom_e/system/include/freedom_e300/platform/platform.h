@@ -1,18 +1,17 @@
 // See LICENSE for license details.
 
-#ifndef _SIFIVE_PLATFORM_H
-#define _SIFIVE_PLATFORM_H
+#ifndef _FREEDOM_E300_PLATFORM_H
+#define _FREEDOM_E300_PLATFORM_H
 
-#include <guava/const.h>
-#include <guava/clint.h>
-#include <guava/uart.h>
-#include <guava/gpio.h>
-#include <guava/spi.h>
-#include <guava/prci.h>
-#include <guava/aon.h>
-#include <guava/otp.h>
-#include <guava/pwm.h>
-#include <guava/drivers_sifive/plic.h>
+#include <freedom_e300/const.h>
+#include <freedom_e300/clint.h>
+#include <freedom_e300/uart.h>
+#include <freedom_e300/gpio.h>
+#include <freedom_e300/spi.h>
+#include <freedom_e300/prci.h>
+#include <freedom_e300/aon.h>
+#include <freedom_e300/pwm.h>
+#include <freedom_e300/drivers_sifive/plic.h>
 
 // Some things missing from the official encoding.h
 #define MCAUSE_INT         0x80000000
