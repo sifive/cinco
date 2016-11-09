@@ -5,7 +5,7 @@
 
 #include <stdint.h>
 
-#define FREEDOM_E300_PLATFORM
+#define SIFIVE_FREEDOM_E300_PLATFORM
 #include <freedom_e300/platform/platform.h>
 
 // helper macros

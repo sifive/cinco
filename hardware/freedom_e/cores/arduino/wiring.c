@@ -27,7 +27,7 @@
 
 #include "Arduino.h"
 #include "dev/io.h"
-#include <guava/platform/platform.h>
+#include <freedom_e300/platform/platform.h>
 
 
 static uint32_t tsc_hi, tsc_lo;

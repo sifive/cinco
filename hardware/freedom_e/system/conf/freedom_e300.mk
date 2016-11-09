@@ -25,12 +25,7 @@
 # $Id$
 #
 
-#
-# MAKEFILES environment variable MUST point to the f32c/src/conf/f32c.mk file
-# when invoking GNU make!
-#
-
-BASE_DIR = $(subst conf/guava.mk,,${MAKEFILES})
+BASE_DIR = $(subst conf/freedom_e300.mk,,${MAKEFILES})
 
 LIBS_MK = $(join ${BASE_DIR},conf/libs.mk)
 POST_MK = $(join ${BASE_DIR},conf/post.mk)

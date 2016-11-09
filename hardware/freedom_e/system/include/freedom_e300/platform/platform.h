@@ -34,11 +34,6 @@
 #include "freedom-u500-platform.h"
 #endif
 
-#ifdef SIFIVE_GUAVA_PLATFORM
-#include "guava-platform.h"
-#endif
-
-
 #ifndef __ASSEMBLER__
 
 //TODO: Add if we actually need this.

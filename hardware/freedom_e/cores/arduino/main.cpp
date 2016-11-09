@@ -20,7 +20,7 @@
 #define ARDUINO_MAIN
 #include "Arduino.h"
 
-void guava_specific_initialization(void)
+void freedom_e300_specific_initialization(void)
 {
   // set things to a known state before running program
   GPIO_REG(GPIO_port) = 0;
@@ -43,7 +43,7 @@ void guava_specific_initialization(void)
 int main( void )
 {
 //	init();
-        guava_specific_initialization();
+        freedom_e300_specific_initialization();
 	setup();
 
 	do {

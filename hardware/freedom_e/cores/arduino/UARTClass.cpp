@@ -22,8 +22,8 @@
 #include "UARTClass.h"
 
 #include <dev/io.h>
-#include <guava/platform/platform.h>
-#include <guava/uart.h>
+#include <freedom_e300/platform/platform.h>
+#include <freedom_e300/uart.h>
 #include "variant.h"
 
 #define _REG32(p,i)     (*(volatile uint32_t *)((p) + (i)))

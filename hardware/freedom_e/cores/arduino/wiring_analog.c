@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "wiring_analog.h"
 
-#include <guava/platform/platform.h>
+#include <freedom_e300/platform/platform.h>
 
 __BEGIN_DECLS
 

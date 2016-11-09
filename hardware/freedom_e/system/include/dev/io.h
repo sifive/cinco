@@ -29,9 +29,8 @@
 #define	_IO_H_
 
 #include <riscv/io.h>
-#define SIFIVE_GUAVA_PLATFORM
-#include <guava/platform/platform.h>
-
+#define SIFIVE_FREEDOM_E300_PLATFORM
+#include <freedom_e300/platform/platform.h>
 
 #define	IO_BASE		0xfffff800
 //

@@ -3,7 +3,7 @@
 #ifndef PLIC_H
 #define PLIC_H
 
-#include <guava/const.h>
+#include <freedom_e300/const.h>
 
 // 32 bits per source
 #define PLIC_PRIORITY_OFFSET            _AC(0x0000,UL)
