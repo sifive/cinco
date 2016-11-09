@@ -32,7 +32,7 @@
 #ifndef __ASSEMBLER__
 
 #include <stdlib.h>
-//#include <stddef.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <unistd.h>
 

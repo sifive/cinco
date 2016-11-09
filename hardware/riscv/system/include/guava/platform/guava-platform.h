@@ -25,6 +25,7 @@
 #define SPI2_BASE_ADDR          _AC(0x10034000,UL)
 #define PWM0_BASE_ADDR          _AC(0x10015000,UL)
 #define PWM1_BASE_ADDR          _AC(0x10025000,UL)
+#define PWM2_BASE_ADDR          _AC(0x10035000,UL)
 
 #define IOF0_SPI1_MASK          _AC(0x000007FC,UL)
 #define IOF0_SPI2_MASK          _AC(0xFC000000,UL)
@@ -36,12 +37,13 @@
 
 #define IOF1_PWM0_MASK          _AC(0x0000000F, UL)
 #define IOF1_PWM1_MASK          _AC(0x00780000, UL)
+#define IOF1_PWM2_MASK          _AC(0x00003C00, UL)
 
 // Setting these correctly makes the PLIC
 // initialization scripts
 // run faster.
-#define PLIC_NUM_SOURCES 49
-#define PLIC_NUM_PRIORITIES 0
+#define PLIC_NUM_SOURCES 53
+#define PLIC_NUM_PRIORITIES 3
 
 #define INT_RESERVED    0
 #define INT_WDOGCMP     1
@@ -54,5 +56,6 @@
 #define INT_GPIO_BASE   8
 #define INT_PWM0_BASE   40
 #define INT_PWM1_BASE   44
+#define INT_PWM2_BASE   48
 
 #endif /* _SIFIVE_GUAVA_PLATFORM_H */

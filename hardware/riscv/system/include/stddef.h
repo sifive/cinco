@@ -52,12 +52,12 @@ typedef	__size_t	size_t;
 #define	_SIZE_T_DECLARED
 #endif
 
-#ifndef	__cplusplus
-#ifndef _WCHAR_T_DECLARED
-typedef	__wchar_t	wchar_t;
-#define	_WCHAR_T_DECLARED
-#endif
-#endif
+//#ifndef	__cplusplus
+//#ifndef _WCHAR_T_DECLARED
+//typedef	__wchar_t	wchar_t;
+//#define	_WCHAR_T_DECLARED
+//#endif
+//#endif
 
 #define	offsetof(type, member)	__offsetof(type, member)
 

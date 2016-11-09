@@ -3,8 +3,6 @@
 #ifndef _SIFIVE_PLATFORM_H
 #define _SIFIVE_PLATFORM_H
 
-#define SIFIVE_GUAVA_PLATFORM
-
 #include <guava/const.h>
 #include <guava/clint.h>
 #include <guava/uart.h>

@@ -11,6 +11,9 @@
 
 #include "SPI.h"
 
+#define SPI_REG_TXFIFO_FULL  (*(volatile int32_t *)(SPI_REG(SPI_REG_TXFIFO)) < 0)
+#define SPI_REG_RXFIFO_VALUE (*(volatile int32_t *)(SPI_REG(SPI_REG_RXFIFO)))
+
 SPIClass::SPIClass(uint32_t _id, void(*_initCb)(void)) :
 	id(_id), initCb(_initCb), initialized(false)
 {
@@ -19,36 +22,28 @@ SPIClass::SPIClass(uint32_t _id, void(*_initCb)(void)) :
 
 void SPIClass::begin() {
 	init();
+
+        // rimas - NPCS = negative polarity chip select?
 	// NPCS control is left to the user
 
-	// Default speed set to 4Mhz
-	setClockDivider(BOARD_SPI_DEFAULT_SS, 21);
+	// Default speed set to ~1Mhz
+	setClockDivider(BOARD_SPI_DEFAULT_SS, 31);
 	setDataMode(BOARD_SPI_DEFAULT_SS, SPI_MODE0);
 	setBitOrder(BOARD_SPI_DEFAULT_SS, MSBFIRST);
 }
 
+// specifies chip select pin to attach to hardware SPI interface
 void SPIClass::begin(uint8_t _pin) {
 	init();
-
-
-//  SPI_REG(SPI_REG_FMT) = settings.fmt;
-//  SPI_REG(SPI_REG_SCKDIV) = settings.sckdiv;
-//  SPI_REG(SPI_REG_SCKMODE) = settings.sckmode;
-//  SPI_REG(SPI_REG_CSID) = settings.csid;
-//  SPI_REG(SPI_REG_CSDEF) = settings.csdef;
-//  SPI_REG(SPI_REG_CSMODE) = settings.csmode;
-
-/*
 	uint32_t spiPin = BOARD_PIN_TO_SPI_PIN(_pin);
-	PIO_Configure(
-		g_APinDescription[spiPin].pPort,
-		g_APinDescription[spiPin].ulPinType,
-		g_APinDescription[spiPin].ulPin,
-		g_APinDescription[spiPin].ulPinConfiguration); 
-                */
+
+        // enable CS pin for selected channel/pin
+        uint32_t iof_mask = (1UL << spiPin);
+        GPIO_REG(GPIO_iof_sel)  &= ~iof_mask;
+        GPIO_REG(GPIO_iof_en)   |=  iof_mask;
 
 	// Default speed set to ~1Mhz
-	setClockDivider(_pin, 32);
+	setClockDivider(_pin, 31);
 	setDataMode(_pin, SPI_MODE0);
 	setBitOrder(_pin, MSBFIRST);
 }
@@ -56,15 +51,21 @@ void SPIClass::begin(uint8_t _pin) {
 void SPIClass::init() {
 	if (initialized)
 		return;
-        /*
+
+        // interrupt state - unused for now
 	interruptMode = 0;
 	interruptSave = 0;
 	interruptMask[0] = 0;
 	interruptMask[1] = 0;
 	interruptMask[2] = 0;
 	interruptMask[3] = 0;
-        */
+      
 	initCb();
+
+        // select SPI function (iof_0) for MOSI, MISO, SCK pins
+        // and then enable iof_en for thjose bits
+        GPIO_REG(GPIO_iof_sel)  &= ~SPI_IOF_MASK;
+        GPIO_REG(GPIO_iof_en)   |=  SPI_IOF_MASK;
 
 //	SPI_Configure(spi, id, SPI_MR_MSTR | SPI_MR_PS | SPI_MR_MODFDIS);
 //	SPI_Enable(spi);
@@ -118,6 +119,8 @@ void SPIClass::usingInterrupt(uint8_t interruptNumber)
 */
 }
 
+
+// start an SPI transaction using specified CS pin and SPIsettings
 void SPIClass::beginTransaction(uint8_t pin, SPISettings settings)
 {
   /*
@@ -134,16 +137,24 @@ void SPIClass::beginTransaction(uint8_t pin, SPISettings settings)
 		}
 	}
         */
-        SPI_REG(SPI_REG_FMT) = settings.fmt;
 
-/*
-	uint32_t ch = board_pin_to_spi_channel(pin);
-	bitorder[ch] = settings.border;
-	spi_configurenpcs(spi, ch, settings.config);
-*/
-	//setBitOrder(pin, settings.border);
-	//setDataMode(pin, settings.datamode);
-	//setClockDivider(pin, settings.clockdiv);
+
+  // before starting a transaction, set SPI peripheral to desired mode
+  // next few lines possibly superflous
+        uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(pin);
+	bitOrder[ch] = settings.border;
+        divider[ch] = settings.sckdiv;
+        mode[ch] = settings.sckmode;
+
+        SPI_REG(SPI_REG_FMT) = SPI_FMT_PROTO(SPI_PROTO_S) | SPI_FMT_ENDIAN(settings.border ? SPI_ENDIAN_LSB : SPI_ENDIAN_MSB) |  SPI_FMT_DIR(SPI_DIR_RX) | SPI_FMT_LEN(8);
+
+        SPI_REG(SPI_REG_SCKDIV)  = settings.sckdiv; 
+        SPI_REG(SPI_REG_SCKMODE) = settings.sckmode; 
+// FIXME: deal with these properly
+
+        //SPI_REG(SPI_REG_CSID)    = settings.csid; 
+        //SPI_REG(SPI_REG_CSDEF)   = settings.csdef; 
+        //SPI_REG(SPI_REG_CSMODE)  = settings.csmode; 
 }
 
 void SPIClass::endTransaction(void)
@@ -164,86 +175,69 @@ void SPIClass::endTransaction(void)
 }
 
 void SPIClass::end(uint8_t _pin) {
-//	uint32_t spiPin = BOARD_PIN_TO_SPI_PIN(_pin);
+	uint32_t spiPin = BOARD_PIN_TO_SPI_PIN(_pin);
+        GPIO_REG(GPIO_iof_en)  &= ~(1UL << spiPin);
+//        GPIO_REG(GPIO_iof_en)  &= ~SPI_IOF_MASK;
+
 	// Setting the pin as INPUT will disconnect it from SPI peripheral
 //	pinMode(_pin, INPUT);
-/*        GPIO_REG(GPIO_iof_en) &= ~IOF_MASK;
-        GPIO_REG(GPIO_pullup_en) &= ~PUE_MASK;
-        GPIO_REG(GPIO_output_en) &= ~OE_MASK;
-        GPIO_REG(GPIO_input_en) &= ~IE_MASK; */
 }
 
 void SPIClass::end() {
 //	SPI_Disable(spi);
-        GPIO_REG(GPIO_iof_en) &= ~IOF_MASK;
-        GPIO_REG(GPIO_pullup_en) &= ~PUE_MASK;
-        GPIO_REG(GPIO_output_en) &= ~OE_MASK;
-        GPIO_REG(GPIO_input_en) &= ~IE_MASK;
+        GPIO_REG(GPIO_iof_en)  &= ~SPI_IOF_MASK;
 	initialized = false;
 }
 
 void SPIClass::setBitOrder(uint8_t _pin, BitOrder _bitOrder) {
-//	uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(_pin);
-//	bitOrder[ch] = _bitOrder;
-        //assert(_bitOrder == 1);
+	uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(_pin);
+	bitOrder[ch] = _bitOrder;
 }
 
 void SPIClass::setDataMode(uint8_t _pin, uint8_t _mode) {
-/*	uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(_pin);
-	mode[ch] = _mode | SPI_CSR_CSAAT;
-	// SPI_CSR_DLYBCT(1) keeps CS enabled for 32 MCLK after a completed
-	// transfer. Some device needs that for working properly.
-	SPI_ConfigureNPCS(spi, ch, mode[ch] | SPI_CSR_SCBR(divider[ch]) | SPI_CSR_DLYBCT(1)); */
-        
-        SPI_REG(SPI_REG_FMT) = SPI_FMT_PROTO(SPI_PROTO_S) | SPI_FMT_ENDIAN(bitOrder ? SPI_ENDIAN_MSB : SPI_ENDIAN_LSB) | SPI_FMT_DIR(SPI_DIR_RX) | SPI_FMT_LEN(8);
+	uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(_pin);
+	mode[ch] = _mode;
 }
 
 void SPIClass::setClockDivider(uint8_t _pin, uint8_t _divider) {
-//	uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(_pin);
-//	divider[ch] = _divider;
+	uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(_pin);
+	divider[ch] = _divider;
 	// SPI_CSR_DLYBCT(1) keeps CS enabled for 32 MCLK after a completed
 	// transfer. Some device needs that for working properly.
 //	SPI_ConfigureNPCS(spi, ch, mode[ch] | SPI_CSR_SCBR(divider[ch]) | SPI_CSR_DLYBCT(1));
-       SPI_REG(SPI_REG_SCKDIV) = _divider; 
 }
 
 byte SPIClass::transfer(byte _pin, uint8_t _data, SPITransferMode _mode) {
+  // FIXME: broken for channels other than 0 for now
 //	uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(_pin);
-	// Reverse bit order
-/*	if (bitOrder[ch] == LSBFIRST)
-		_data = __REV(__RBIT(_data));
-	uint32_t d = _data | SPI_PCS(ch); */
-        uint32_t d = _data;
+ 
 
 //	if (_mode == SPI_LAST)
 //		d |= SPI_TDR_LASTXFER;
 
 	// SPI_Write(spi, _channel, _data);
-	while (SPI_REG(SPI_REG_TXFIFO) < 0)
-		;
-        SPI_REG(SPI_REG_TXFIFO) = d;
+	while (SPI_REG(SPI_REG_TXFIFO) < 0) ;
+        SPI_REG(SPI_REG_TXFIFO) = _data;
 
 	// return SPI_Read(spi);
         volatile int32_t x;
-	while ((x = SPI_REG(SPI_REG_RXFIFO)) < 0)
-		;
-
+	while ((x = SPI_REG(SPI_REG_RXFIFO)) < 0);
 	return x & 0xFF;
 }
 
 uint16_t SPIClass::transfer16(byte _pin, uint16_t _data, SPITransferMode _mode) {
 	union { uint16_t val; struct { uint8_t lsb; uint8_t msb; }; } t;
-//	uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(_pin);
+	uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(_pin);
 
 	t.val = _data;
 
-//	if (bitOrder[ch] == LSBFIRST) {
-//		t.lsb = transfer(_pin, t.lsb, SPI_CONTINUE);
-//		t.msb = transfer(_pin, t.msb, _mode);
-//	} else {
+	if (bitOrder[ch] == LSBFIRST) {
+		t.lsb = transfer(_pin, t.lsb, SPI_CONTINUE);
+		t.msb = transfer(_pin, t.msb, _mode);
+	} else {
 		t.msb = transfer(_pin, t.msb, SPI_CONTINUE);
 		t.lsb = transfer(_pin, t.lsb, _mode);
-//	}
+	}
 
 	return t.val;
 }
@@ -258,22 +252,16 @@ void SPIClass::transfer(byte _pin, void *_buf, size_t _count, SPITransferMode _m
 		return;
 	}
 
-///	uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(_pin);
-	const uint32_t ch = 0;
+	uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(_pin);
 	bool reverse = (bitOrder[ch] == LSBFIRST);
 
 	// Send the first byte
-	uint32_t d = *buffer;
-//	if (reverse)
-//		d = __REV(__RBIT(d));
-
-	while (((int32_t)SPI_REG(SPI_REG_TXFIFO)) < 0)
-		;
-        SPI_REG(SPI_REG_TXFIFO) = d;
-
+        while (SPI_REG_TXFIFO_FULL) ;
+//	while (((int32_t)SPI_REG(SPI_REG_TXFIFO)) < 0) //		;
+        SPI_REG(SPI_REG_TXFIFO) = *buffer;
 
         volatile int32_t x;
-        uint8_t r;
+        uint8_t r,d;
 	while (_count > 1) {
 		// Prepare next byte
 		d = *(buffer+1);
@@ -283,15 +271,13 @@ void SPIClass::transfer(byte _pin, void *_buf, size_t _count, SPITransferMode _m
 			d |= SPI_TDR_LASTXFER; */
 
 		// Read transferred byte and send next one straight away
-	        while ((x = SPI_REG(SPI_REG_RXFIFO)) < 0)
-	        	;
+                while ((x = SPI_REG(SPI_REG_RXFIFO)) < 0)
+                  ;
 		r = x & 0xFF;
-
+  // should prob verify that there's room in FIFO first
                 SPI_REG(SPI_REG_TXFIFO) = d;
 
 		// Save read byte
-//		if (reverse)
-//			r = __REV(__RBIT(r));
 		*buffer = r;
 		buffer++;
 		_count--;
@@ -301,8 +287,6 @@ void SPIClass::transfer(byte _pin, void *_buf, size_t _count, SPITransferMode _m
 	while ((x = SPI_REG(SPI_REG_RXFIFO)) < 0)
 		;
 	r = x & 0xFF;
-//	if (reverse)
-//		r = __REV(__RBIT(r));
 	*buffer = r;
 }
 
@@ -316,27 +300,9 @@ void SPIClass::detachInterrupt(void) {
 
 #if SPI_INTERFACES_COUNT > 0
 static void SPI_0_Init(void) {
-        GPIO_REG(GPIO_output_en) |= OE_MASK;
-        GPIO_REG(GPIO_input_en) |= IE_MASK;
-        GPIO_REG(GPIO_pullup_en) |= PUE_MASK;
-        GPIO_REG(GPIO_iof_sel) &= ~IOF_MASK;;
-        GPIO_REG(GPIO_iof_en) |= IOF_MASK;
-//        delay(100); // Pull-up delay
-/*	PIO_Configure(
-			g_APinDescription[PIN_SPI_MOSI].pPort,
-			g_APinDescription[PIN_SPI_MOSI].ulPinType,
-			g_APinDescription[PIN_SPI_MOSI].ulPin,
-			g_APinDescription[PIN_SPI_MOSI].ulPinConfiguration);
-	PIO_Configure(
-			g_APinDescription[PIN_SPI_MISO].pPort,
-			g_APinDescription[PIN_SPI_MISO].ulPinType,
-			g_APinDescription[PIN_SPI_MISO].ulPin,
-			g_APinDescription[PIN_SPI_MISO].ulPinConfiguration);
-	PIO_Configure(
-			g_APinDescription[PIN_SPI_SCK].pPort,
-			g_APinDescription[PIN_SPI_SCK].ulPinType,
-			g_APinDescription[PIN_SPI_SCK].ulPin,
-			g_APinDescription[PIN_SPI_SCK].ulPinConfiguration); */
+        // select SPI function (iof_0) for MOSI, MISO, SCK pins
+        GPIO_REG(GPIO_iof_sel)  &= ~SPI_IOF_MASK;;
+        GPIO_REG(GPIO_iof_en)   |=  SPI_IOF_MASK;
 }
 
 SPIClass SPI(SPI_INTERFACE_ID, SPI_0_Init);

@@ -4,7 +4,6 @@
 #include <sys/isr.h>
 #include <dev/io.h>
 #include "wiring_private.h"
-#include "emard_timer.h"
 
 __BEGIN_DECLS
 
