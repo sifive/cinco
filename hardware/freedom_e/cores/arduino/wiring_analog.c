@@ -5,9 +5,6 @@
 
 __BEGIN_DECLS
 
-#define PWM_REG(offset) (*(volatile uint32_t*)(PWM1_BASE_ADDR + (offset)))
-#define GPIO_REG(offset) (*(volatile uint32_t*)(GPIO_BASE_ADDR + (offset)))
-
 /* old arduino uses 490 Hz */
 /* new arduino uses 980 Hz */
 static uint32_t analog_write_frequency = 980;
@@ -74,9 +71,9 @@ void analogWrite(uint32_t ulPin, uint32_t ulValue)
 
   if (!PWMEnabled)
   {
-    PWM_REG(PWM_CFG) = (PWM_CFG_ZEROCMP | PWM_CFG_ENALWAYS);
+    PWM0_REG(PWM_CFG) = (PWM_CFG_ZEROCMP | PWM_CFG_ENALWAYS);
     PWMPeriod = 0xffff; // ~ 1kHz at 65MHZ cpu freq
-    PWM_REG(PWM_CMP0) = PWMPeriod;
+    PWM0_REG(PWM_CMP0) = PWMPeriod;
     PWMEnabled = 1;
   }
 
@@ -93,7 +90,7 @@ void analogWrite(uint32_t ulPin, uint32_t ulValue)
 
 //  ulValue = mapResolution(ulValue, _writeResolution, 16);
   
-  PWM_REG(PWM_CMP0 + (4*(ulPin-19))) = ulValue > PWMPeriod ? PWMPeriod : ulValue;
+  PWM0_REG(PWM_CMP0 + (4*(ulPin-19))) = ulValue > PWMPeriod ? PWMPeriod : ulValue;
 
 }
   

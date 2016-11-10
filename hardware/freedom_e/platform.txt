@@ -13,20 +13,11 @@ compiler.objcopy.cmd=riscv32-unknown-elf-objcopy
 compiler.elf2hex.cmd=riscv32-unknown-elf-objcopy
 compiler.size.cmd=riscv32-unknown-elf-size
 
-compiler.c.flags=-c -Os -m32 -msoft-float -fpeel-loops \
-		    -ffreestanding -ffunction-sections \
-		    -fdata-sections -Wall -nostdinc "-I{build.system.path}/include" \
-		    -include sys/param.h -include sys/stdint.h
+compiler.c.flags=-c -Os -m32 -msoft-float -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -Wall -nostdinc "-I{build.system.path}/include" -include sys/param.h -include sys/stdint.h
 
-compiler.cpp.flags=-c -Os -m32 -msoft-float -fpeel-loops -ffreestanding \
-		      -ffunction-sections -fdata-sections -fpermissive \
-		      -Wall -nostdinc "-I{build.system.path}/include" \
-		      -include sys/param.h -fno-rtti  -fno-exceptions \
-		      -include sys/stdint.h
+compiler.cpp.flags=-c -Os -m32 -msoft-float -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -fpermissive -Wall -nostdinc "-I{build.system.path}/include" -include sys/param.h -fno-rtti  -fno-exceptions -include sys/stdint.h
 
-compiler.ld.flags=-T {build.system.path}/riscv/lib/ldscripts/freedom-e300-flash.ld \
-		     -N -EL -melf32lriscv \
-		     --gc-sections "--library-path={build.system.path}/riscv/lib"
+compiler.ld.flags=-T {build.system.path}/riscv/lib/ldscripts/freedom-e300-flash.ld -N -EL -melf32lriscv --gc-sections "--library-path={build.system.path}/riscv/lib"
 
 compiler.S.flags=-c -g -x assembler-with-cpp
 
@@ -91,13 +82,11 @@ recipe.size.regex=\s*[0-9]+\s+[0-9]+\s+[0-9]+\s+([0-9]+).*
 
 # Uploader tools
 # -------------------
-
-tools.lsketch.path=
-tools.lsketch.cmd.path=openocd_lsketch
-tools.lsketch.upload.params.verbose=-v
-tools.lsketch.upload.params.quiet=-q
-tools.lsketch.program.params.verbose=-v
-tools.lsketch.program.params.quiet=-q
-tools.lsketch.program.pattern="{cmd.path}" "{build.path}/{build.project_name}.elf"
-tools.lsketch.upload.pattern="{cmd.path}" "{build.path}/{build.project_name}.elf"
-
+tools.openocd.path=
+tools.openocd.cmd.path=openocd_program
+tools.openocd.upload.params.verbose=-v
+tools.openocd.upload.params.quiet=-q
+tools.openocd.program.params.verbose=-v
+tools.openocd.program.params.quiet=-q
+tools.openocd.program.pattern="{cmd.path}" "{build.path}/{build.project_name}.elf"
+tools.openocd.upload.pattern="{cmd.path}" "{build.path}/{build.project_name}.elf"

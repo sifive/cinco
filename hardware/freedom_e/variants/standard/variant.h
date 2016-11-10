@@ -8,14 +8,6 @@
 #define SIFIVE_FREEDOM_E300_PLATFORM
 #include <freedom_e300/platform/platform.h>
 
-// helper macros
-#define _REG32(p, i)    (*(volatile uint32_t *)((p) + (i)))
-#define SPI_REG(i)      _REG32(SPI_BASE_ADDR, (i))
-#define GPIO_REG(i)     _REG32(GPIO_BASE_ADDR, (i))
-#define PLIC_REG(i)     _REG32(PLIC_BASE_ADDR, (i))
-#define PWM0_REG(i)     _REG32(PWM0_BASE_ADDR, (i))
-#define PWM1_REG(i)     _REG32(PWM1_BASE_ADDR, (i))
-#define PWM2_REG(i)     _REG32(PWM2_BASE_ADDR, (i))
 
 /*----------------------------------------------------------------------------
 *        Headers
