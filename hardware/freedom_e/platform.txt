@@ -17,7 +17,7 @@ compiler.c.flags=-c -Os -m32 -msoft-float -fpeel-loops -ffreestanding -ffunction
 
 compiler.cpp.flags=-c -Os -m32 -msoft-float -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -fpermissive -Wall -nostdinc "-I{build.system.path}/include" -include sys/param.h -fno-rtti  -fno-exceptions -include sys/stdint.h
 
-compiler.ld.flags=-T {build.system.path}/riscv/lib/ldscripts/freedom-e300-flash.ld -N -EL -melf32lriscv --gc-sections "--library-path={build.system.path}/riscv/lib"
+compiler.ld.flags=-T {build.system.path}/riscv/lib/ldscripts/freedom-e300-sram.ld -N -EL -melf32lriscv --gc-sections "--library-path={build.system.path}/riscv/lib"
 
 compiler.S.flags=-c -g -x assembler-with-cpp
 
@@ -65,9 +65,9 @@ recipe.cpp.o.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} -D
 recipe.ar.pattern="{compiler.path}{compiler.ar.cmd}" {compiler.ar.flags} {compiler.ar.extra_flags} "{archive_file_path}" "{object_file}"
 
 ## Link gc-sections, archives, and objects
-recipe.c.combine.pattern="{compiler.path}{compiler.ld.cmd}" {compiler.ld.flags} -nostdlib {build.extra_flags} -lcrt0f {object_files} "{build.path}/{archive_file}" -lm -lc -o "{build.path}/{build.project_name}.elf"
+#recipe.c.combine.pattern="{compiler.path}{compiler.ld.cmd}" {compiler.ld.flags} -nostdlib {build.extra_flags} -lcrt0f {object_files} "{build.path}/{archive_file}" -lm -lc -o "{build.path}/{build.project_name}.elf"
 
-#recipe.c.combine.pattern="{compiler.path}{compiler.ld.cmd}" {compiler.ld.flags} -nostdlib {compiler.ld.extra_flags} -lcrt0 {object_files} "{archive_file_path}" -lm -lc -o "{build.path}/{build.project_name}.elf"
+recipe.c.combine.pattern="{compiler.path}{compiler.ld.cmd}" {compiler.ld.flags} -nostdlib {build.extra_flags} -lcrt0 {object_files} "{archive_file_path}" -lm -lc -o "{build.path}/{build.project_name}.elf"
 
 ## Create binary
 recipe.objcopy.eep.pattern="{compiler.path}{compiler.elf2hex.cmd}" {compiler.elf2hex.flags} -O binary "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.bin"
@@ -82,7 +82,7 @@ recipe.size.regex=\s*[0-9]+\s+[0-9]+\s+[0-9]+\s+([0-9]+).*
 
 # Uploader tools
 # -------------------
-tools.openocd.path=
+tools.openocd.path=$CINCO/tools/
 tools.openocd.cmd.path=openocd_program
 tools.openocd.upload.params.verbose=-v
 tools.openocd.upload.params.quiet=-q

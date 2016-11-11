@@ -28,33 +28,22 @@ __BEGIN_DECLS
 extern void initVariant( void ) ;
 extern void init( void ) ;
 
-enum PIN_TYPE {
-  PIN_TYPE_NC = 0, // not connected
-  PIN_TYPE_INPUT,
-  PIN_TYPE_OUTPUT,
-  PIN_TYPE_GPIO,
-  PIN_TYPE_SIZE // must be last, defines the size
-};
-
-enum OCP_TYPE {
-  OCP_NONE = 15
-};
-
-enum ICP_TYPE {
-  ICP_NONE = 15
-};
-
 extern const volatile uint32_t *pintype2ioaddr[];
 extern const volatile uint32_t *pintype2ioaddr_in[];
 
 struct variant_pin_map_s {
-	uint8_t	io_port:3,  // max 8 pin types
-                bit_pos:5;  // max 32 bits
-	uint8_t	pwm:4, icp:4;
+  uint8_t io_port;
+  uint8_t bit_pos;// max 8 GPIO Peripherals
+  uint8_t pwm_num;
+  uint8_t pwm_cmp_num;
 };
 
 extern const struct variant_pin_map_s variant_pin_map[];
 extern const uint32_t variant_pin_map_size;
+
+extern const volatile uint32_t* variant_pwm[];
+extern const uint32_t variant_pwm_size;
+
 
 /**
  * \brief Returns the number of milliseconds since the Arduino board began running the current program.
@@ -90,19 +79,12 @@ extern void delay( uint32_t dwMs ) ;
  *
  * \param dwUs the number of microseconds to pause (uint32_t)
  */
+
+//TODO!!! USE 32kHz timer here instead.
+
 static inline void delayMicroseconds(uint32_t) __attribute__((always_inline, unused));
 static inline void delayMicroseconds(uint32_t usec){
     if (usec == 0) return;
-#if 0
-    // XXX MARKO FIXME!
-    uint32_t n = usec * (F_CPU / 3000000);
-    asm volatile(
-        "L_%=_delayMicroseconds:"       "\n\t"
-        "subs   %0, #1"                 "\n\t"
-        "bne    L_%=_delayMicroseconds" "\n"
-        : "+r" (n) :
-    );
-#endif
     int32_t endwait = micros() + usec;
     while( ((int32_t)micros())-endwait < 0);
 }

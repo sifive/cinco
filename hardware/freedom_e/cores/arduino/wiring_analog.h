@@ -21,21 +21,7 @@
 
 __BEGIN_DECLS
 
-struct pwm_enable_bitmask_s
-{
-  uint32_t control_and;   // first and'ed to preserve bits
-  uint32_t control_or;    // last or'ed to set bits that enable this timer
-  uint32_t control_and_or;// 1-use and logic, 0-use or logic
-  uint32_t apply;
-  uint8_t ocp_start;
-  uint8_t ocp_stop;
-  uint32_t ocp_ie;
-  uint32_t ocp_if;
-};
 
-/*
- * \brief SAM3 products have only one reference for ADC
- */
 typedef enum _eAnalogReference
 {
   AR_DEFAULT,
@@ -93,7 +79,6 @@ extern void analogWriteResolution(int res);
 extern void analogWriteFrequency(int freq);
 
 extern void analogWritePhase(uint32_t pin, uint32_t phase);
-
 
 extern void analogOutputInit( void ) ;
 

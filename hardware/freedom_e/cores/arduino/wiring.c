@@ -29,28 +29,14 @@
 #include "dev/io.h"
 #include <freedom_e300/platform/platform.h>
 
+const struct variant_pin_map_s variant_pin_map[] = VARIANT_DIGITAL_PIN_MAP;
+const uint32_t variant_pin_map_size = sizeof(variant_pin_map) / sizeof(struct variant_pin_map_s);
+
+const uint32_t * variant_pwm[] = VARIANT_PWM_MAP;
+const uint32_t variant_pwm_size = sizeof(variant_pwm_map) / sizeof(uint32_t*);
 
 static uint32_t tsc_hi, tsc_lo;
-/*
-const volatile uint32_t *pintype2ioaddr[PIN_TYPE_SIZE] = {
-  [PIN_TYPE_NC]     = NULL,
-  [PIN_TYPE_INPUT]  = (volatile uint32_t *)IO_PUSHBTN,
-  [PIN_TYPE_OUTPUT] = (volatile uint32_t *)IO_LED,
-  [PIN_TYPE_GPIO]   = (volatile uint32_t *)(GPIO_BASE_ADDR+GPIO_port)
-};
 
-const volatile uint32_t *pintype2ioaddr_in[PIN_TYPE_SIZE] = {
-  [PIN_TYPE_NC]     = NULL,
-  [PIN_TYPE_INPUT]  = (volatile uint32_t *)IO_PUSHBTN,
-  [PIN_TYPE_OUTPUT] = (volatile uint32_t *)IO_LED,
-  [PIN_TYPE_GPIO]   = (volatile uint32_t *)(GPIO_BASE_ADDR+GPIO_value)
-};
-
-const struct variant_pin_map_s variant_pin_map[] = VARIANT_DIGITAL_PIN_MAP;
-const uint32_t variant_pin_map_size = sizeof(variant_pin_map);
-
-volatile uint32_t *EMARD_TIMER = EMARD_TIMER_ADDRESS;
-*/
 static void
 update_tsc(void)
 {
