@@ -11,7 +11,7 @@ pinMode(uint32_t pin, uint32_t mode)
   if (pin >= variant_pin_map_size)
     return;
   
-  GPIO_REG(GPIO_output_xor)  &= ~digitalPinToBitMask(pin);
+  GPIO_REG(GPIO_out_xor)  &= ~digitalPinToBitMask(pin);
   GPIO_REG(GPIO_iof_en)      &= ~digitalPinToBitMask(pin);
   
   switch (mode) {
@@ -50,10 +50,10 @@ digitalWrite(uint32_t pin, uint32_t val)
 int
 digitalRead(uint32_t pin)
 {
-  if (pin >= variant_pin_map_size)
-    return 0;
+if (pin >= variant_pin_map_size)
+  return 0;
 
-  return ((GPIO_REG(GPIO_value) & digitalPinToBitMask(pin)) != 0)
+return ((GPIO_REG(GPIO_value) & digitalPinToBitMask(pin)) != 0);
 }
 
 __END_DECLS

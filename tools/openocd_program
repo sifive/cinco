@@ -6,7 +6,7 @@ cp ${1} /home/megan/ARDUINO.elf
 
 riscv32-unknown-elf-gdb -batch \
   -ex "target extended-remote | openocd -c \"gdb_port pipe; log_output openocd.log\" -f $CINCO/misc/openocd.cfg -l /tmp/openocd.log" \
-  -ex "load ${1}" \
+  -ex "monitor load_image ${1}" \
   -ex "set \$pc = 0x80000000" \
-  -ex "continue" ${1}
+  -ex "monitor resume" ${1}
 

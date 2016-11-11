@@ -21,16 +21,16 @@ void analogWriteResolution(int res) {
 
 void analogWritePhase(uint32_t pin, uint32_t phase)
 {
-  int8_t pwm_channel;
+  int8_t pwm_num;
   volatile uint32_t *start, *stop;
   
   if(pin >= variant_pin_map_size)
     return;
 
-  pwm_channel = variant_pin_map[pin].pwm;
-  if(pwm_channel > variant_num_pwm)
+  pwm_num = variant_pin_map[pin].pwm_num;
+  if(pwm_num > variant_pwm_size)
     {
-      //TODO: Whatever this is supposed to do.
+      //TODO!!! Whatever this is supposed to do.
     }
 }
       
@@ -39,13 +39,14 @@ void analogOutputInit( void )
 }
 
 
-void analogWrite(uint32_t ulPin, uint32_t ulValue)
+void analogWrite(uint32_t pin, uint32_t ulValue)
 {
 
   uint8_t pwm_num;
   uint8_t pwm_cmp_num;
+  uint32_t pwm_period;
   
-  if (ulPin > variant_pin_map_size) {
+  if (pin > variant_pin_map_size) {
     return;
   }
 
@@ -54,30 +55,23 @@ void analogWrite(uint32_t ulPin, uint32_t ulValue)
     return;
   }
 
-  PWMPeriod = (1 << _writeResolution) - 1;
+  pwm_period = (1 << _writeResolution) - 1;
   
-  if (!PWMEnabled[pwm_num]) {
-    *((volatile uint32_t*) (variant_pwm[pwm_num] + PWM_CFG))  = (PWM_CFG_ZEROCMP | PWM_CFG_ENALWAYS);
-    *((volatile uint32_t*) (variant_pwm[pwm_num] + PWM_CMP0)) = PWMPeriod;
-    PWMEnabled[pwm_num] = 1;
-  }
-
-  if (!PWMEnabledPins[ulPin]) 
-  {
-    GPIO_REG(GPIO_pullup_en)  &= ~(1<<ulPin);
-    GPIO_REG(GPIO_out_xor)    &= ~digitalPinToBitMask(pin);
-    GPIO_REG(GPIO_iof_sel)    |= digitalPinToBitMask(pin);
-    GPIO_REG(GPIO_iof_en)     |= digitalPinToBitMask(pin);
-    PWMEnabledPins[ulPin] = 1;
-  }
-
+  *((volatile uint32_t*) (variant_pwm[pwm_num] + PWM_CFG))  = (PWM_CFG_ZEROCMP | PWM_CFG_ENALWAYS);
+  *((volatile uint32_t*) (variant_pwm[pwm_num] + PWM_CMP0)) = pwm_period;
   
-  PWM_REG(PWM_CMP0 + (4*(ulPin-19))) = ulValue > PWMPeriod ? PWMPeriod : ulValue;
-
+  GPIO_REG(GPIO_pullup_en)  &= ~(1<<pin);
+  GPIO_REG(GPIO_out_xor)    &= ~digitalPinToBitMask(pin);
+  GPIO_REG(GPIO_iof_sel)    |= digitalPinToBitMask(pin);
+  GPIO_REG(GPIO_iof_en)     |= digitalPinToBitMask(pin);
+  
+  *((volatile uint32_t*) (variant_pwm[pwm_num] + PWM_CMP0 + pwm_cmp_num)) =
+    (ulValue > pwm_period) ? pwm_period : ulValue;
+  
 }
 
 //TODO!!!
-uint32_t analogRead(uint32_t ulPin)
+uint32_t analogRead(uint32_t pin)
 {
   return 0;
 }

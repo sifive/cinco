@@ -72,7 +72,7 @@ static const uint8_t MOSI = PIN_SPI_MOSI;
 static const uint8_t MISO = PIN_SPI_MISO;
 static const uint8_t SCK  = PIN_SPI_SCK;
 
-#define VARIANT_DIGITAL_PIN_MAP  [{.io_port = 0, .bit_pos = 16, .pwm_num = 0xF, .pwm_cmp_num = 0}, \
+#define VARIANT_DIGITAL_PIN_MAP  {{.io_port = 0, .bit_pos = 16, .pwm_num = 0xF, .pwm_cmp_num = 0}, \
 				  {.io_port = 0, .bit_pos = 17, .pwm_num = 0xF, .pwm_cmp_num = 0}, \
 				  {.io_port = 0, .bit_pos = 18, .pwm_num = 0xF, .pwm_cmp_num = 0}, \
 				  {.io_port = 0, .bit_pos = 19, .pwm_num = 1,  .pwm_cmp_num = 1}, \
@@ -84,15 +84,15 @@ static const uint8_t SCK  = PIN_SPI_SCK;
 				  {.io_port = 0, .bit_pos = 1,  .pwm_num = 0,  .pwm_cmp_num = 1}, \
 				  {.io_port = 0, .bit_pos = 2,  .pwm_num = 0,  .pwm_cmp_num = 2}, \
 				  {.io_port = 0, .bit_pos = 3,  .pwm_num = 0, .pwm_cmp_num  = 3}, \
-				  {.io_port = 0, .bit_pos = 4,  .pwm_num = 0xF, .pwm_cmp_num = X}, \
-				  {.io_port = 0, .bit_pos = 5,  .pwm_num = 0xF, .pwm_cmp_num = X}, \
-				  {.io_port = 0, .bit_pos = 8,  .pwm_num = 0xF, .pwm_cmp_num = X}, \
-				  {.io_port = 0, .bit_pos = 9,  .pwm_num = 0xF, .pwm_cmp_num = X}, \
+				  {.io_port = 0, .bit_pos = 4,  .pwm_num = 0xF, .pwm_cmp_num = 0}, \
+				  {.io_port = 0, .bit_pos = 5,  .pwm_num = 0xF, .pwm_cmp_num = 0}, \
+				  {.io_port = 0, .bit_pos = 8,  .pwm_num = 0xF, .pwm_cmp_num = 0}, \
+				  {.io_port = 0, .bit_pos = 9,  .pwm_num = 0xF, .pwm_cmp_num = 0}, \
 				  {.io_port = 0, .bit_pos = 10, .pwm_num = 2,   .pwm_cmp_num = 0}, \
 				  {.io_port = 0, .bit_pos = 11, .pwm_num = 2,   .pwm_cmp_num = 1}, \
 				  {.io_port = 0, .bit_pos = 12, .pwm_num = 2,   .pwm_cmp_num = 2}, \
-				  {.io_port = 0, .bit_pos = 13, .pwm_num = 2,   .pwm_cmp_num = 3} ]
+				    {.io_port = 0, .bit_pos = 13, .pwm_num = 2,   .pwm_cmp_num = 3}}
 
-#define VARIANT_PWM_LIST [PWM0_BASE_ADDR, PWM1_BASE_ADDR, PWM2_BASE_ADDR]
+#define VARIANT_PWM_LIST {PWM0_BASE_ADDR, PWM1_BASE_ADDR, PWM2_BASE_ADDR}
 
 #endif 

@@ -32,8 +32,8 @@
 const struct variant_pin_map_s variant_pin_map[] = VARIANT_DIGITAL_PIN_MAP;
 const uint32_t variant_pin_map_size = sizeof(variant_pin_map) / sizeof(struct variant_pin_map_s);
 
-const uint32_t * variant_pwm[] = VARIANT_PWM_MAP;
-const uint32_t variant_pwm_size = sizeof(variant_pwm_map) / sizeof(uint32_t*);
+const volatile uint32_t * variant_pwm[] = VARIANT_PWM_LIST;
+const uint32_t variant_pwm_size = sizeof(variant_pwm) / sizeof(uint32_t*);
 
 static uint32_t tsc_hi, tsc_lo;
 
