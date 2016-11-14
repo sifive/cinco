@@ -1,9 +1,0 @@
-lsketch.name=lsketch
-lsketch.communication=usb
-lsketch.protocol=elf
-lsketch.program.params.verbose=-v
-lsketch.program.params.quiet=-q
-lsketch.program.protocol=elf
-lsketch.program.tool=lsketch
-lsketch.program.extra_params=
-lsketch.bootloader.tool=lsketch

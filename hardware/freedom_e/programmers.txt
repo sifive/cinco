@@ -1,0 +1,9 @@
+openocd.name=openocd
+openocd.communication=usb
+openocd.protocol=elf
+openocd.program.params.verbose=-v
+openocd.program.params.quiet=-q
+openocd.program.protocol=elf
+openocd.program.tool=openocd
+openocd.program.extra_params=
+openocd.booloader.tool=openocd
