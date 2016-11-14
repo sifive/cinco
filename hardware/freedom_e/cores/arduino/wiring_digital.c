@@ -13,6 +13,7 @@ pinMode(uint32_t pin, uint32_t mode)
   
   GPIO_REG(GPIO_out_xor)  &= ~digitalPinToBitMask(pin);
   GPIO_REG(GPIO_iof_en)      &= ~digitalPinToBitMask(pin);
+//pwm_enabled_pin[pin] = 0;
   
   switch (mode) {
   case INPUT_PULLUP:

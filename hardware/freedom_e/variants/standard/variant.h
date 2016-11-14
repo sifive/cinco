@@ -92,7 +92,10 @@ static const uint8_t SCK  = PIN_SPI_SCK;
 				  {.io_port = 0, .bit_pos = 11, .pwm_num = 2,   .pwm_cmp_num = 1}, \
 				  {.io_port = 0, .bit_pos = 12, .pwm_num = 2,   .pwm_cmp_num = 2}, \
 				    {.io_port = 0, .bit_pos = 13, .pwm_num = 2,   .pwm_cmp_num = 3}}
+#define VARIANT_NUM_PIN (20)
 
 #define VARIANT_PWM_LIST {PWM0_BASE_ADDR, PWM1_BASE_ADDR, PWM2_BASE_ADDR}
+
+#define VARIANT_NUM_PWM (3)
 
 #endif 

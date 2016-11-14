@@ -33,7 +33,7 @@ extern const volatile uint32_t *pintype2ioaddr_in[];
 
 struct variant_pin_map_s {
   uint8_t io_port;
-  uint8_t bit_pos;// max 8 GPIO Peripherals
+  uint8_t bit_pos;
   uint8_t pwm_num;
   uint8_t pwm_cmp_num;
 };
@@ -41,9 +41,8 @@ struct variant_pin_map_s {
 extern const struct variant_pin_map_s variant_pin_map[];
 extern const uint32_t variant_pin_map_size;
 
-extern const volatile uint32_t* variant_pwm[];
+extern const volatile void* variant_pwm[];
 extern const uint32_t variant_pwm_size;
-
 
 /**
  * \brief Returns the number of milliseconds since the Arduino board began running the current program.
