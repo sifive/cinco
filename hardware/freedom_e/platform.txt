@@ -13,9 +13,9 @@ compiler.objcopy.cmd=riscv32-unknown-elf-objcopy
 compiler.elf2hex.cmd=riscv32-unknown-elf-objcopy
 compiler.size.cmd=riscv32-unknown-elf-size
 
-compiler.c.flags=-c -Os -m32 -msoft-float -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -Wall -nostdinc "-I{build.system.path}/include" -include sys/param.h -include sys/stdint.h -g
+compiler.c.flags=-c -O1 -m32 -msoft-float -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -Wall -nostdinc "-I{build.system.path}/include" -include sys/param.h -include sys/stdint.h -g
 
-compiler.cpp.flags=-c -Os -m32 -msoft-float -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -fpermissive -Wall -nostdinc "-I{build.system.path}/include" -include sys/param.h -fno-rtti  -fno-exceptions -include sys/stdint.h -g
+compiler.cpp.flags=-c -O1 -m32 -msoft-float -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -fpermissive -Wall -nostdinc "-I{build.system.path}/include" -include sys/param.h -fno-rtti  -fno-exceptions -include sys/stdint.h -g
 
 compiler.ld.flags=-T {build.ldscript} -N -EL -melf32lriscv --gc-sections "--library-path={build.system.path}/riscv/lib"
 

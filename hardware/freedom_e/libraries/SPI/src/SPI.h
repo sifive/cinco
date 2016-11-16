@@ -30,13 +30,14 @@
 //   - setDataMode(pin, datamode)
 //   - setClockDivider(pin, clockdiv)
 //   - transfer(pin, data, SPI_LAST/SPI_CONTINUE)
-//   - beginTransaction(pin, SPISettings settings) (if transactions are available)
+//   - beginTransaction(pin, SPISettings settings)
+//     (if transactions are available)
 #define SPI_HAS_EXTENDED_CS_PIN_HANDLING 1
 
-#define SPI_MODE0 0x02
-#define SPI_MODE1 0x00
-#define SPI_MODE2 0x03
-#define SPI_MODE3 0x01
+#define SPI_MODE0 0x00
+#define SPI_MODE1 0x01
+#define SPI_MODE2 0x02
+#define SPI_MODE3 0x03
 
 enum SPITransferMode {
 	SPI_CONTINUE,
@@ -65,7 +66,7 @@ private:
 		} else {
 			sckdiv = (F_CPU / (2*clock)) - 1;
 		}
-                sckmode = 0;
+                sckmode = dataMode;
                 csid = 0;
                 csdef = 0xFFFF;
                 csmode = SPI_CSMODE_AUTO;
@@ -95,18 +96,18 @@ class SPIClass {
   public:
 	SPIClass(uint32_t _id);
 
-	// Transfer functions
+	// Transfer functions where the hardware controls the SS line
 	byte transfer(byte _pin, uint8_t _data, SPITransferMode _mode = SPI_LAST);
 	uint16_t transfer16(byte _pin, uint16_t _data, SPITransferMode _mode = SPI_LAST);
 	void transfer(byte _pin, void *_buf, size_t _count, SPITransferMode _mode = SPI_LAST);
-	// Transfer functions on default pin SS
-	byte transfer(uint8_t _data, SPITransferMode _mode = SPI_LAST) { return transfer(SS, _data, _mode); }
-	uint16_t transfer16(uint16_t _data, SPITransferMode _mode = SPI_LAST) { return transfer16(SS, _data, _mode); }
-	void transfer(void *_buf, size_t _count, SPITransferMode _mode = SPI_LAST) { transfer(SS, _buf, _count, _mode); }
+
+	// Transfer functions where the user controls the SS line
+	byte transfer(uint8_t _data, SPITransferMode _mode = SPI_LAST);
+	void transfer(void *_buf, size_t _count, SPITransferMode _mode = SPI_LAST);
 
 	// Transaction Functions
 	void usingInterrupt(uint8_t interruptNumber);
-	void beginTransaction(SPISettings settings) { beginTransaction(SS, settings); }
+	void beginTransaction(SPISettings settings);
 	void beginTransaction(uint8_t pin, SPISettings settings);
 	void endTransaction(void);
 
@@ -126,16 +127,18 @@ class SPIClass {
 	void setDataMode(uint8_t _pin, uint8_t);
 	void setClockDivider(uint8_t _pin, uint8_t);
 
-	// These methods sets the same parameters but on default pin BOARD_SPI_DEFAULT_SS
-	void setBitOrder(BitOrder _order) { setBitOrder(SS, _order); };
-	void setDataMode(uint8_t _mode) { setDataMode(SS, _mode); };
-	void setClockDivider(uint8_t _div) { setClockDivider(SS, _div); };
+	// These methods sets the same parameters, but globally.
+	void setBitOrder(BitOrder _order);
+	void setDataMode(uint8_t _mode);
+	void setClockDivider(uint8_t _div);
 
   private:
 	uint32_t id;
-	BitOrder bitOrder[VARIANT_NUM_SPI];
-	uint32_t divider[VARIANT_NUM_SPI];
-	uint32_t mode[VARIANT_NUM_SPI];
+	// These are for specific pins.
+	BitOrder bitOrder[4+1];
+	uint32_t divider[4+1];
+	uint32_t mode[4+1];
+	
 	uint8_t interruptMode;    // 0=none, 1-15=mask, 16=global
 	uint8_t interruptSave;    // temp storage, to restore state
 	uint32_t interruptMask[4];
