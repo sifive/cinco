@@ -33,6 +33,9 @@
 #define SPI_SCK_POL             0x1
 #define SPI_SCK_PHA             0x2
 
+#define SPI_TXFIFO_FULL  0x80000000
+#define SPI_RXFIFO_EMPTY 0x80000000
+
 #define SPI_FMT_PROTO(x)        ((x) & 0x3)
 #define SPI_FMT_ENDIAN(x)       (((x) & 0x1) << 2)
 #define SPI_FMT_DIR(x)          (((x) & 0x1) << 3)

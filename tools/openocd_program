@@ -4,9 +4,10 @@ echo "${1}" > /tmp/debug_filename.txt
 
 cp ${1} /home/megan/ARDUINO.elf
 
-riscv32-unknown-elf-gdb -batch \
-  -ex "target extended-remote | openocd -c \"gdb_port pipe; log_output openocd.log\" -f $CINCO/misc/openocd.cfg -l /tmp/openocd.log" \
-  -ex "monitor load_image ${1}" \
-  -ex "set \$pc = 0x80000000" \
-  -ex "monitor resume" ${1}
+riscv32-unknown-elf-gdb ${1} -batch \
+  -ex "target extended-remote | openocd -c \"gdb_port pipe\" -f $CINCO/misc/openocd.cfg" \
+  -ex "load" \
+  -ex "continue" \
+  -ex "quit"
+
 

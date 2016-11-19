@@ -6,6 +6,8 @@
 #include <stdint.h>
 
 #define SIFIVE_FREEDOM_E300_PLATFORM
+#define FREEDOM_E300
+#define RISCV
 #include <freedom_e300/platform/platform.h>
 
 /*----------------------------------------------------------------------------
@@ -33,44 +35,36 @@ extern UARTClass Serial;
 
 #define SPI_INTERFACES_COUNT 1
 
-//TODO: These use GPIO numbers, not pin numbers.
 // Should translate from these to pins.
-//#define SPI_INTERFACE        (0)
-#define SPI_INTERFACE_ID     (0)
-#define SPI_CHANNELS_NUM     3
-#define PIN_SPI_SS0          (2u)
-#define PIN_SPI_SS1          (9u)
-#define PIN_SPI_SS2          (10u)
-#define PIN_SPI_MOSI         (3u)
-#define PIN_SPI_MISO         (4u)
-#define PIN_SPI_SCK          (5u)
-#define BOARD_SPI_SS0        (10u)
-#define BOARD_SPI_SS1        (14u)
-#define BOARD_SPI_SS2        (15u)
-#define BOARD_SPI_DEFAULT_SS BOARD_SPI_SS0
+#define PIN_SPI1_SCK    (13u)
+#define PIN_SPI1_MISO   (12u)
+#define PIN_SPI1_MOSI   (11u)
+#define PIN_SPI1_SS0    (10u)
+#define PIN_SPI1_SS1    (14u) // Note, this is not actually connected!
+#define PIN_SPI1_SS2    (15u)
+#define PIN_SPI1_SS3    (16u)
 
-#define BOARD_PIN_TO_SPI_PIN(x) \
-        (x==BOARD_SPI_SS0 ? PIN_SPI_SS0 : \
-        (x==BOARD_SPI_SS1 ? PIN_SPI_SS1 : PIN_SPI_SS2))
+#define SS_PIN_TO_CS_ID(x) \
+  ((x==PIN_SPI1_SS0 ? 0 :		 \
+    (x==PIN_SPI1_SS1 ? 1 :		 \
+     (x==PIN_SPI1_SS2 ? 2 :		 \
+      (x==PIN_SPI1_SS3 ? 3 :		 \
+       -1))))) 
 
-#define BOARD_PIN_TO_SPI_CHANNEL(x) \
-        (x==BOARD_SPI_SS0 ? 0 : \
-        (x==BOARD_SPI_SS1 ? 1 : 2))
-
-#define SPI_BASE_ADDR   SPI1_BASE_ADDR
-#define INT_SPI         INT_SPI1_BASE
+#define SPI_REG(x) SPI1_REG(x)
 
 // we only want to enable 3 peripheral managed SPI pins: SCK, MOSI, MISO
 // CS pins can either be handled by hardware or bit banged as GPIOs
 
-#define SPI_IOF_MASK        (0x00000038)
+static const uint8_t SS   = PIN_SPI1_SS0;
+static const uint8_t SS1  = PIN_SPI1_SS1;
+static const uint8_t SS2  = PIN_SPI1_SS2;
+static const uint8_t SS3  = PIN_SPI1_SS3;
+static const uint8_t MOSI = PIN_SPI1_MOSI;
+static const uint8_t MISO = PIN_SPI1_MISO;
+static const uint8_t SCK  = PIN_SPI1_SCK;
 
-static const uint8_t SS   = BOARD_SPI_SS0;
-static const uint8_t SS1  = BOARD_SPI_SS1;
-static const uint8_t SS2  = BOARD_SPI_SS2;
-static const uint8_t MOSI = PIN_SPI_MOSI;
-static const uint8_t MISO = PIN_SPI_MISO;
-static const uint8_t SCK  = PIN_SPI_SCK;
+static const uint32_t SPI_IOF_MASK = (1 << IOF_SPI1_SCK) | (1 << IOF_SPI1_MOSI) | (1 << IOF_SPI1_MISO);
 
 #define VARIANT_DIGITAL_PIN_MAP  {{.io_port = 0, .bit_pos = 16, .pwm_num = 0xF, .pwm_cmp_num = 0}, \
 				  {.io_port = 0, .bit_pos = 17, .pwm_num = 0xF, .pwm_cmp_num = 0}, \
@@ -97,5 +91,9 @@ static const uint8_t SCK  = PIN_SPI_SCK;
 #define VARIANT_PWM_LIST {PWM0_BASE_ADDR, PWM1_BASE_ADDR, PWM2_BASE_ADDR}
 
 #define VARIANT_NUM_PWM (3)
+#define VARIANT_NUM_SPI (1)
+// For interfacing with the onboard SPI Flash.
+#define VARIANT_NUM_QSPI (1)
+#define VARIANT_NUM_UART (1)
 
 #endif 

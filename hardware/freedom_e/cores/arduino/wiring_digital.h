@@ -27,11 +27,11 @@ __BEGIN_DECLS
 #define PortAddr_t uint32_t
 #define PortRegister_t volatile uint32_t *
 
-#define digitalPinToPort(pin)    ((PortAddr_t)     GPIO_REG(GPIO_port))
-#define digitalPinToPortIn(pin)  ((PortAddr_t)     GPIO_REG(GPIO_value))
+#define digitalPinToPort(pin)    ((PortAddr_t)     GPIO_BASE_ADDR)
+#define digitalPinToPortIn(pin)  ((PortAddr_t)     GPIO_BASE_ADDR)
 #define digitalPinToBitMask(pin) ((PortValue_t)    (1<<variant_pin_map[pin].bit_pos))
-#define portOutputRegister(port) ((PortRegister_t) GPIO_REG(GPIO_port))
-#define portInputRegister(port)  ((PortRegister_t) GPIO_REG(GPIO_value))
+#define portOutputRegister(port) ((PortRegister_t) (GPIO_BASE_ADDR + GPIO_port))
+#define portInputRegister(port)  ((PortRegister_t) (GPIO_BASE_ADDR + GPIO_value))
 
 /**
  * \brief Configures the specified pin to behave either as an input or an output. See the description of digital pins for details.

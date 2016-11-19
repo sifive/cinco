@@ -11,34 +11,29 @@
 
 #include "SPI.h"
 
-#define SPI_REG_TXFIFO_FULL  (*(volatile int32_t *)(SPI_REG(SPI_REG_TXFIFO)) < 0)
-#define SPI_REG_RXFIFO_VALUE (*(volatile int32_t *)(SPI_REG(SPI_REG_RXFIFO)))
-
-SPIClass::SPIClass(uint32_t _id, void(*_initCb)(void)) :
-	id(_id), initCb(_initCb), initialized(false)
+SPIClass::SPIClass(uint32_t _id) :
+  id(_id)
 {
 	// Empty
 }
 
 void SPIClass::begin() {
-	init();
+  
+  GPIO_REG(GPIO_iof_sel) &= ~SPI_IOF_MASK;
+  GPIO_REG(GPIO_iof_en)  |= SPI_IOF_MASK;
 
-        // rimas - NPCS = negative polarity chip select?
-	// NPCS control is left to the user
-
-	// Default speed set to ~1Mhz
-	setClockDivider(BOARD_SPI_DEFAULT_SS, 31);
-	setDataMode(BOARD_SPI_DEFAULT_SS, SPI_MODE0);
-	setBitOrder(BOARD_SPI_DEFAULT_SS, MSBFIRST);
+  // Default speed set to ~1Mhz
+  setClockDivider(31);
+  setDataMode(SPI_MODE0);
+  setBitOrder(MSBFIRST);
+  
 }
 
 // specifies chip select pin to attach to hardware SPI interface
 void SPIClass::begin(uint8_t _pin) {
-	init();
-	uint32_t spiPin = BOARD_PIN_TO_SPI_PIN(_pin);
-
+  	
         // enable CS pin for selected channel/pin
-        uint32_t iof_mask = (1UL << spiPin);
+        uint32_t iof_mask = digitalPinToBitMask(_pin);
         GPIO_REG(GPIO_iof_sel)  &= ~iof_mask;
         GPIO_REG(GPIO_iof_en)   |=  iof_mask;
 
@@ -46,188 +41,124 @@ void SPIClass::begin(uint8_t _pin) {
 	setClockDivider(_pin, 31);
 	setDataMode(_pin, SPI_MODE0);
 	setBitOrder(_pin, MSBFIRST);
+
+	this->begin();
+
 }
 
-void SPIClass::init() {
-	if (initialized)
-		return;
-
-        // interrupt state - unused for now
-	interruptMode = 0;
-	interruptSave = 0;
-	interruptMask[0] = 0;
-	interruptMask[1] = 0;
-	interruptMask[2] = 0;
-	interruptMask[3] = 0;
-      
-	initCb();
-
-        // select SPI function (iof_0) for MOSI, MISO, SCK pins
-        // and then enable iof_en for thjose bits
-        GPIO_REG(GPIO_iof_sel)  &= ~SPI_IOF_MASK;
-        GPIO_REG(GPIO_iof_en)   |=  SPI_IOF_MASK;
-
-//	SPI_Configure(spi, id, SPI_MR_MSTR | SPI_MR_PS | SPI_MR_MODFDIS);
-//	SPI_Enable(spi);
-	initialized = true;
-}
-/*
-#ifndef interruptsStatus
-#define interruptsStatus() __interruptsStatus()
-static inline unsigned char __interruptsStatus(void) __attribute__((always_inline, unused));
-static inline unsigned char __interruptsStatus(void) {
-	unsigned int primask, faultmask;
-	asm volatile ("mrs %0, primask" : "=r" (primask));
-	if (primask) return 0;
-	asm volatile ("mrs %0, faultmask" : "=r" (faultmask));
-	if (faultmask) return 0;
-	return 1;
-}
-#endif
-*/
 void SPIClass::usingInterrupt(uint8_t interruptNumber)
 {
-/*
-	uint8_t irestore;
+}
 
-	irestore = interruptsStatus();
-	noInterrupts();
-	if (interruptMode < 16) {
-		if (interruptNumber > NUM_DIGITAL_PINS) {
-			interruptMode = 16;
-		} else {
-			Pio *pio = g_APinDescription[interruptNumber].pPort;
-			uint32_t mask = g_APinDescription[interruptNumber].ulPin;
-			if (pio == PIOA) {
-				interruptMode |= 1;
-				interruptMask[0] |= mask;
-			} else if (pio == PIOB) {
-				interruptMode |= 2;
-				interruptMask[1] |= mask;
-			} else if (pio == PIOC) {
-				interruptMode |= 4;
-				interruptMask[2] |= mask;
-			} else if (pio == PIOD) {
-				interruptMode |= 8;
-				interruptMask[3] |= mask;
-			} else {
-				interruptMode = 16;
-			}
-		}
-	}
-	if (irestore) interrupts();
-*/
+// start an SPI transaction using specified SPIsettings
+void SPIClass::beginTransaction(SPISettings settings)
+{
+  // before starting a transaction, set SPI peripheral to desired mode
+
+  SPI_REG(SPI_REG_FMT) = SPI_FMT_PROTO(SPI_PROTO_S) |
+    SPI_FMT_ENDIAN((settings.border == LSBFIRST) ? SPI_ENDIAN_LSB : SPI_ENDIAN_MSB) |
+    SPI_FMT_DIR(SPI_DIR_RX) |
+    SPI_FMT_LEN(8);
+  
+  SPI_REG(SPI_REG_SCKDIV)  = settings.sckdiv;
+
+  SPI_REG(SPI_REG_SCKMODE) = settings.sckmode;
+
+  // We Don't control CS, so this setting doesn't matter.
+  //SPI_REG(SPI_REG_CSDEF)   = 0xFFFF;
+
 }
 
 
 // start an SPI transaction using specified CS pin and SPIsettings
 void SPIClass::beginTransaction(uint8_t pin, SPISettings settings)
 {
-  /*
-	uint8_t mode = interruptMode;
-	if (mode > 0) {
-		if (mode < 16) {
-			if (mode & 1) PIOA->PIO_IDR = interruptMask[0];
-			if (mode & 2) PIOB->PIO_IDR = interruptMask[1];
-			if (mode & 4) PIOC->PIO_IDR = interruptMask[2];
-			if (mode & 8) PIOD->PIO_IDR = interruptMask[3];
-		} else {
-			interruptSave = interruptsStatus();
-			noInterrupts();
-		}
-	}
-        */
-
-
+  
   // before starting a transaction, set SPI peripheral to desired mode
-  // next few lines possibly superflous
-        uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(pin);
-	bitOrder[ch] = settings.border;
-        divider[ch] = settings.sckdiv;
-        mode[ch] = settings.sckmode;
+  SPI_REG(SPI_REG_CSID)   = SS_PIN_TO_CS_ID(pin); 
+  SPI_REG(SPI_REG_CSMODE) = SPI_CSMODE_HOLD;
 
-        SPI_REG(SPI_REG_FMT) = SPI_FMT_PROTO(SPI_PROTO_S) | SPI_FMT_ENDIAN(settings.border ? SPI_ENDIAN_LSB : SPI_ENDIAN_MSB) |  SPI_FMT_DIR(SPI_DIR_RX) | SPI_FMT_LEN(8);
+  // There is no way here to change the CS polarity.
+  SPI_REG(SPI_REG_CSDEF)   = 0xFFFF;
 
-        SPI_REG(SPI_REG_SCKDIV)  = settings.sckdiv; 
-        SPI_REG(SPI_REG_SCKMODE) = settings.sckmode; 
-// FIXME: deal with these properly
+  this->beginTransaction(settings);
 
-        //SPI_REG(SPI_REG_CSID)    = settings.csid; 
-        //SPI_REG(SPI_REG_CSDEF)   = settings.csdef; 
-        //SPI_REG(SPI_REG_CSMODE)  = settings.csmode; 
 }
 
-void SPIClass::endTransaction(void)
-{
-/*
-	uint8_t mode = interruptMode;
-	if (mode > 0) {
-		if (mode < 16) {
-			if (mode & 1) PIOA->PIO_IER = interruptMask[0];
-			if (mode & 2) PIOB->PIO_IER = interruptMask[1];
-			if (mode & 4) PIOC->PIO_IER = interruptMask[2];
-			if (mode & 8) PIOD->PIO_IER = interruptMask[3];
-		} else {
-			if (interruptSave) interrupts();
-		}
-	}
-*/
+void SPIClass::endTransaction(void) {
+  SPI_REG(SPI_REG_CSMODE) = SPI_CSMODE_AUTO;
 }
 
 void SPIClass::end(uint8_t _pin) {
-	uint32_t spiPin = BOARD_PIN_TO_SPI_PIN(_pin);
-        GPIO_REG(GPIO_iof_en)  &= ~(1UL << spiPin);
-//        GPIO_REG(GPIO_iof_en)  &= ~SPI_IOF_MASK;
-
-	// Setting the pin as INPUT will disconnect it from SPI peripheral
-//	pinMode(_pin, INPUT);
+  GPIO_REG(GPIO_iof_en)  &= ~digitalPinToBitMask(_pin);    
 }
 
 void SPIClass::end() {
-//	SPI_Disable(spi);
-        GPIO_REG(GPIO_iof_en)  &= ~SPI_IOF_MASK;
-	initialized = false;
+  GPIO_REG(GPIO_iof_en)  &= ~SPI_IOF_MASK;
+}
+
+void SPIClass::setBitOrder(BitOrder _bitOrder) {
+  SPI_REG(SPI_REG_FMT) = SPI_FMT_PROTO(SPI_PROTO_S) |
+    SPI_FMT_ENDIAN((_bitOrder == LSBFIRST) ? SPI_ENDIAN_LSB : SPI_ENDIAN_MSB) |
+    SPI_FMT_DIR(SPI_DIR_RX) |
+    SPI_FMT_LEN(8);
 }
 
 void SPIClass::setBitOrder(uint8_t _pin, BitOrder _bitOrder) {
-	uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(_pin);
+	uint32_t ch = SS_PIN_TO_CS_ID(_pin);
 	bitOrder[ch] = _bitOrder;
+	// This gets used later?
+}
+
+void SPIClass::setDataMode(uint8_t _mode) {
+  SPI_REG(SPI_REG_SCKMODE) = _mode;
 }
 
 void SPIClass::setDataMode(uint8_t _pin, uint8_t _mode) {
-	uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(_pin);
+	uint32_t ch = SS_PIN_TO_CS_ID(_pin);
 	mode[ch] = _mode;
+	// This gets used later?
+}
+
+void SPIClass::setClockDivider(uint8_t _divider) {
+  SPI_REG(SPI_REG_SCKDIV) = _divider;
 }
 
 void SPIClass::setClockDivider(uint8_t _pin, uint8_t _divider) {
-	uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(_pin);
-	divider[ch] = _divider;
-	// SPI_CSR_DLYBCT(1) keeps CS enabled for 32 MCLK after a completed
-	// transfer. Some device needs that for working properly.
-//	SPI_ConfigureNPCS(spi, ch, mode[ch] | SPI_CSR_SCBR(divider[ch]) | SPI_CSR_DLYBCT(1));
+  uint32_t ch = SS_PIN_TO_CS_ID(_pin);
+  divider[ch] = _divider;
+  // THis gets used later?
+}
+
+
+byte SPIClass::transfer(uint8_t _data, SPITransferMode _mode) {
+
+  // SPI_Write(spi, _channel, _data);
+  while (SPI_REG(SPI_REG_TXFIFO) & SPI_TXFIFO_FULL) ;
+  SPI_REG(SPI_REG_TXFIFO) = _data;
+  
+  // return SPI_Read(spi);
+  volatile int32_t x;
+  while ((x = SPI_REG(SPI_REG_RXFIFO)) & SPI_RXFIFO_EMPTY);
+  return x & 0xFF;
+  
+  if (_mode == SPI_LAST) {
+    SPI_REG(SPI_REG_CSMODE) = SPI_CSMODE_AUTO;
+  }
+  
 }
 
 byte SPIClass::transfer(byte _pin, uint8_t _data, SPITransferMode _mode) {
-  // FIXME: broken for channels other than 0 for now
-//	uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(_pin);
+
+  // No need to do anything with the pin, because that was already
+  // set up earlier.
+  return this->transfer(_data, _mode);
  
-
-//	if (_mode == SPI_LAST)
-//		d |= SPI_TDR_LASTXFER;
-
-	// SPI_Write(spi, _channel, _data);
-	while (SPI_REG(SPI_REG_TXFIFO) < 0) ;
-        SPI_REG(SPI_REG_TXFIFO) = _data;
-
-	// return SPI_Read(spi);
-        volatile int32_t x;
-	while ((x = SPI_REG(SPI_REG_RXFIFO)) < 0);
-	return x & 0xFF;
 }
 
 uint16_t SPIClass::transfer16(byte _pin, uint16_t _data, SPITransferMode _mode) {
 	union { uint16_t val; struct { uint8_t lsb; uint8_t msb; }; } t;
-	uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(_pin);
+	uint32_t ch = SS_PIN_TO_CS_ID(_pin);
 
 	t.val = _data;
 
@@ -243,39 +174,31 @@ uint16_t SPIClass::transfer16(byte _pin, uint16_t _data, SPITransferMode _mode) 
 }
 
 void SPIClass::transfer(byte _pin, void *_buf, size_t _count, SPITransferMode _mode) {
-	if (_count == 0)
-		return;
+  
+  if (_count == 0)
+    return;
+  
+  uint8_t *buffer = (uint8_t *)_buf;
+  if (_count == 1) {
+    *buffer = transfer(_pin, *buffer, _mode);
+    return;
+  }
 
-	uint8_t *buffer = (uint8_t *)_buf;
-	if (_count == 1) {
-		*buffer = transfer(_pin, *buffer, _mode);
-		return;
-	}
+  // Send the first byte
+  while (SPI_REG(SPI_REG_TXFIFO) < 0) ;
+  SPI_REG(SPI_REG_TXFIFO) = *buffer;
 
-	uint32_t ch = BOARD_PIN_TO_SPI_CHANNEL(_pin);
-	bool reverse = (bitOrder[ch] == LSBFIRST);
-
-	// Send the first byte
-        while (SPI_REG_TXFIFO_FULL) ;
-//	while (((int32_t)SPI_REG(SPI_REG_TXFIFO)) < 0) //		;
-        SPI_REG(SPI_REG_TXFIFO) = *buffer;
-
-        volatile int32_t x;
-        uint8_t r,d;
-	while (_count > 1) {
-		// Prepare next byte
-		d = *(buffer+1);
-/*		if (reverse)
-			d = __REV(__RBIT(d)); */
-/*		if (_count == 2 && _mode == SPI_LAST)
-			d |= SPI_TDR_LASTXFER; */
-
-		// Read transferred byte and send next one straight away
-                while ((x = SPI_REG(SPI_REG_RXFIFO)) < 0)
-                  ;
-		r = x & 0xFF;
-  // should prob verify that there's room in FIFO first
-                SPI_REG(SPI_REG_TXFIFO) = d;
+  volatile int32_t x;
+  uint8_t r,d;
+  while (_count > 1) {
+    // Prepare next byte
+    d = *(buffer+1);
+    // Read transferred byte and send next one straight away
+    while ((x = (SPI_REG(SPI_REG_RXFIFO)) & SPI_RXFIFO_EMPTY))
+      ;
+    r = x & 0xFF;
+    while (SPI_REG(SPI_REG_TXFIFO) & SPI_TXFIFO_FULL);
+    SPI_REG(SPI_REG_TXFIFO) = d;
 
 		// Save read byte
 		*buffer = r;
@@ -284,10 +207,10 @@ void SPIClass::transfer(byte _pin, void *_buf, size_t _count, SPITransferMode _m
 	}
 
 	// Receive the last transferred byte
-	while ((x = SPI_REG(SPI_REG_RXFIFO)) < 0)
-		;
-	r = x & 0xFF;
-	*buffer = r;
+  while ((x = (SPI_REG(SPI_REG_RXFIFO)) & SPI_RXFIFO_EMPTY))
+    ;
+  r = x & 0xFF;
+  *buffer = r;
 }
 
 void SPIClass::attachInterrupt(void) {
@@ -299,12 +222,6 @@ void SPIClass::detachInterrupt(void) {
 }
 
 #if SPI_INTERFACES_COUNT > 0
-static void SPI_0_Init(void) {
-        // select SPI function (iof_0) for MOSI, MISO, SCK pins
-        GPIO_REG(GPIO_iof_sel)  &= ~SPI_IOF_MASK;;
-        GPIO_REG(GPIO_iof_en)   |=  SPI_IOF_MASK;
-}
-
-SPIClass SPI(SPI_INTERFACE_ID, SPI_0_Init);
+SPIClass SPI(1);
 #endif
 
