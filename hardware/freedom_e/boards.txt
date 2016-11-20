@@ -26,4 +26,29 @@ freedom_e300_arty_devkit.menu.pgm_loc.ram.crt=crt0
 freedom_e300_arty_devkit.menu.pgm_loc.ram.build.ldscript={build.system.path}/riscv/lib/ldscripts/freedom-e300-sram.ld
 
 #TODO:
-#Write a new board for hifive
+hifive1.name=HiFive 1
+#TODO: What frequency will we actually run at?
+hifive1.build.f_cpu=16000000L
+#Point to the file for ./variants/<variant>/pins_arduino.h
+hifive1.build.variant=standard
+hifive1.build.mcu=rv32imaf
+#"The 'core' file directory for this board, in ./cores
+hifive1.build.core=arduino
+# This sets a define for use in the compiled code.
+#TODO: Use a different one.
+hifive1.build.board=FREEDOM_E300_ARTY_DEVKIT
+hifive1.build.sdata.size=4096
+#This selects the tool from "programmers.txt"
+hifive1.program.tool=openocd
+hifive1.upload.tool=openocd
+hifive1.menu.pgm_loc.flash=Flash
+hifive1.menu.pgm_loc.ram=Scratchpad
+# Limit is the 128MB Flash. Assume half is used for something else.
+hifive1.menu.pgm_loc.flash.upload.maximum_size=67108864
+hifive1.menu.pgm_loc.flash.crt=crt0f
+hifive1.menu.pgm_loc.flash.build.ldscript={build.system.path}/riscv/lib/ldscripts/freedom-e300-flash.ld
+
+# Limit is the 16kB Scratchpad, less stack and other regions.
+hifive1.menu.pgm_loc.ram.upload.maximum_size=15360
+hifive1.menu.pgm_loc.ram.crt=crt0
+hifive1.menu.pgm_loc.ram.build.ldscript={build.system.path}/riscv/lib/ldscripts/freedom-e300-sram.ld

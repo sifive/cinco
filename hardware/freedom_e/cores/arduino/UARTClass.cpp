@@ -98,18 +98,11 @@ UARTClass::sio_putchar(char c, int blocking)
 void
 UARTClass::sio_setbaud(int bauds)
 {
-  /*
-  uint32_t val;
 
-  val = bauds;
-  if (bauds > 1000000)
-    val /= 10;
-  val = val * 1024 / 1000 * 1024 / (F_CPU / 1000) + 1;
-  if (bauds > 1000000)
-    val *= 10;
+  //F_Baud = f_in/(div+1) 
 
-  volatile uint16_t  *hp = (volatile uint16_t *)&serbase[IO_SIO_BAUD-IO_SIO_BYTE];
-  *hp = val; */
+  UART_REG(UART_REG_DIV) = F_CPU / bauds - 1;
+ 
 }
 
 
@@ -123,7 +116,9 @@ UARTClass::begin(unsigned long bauds)
   GPIO_REG(GPIO_iof_sel)   &= ~(PIN_RX | PIN_TX);
   GPIO_REG(GPIO_iof_en)    |= IOF0_UART0_MASK;
 
-  UART_REG(UART_REG_DIV) = 541;
+  //F_Baud = f_in/(div+1) 
+
+  UART_REG(UART_REG_DIV) = F_CPU / bauds - 1;
   UART_REG(UART_REG_TXCTRL) |= UART_TXEN;
   UART_REG(UART_REG_RXCTRL) |= UART_RXEN;
 
