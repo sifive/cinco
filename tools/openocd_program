@@ -5,7 +5,7 @@ echo "${1}" > /tmp/debug_filename.txt
 cp ${1} /home/megan/ARDUINO.elf
 
 riscv32-unknown-elf-gdb ${1} -batch \
-  -ex "target extended-remote | openocd -c \"gdb_port pipe\" -f $CINCO/misc/openocd.cfg" \
+  -ex "target extended-remote | openocd -c \"gdb_port pipe\" -f $CINCO/misc/sifive_hifive.cfg" \
   -ex "load" \
   -ex "continue" \
   -ex "quit"

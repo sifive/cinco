@@ -81,7 +81,7 @@ recipe.size.regex=\s*[0-9]+\s+[0-9]+\s+[0-9]+\s+([0-9]+).*
 # Uploader tools
 # -------------------
 tools.openocd.path=$CINCO/tools/
-tools.openocd.cmd.path=openocd_program
+tools.openocd.cmd.path=openocd_upload
 tools.openocd.upload.params.verbose=-v
 tools.openocd.upload.params.quiet=-q
 tools.openocd.program.params.verbose=-v
