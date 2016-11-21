@@ -1,5 +1,3 @@
-menu.pgm_loc=Program Location
-
 freedom_e300_arty_devkit.name=Freedom E300 Arty DevKit
 freedom_e300_arty_devkit.build.f_cpu=65000000L
 #Point to the file for ./variants/<variant>/pins_arduino.h
@@ -13,19 +11,11 @@ freedom_e300_arty_devkit.build.sdata.size=4096
 #This selects the tool from "programmers.txt"
 freedom_e300_arty_devkit.program.tool=openocd
 freedom_e300_arty_devkit.upload.tool=openocd
-freedom_e300_arty_devkit.menu.pgm_loc.flash=Flash
-freedom_e300_arty_devkit.menu.pgm_loc.ram=Scratchpad
 # Limit is the 128MB Flash. Assume half is used for something else.
-freedom_e300_arty_devkit.menu.pgm_loc.flash.upload.maximum_size=67108864
-freedom_e300_arty_devkit.menu.pgm_loc.flash.crt=crt0f
-freedom_e300_arty_devkit.menu.pgm_loc.flash.build.ldscript={build.system.path}/riscv/lib/ldscripts/freedom-e300-flash.ld
+freedom_e300_arty_devkit.upload.maximum_size=67108864
+freedom_e300_arty_devkit.build.ldscript={build.system.path}/riscv/lib/ldscripts/freedom-e300-flash.ld
+freedom_e300_arty_devkit.build.openocdcfg=freedom-e300-arty-devkit.cfg
 
-# Limit is the 16kB Scratchpad, less stack and other regions.
-freedom_e300_arty_devkit.menu.pgm_loc.ram.upload.maximum_size=15360
-freedom_e300_arty_devkit.menu.pgm_loc.ram.crt=crt0
-freedom_e300_arty_devkit.menu.pgm_loc.ram.build.ldscript={build.system.path}/riscv/lib/ldscripts/freedom-e300-sram.ld
-
-#TODO:
 hifive1.name=HiFive 1
 #TODO: What frequency will we actually run at?
 hifive1.build.f_cpu=16000000L
@@ -41,14 +31,8 @@ hifive1.build.sdata.size=4096
 #This selects the tool from "programmers.txt"
 hifive1.program.tool=openocd
 hifive1.upload.tool=openocd
-hifive1.menu.pgm_loc.flash=Flash
-hifive1.menu.pgm_loc.ram=Scratchpad
 # Limit is the 128MB Flash. Assume half is used for something else.
-hifive1.menu.pgm_loc.flash.upload.maximum_size=67108864
-hifive1.menu.pgm_loc.flash.crt=crt0f
-hifive1.menu.pgm_loc.flash.build.ldscript={build.system.path}/riscv/lib/ldscripts/freedom-e300-flash.ld
+hifive1.upload.maximum_size=67108864
+hifive1.build.ldscript={build.system.path}/riscv/lib/ldscripts/freedom-e300-flash.ld
+freedom_e300_arty_devkit.build.openocdcfg=freedom-e300-hifive.cfg
 
-# Limit is the 16kB Scratchpad, less stack and other regions.
-hifive1.menu.pgm_loc.ram.upload.maximum_size=15360
-hifive1.menu.pgm_loc.ram.crt=crt0
-hifive1.menu.pgm_loc.ram.build.ldscript={build.system.path}/riscv/lib/ldscripts/freedom-e300-sram.ld

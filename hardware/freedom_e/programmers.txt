@@ -5,5 +5,8 @@ openocd.program.params.verbose=-v
 openocd.program.params.quiet=-q
 openocd.program.protocol=elf
 openocd.program.tool=openocd
-openocd.program.extra_params=
+openocd.program.extra_params="somthing_else"
 openocd.booloader.tool=openocd
+openocd.upload.tool=openocd
+openocd.upload.extra_params="something"
+

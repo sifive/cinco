@@ -48,6 +48,7 @@ compiler.elf2hex.extra_flags=
 # USB Flags
 # ---------
 build.usb_flags=
+build.openocdcfg=
 
 # Compile patterns
 # ---------------------
@@ -65,7 +66,7 @@ recipe.cpp.o.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} -D
 recipe.ar.pattern="{compiler.path}{compiler.ar.cmd}" {compiler.ar.flags} {compiler.ar.extra_flags} "{archive_file_path}" "{object_file}"
 
 ## Link gc-sections, archives, and objects
-recipe.c.combine.pattern="{compiler.path}{compiler.ld.cmd}" {compiler.ld.flags} -nostdlib {build.extra_flags} -l{crt} {object_files} "{build.path}/{archive_file}" -lm -lc -o "{build.path}/{build.project_name}.elf"
+recipe.c.combine.pattern="{compiler.path}{compiler.ld.cmd}" {compiler.ld.flags} -nostdlib {build.extra_flags} -lcrt0f {object_files} "{build.path}/{archive_file}" -lm -lc -o "{build.path}/{build.project_name}.elf"
 
 ## Create binary
 recipe.objcopy.eep.pattern="{compiler.path}{compiler.elf2hex.cmd}" {compiler.elf2hex.flags} -O binary "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.bin"
@@ -86,5 +87,6 @@ tools.openocd.upload.params.verbose=-v
 tools.openocd.upload.params.quiet=-q
 tools.openocd.program.params.verbose=-v
 tools.openocd.program.params.quiet=-q
-tools.openocd.program.pattern="{cmd.path}" "{build.path}/{build.project_name}.elf"
-tools.openocd.upload.pattern="{cmd.path}" "{build.path}/{build.project_name}.elf"
+#TODO: Figure out how to make this work for both HiFive and Arty Dev Kit
+tools.openocd.program.pattern="{cmd.path}" "{build.path}/{build.project_name}.elf" freedom-e300-hifive.cfg
+tools.openocd.upload.pattern="{cmd.path}" "{build.path}/{build.project_name}.elf" freedom-e300-hifive.cfg
