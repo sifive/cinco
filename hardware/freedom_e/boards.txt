@@ -18,7 +18,7 @@ freedom_e300_arty_devkit.build.openocdcfg=freedom-e300-arty-devkit.cfg
 
 hifive1.name=HiFive 1
 #TODO: What frequency will we actually run at?
-hifive1.build.f_cpu=16000000L
+hifive1.build.f_cpu=256000000L
 #Point to the file for ./variants/<variant>/pins_arduino.h
 hifive1.build.variant=standard
 hifive1.build.mcu=rv32imaf
