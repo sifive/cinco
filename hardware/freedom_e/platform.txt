@@ -38,11 +38,12 @@ build.extra_flags=
 #build.sdata.size=32768
 
 # These can be overridden in platform.local.txt
-
-compiler.c.extra_flags=-DF_CPU={build.f_cpu}L
+# The LFCLKBYPASS and HFXTAL don't really make sense for the DevKit, but they
+# also don't break anything.
+compiler.c.extra_flags=-DF_CPU={build.f_cpu}L -D{build.board} -DHFXTAL -D LFCLKBYPASS
 compiler.c.elf.extra_flags=
-compiler.cpp.extra_flags=-DF_CPU={build.f_cpu}L
-compiler.S.extra_flags=-DF_CPU={build.f_cpu}L
+compiler.cpp.extra_flags=-DF_CPU={build.f_cpu}L -D{build.board} -DHFXTAL -D LFCLKBYPASS
+compiler.S.extra_flags=-DF_CPU={build.f_cpu}L -D{build.board} -DHFXTAL -D LFCLKBYPASS
 compiler.ar.extra_flags=
 compiler.elf2hex.extra_flags=
 

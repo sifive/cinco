@@ -80,5 +80,6 @@ ctor_loop:
 	jalr	a0
 ctor_loop_enter:
 	bne	s0, s1,	ctor_loop
+
 	move	ra, s2
 	j	main
