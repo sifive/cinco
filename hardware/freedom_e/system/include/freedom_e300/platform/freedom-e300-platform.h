@@ -84,7 +84,6 @@
 #define INT_PWM1_BASE   44
 #define INT_PWM2_BASE   48
 
-
 // helper macros
 #define _REG32(p, i)    (*(volatile uint32_t *)((p) + (i)))
 #define SPI0_REG(i)     _REG32(SPI0_BASE_ADDR, (i))
