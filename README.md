@@ -1,5 +1,7 @@
 # README #
 
+This repository allows you to program Freedom E300 boards using the Arduino IDE. Follow the instructions below to install the Board support package manually.
+
 # Setup #
 
 ## Install Arduino ##
