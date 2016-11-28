@@ -4,11 +4,12 @@
 
 ## Install Arduino ##
 
-Download and install Arduino IDE 1.6.12 tarball from the Arduino website. Unpack it in /opt and run their installation script.
+Download and install Arduino IDE 1.6.12 tarball from the Arduino website. Unpack it and run their installation script as directed.
 
 ## Install this Repo ###
 * clone this repo wherever you like, and then create a symlink:
 ```
+git clone --recursive http://github.com/sifive/cinco.git
 cd /opt/arduino-1.6.12/hardware/
 ln -s path-to-this-repo/hardware sifive
 ```
@@ -18,34 +19,52 @@ ln -s path-to-this-repo/hardware sifive
 ```
 cd path-to-this-repo
 git submodule update --init --recursive
-cd freedom-e-sdk
+cd hardware/freedom_e/freedom-e-sdk
 make tools
 ```
 
-Add variables to your path:
+Add the toolchain to your path:
 
 ```
-export CINCO=path-to-this-repo
-export PATH=$CINCO/freedom-e-sdk/toolchain/bin:$PATH
+export PATH=$CINCO/hardware/freedom_e/freedom-e-sdk/toolchain/bin:$PATH
 ```
 
 Make sure you have permissons to communicate with your USB
 devices. Generally this means adding yourself to the 'dialout' or
-'plugdev' group(s). 
+'plugdev' group(s). After plugging in the board you want to talk to, try the 
+commands below:
+
+```
+ls -l /dev/ttyUSB*
+
+crw-rw-r-- 1 root plugdev 188, 1 Nov 28 12:53 /dev/ttyUSB1
+```
+
+In the above example, I'd need to add myself to the 'plugdev' group.
+
+```
+sudo useradd <name> -G plugdev
+```
+
+You probably have to log out and log back in, then check that you're now a member of the plugdev group:
+
+```
+groups
+... plugdev ... 
+```
 
 ## Connecting to the HiFive1 Board
-
 
 * Make sure a jumper is installed for IOREF, to either 3.3V or 5V, depending
 on the shield or other devices you want to communicate with.
 
-* Plug in one  USB micro cables to the micro USB connector on the HiFive1
+* Plug in a USB micro cable to the micro USB connector on the HiFive1
 board.
 
-* The device will show up as FTDI Dual RS232. Determine which
-serial port to use, e.g. `/dev/ttyUSB0-3`.
-The ordering of these is nondeterministic based on when order that things
-get plugged in/etc but that only matters when you want to use serial console.  
+* The device will show up as `Future Devices Dual RS232-HS` . Determine which
+serial port to use, e.g. `/dev/ttyUSB0-3`, by running the `lsusb` command
+and seeing which Bus the device shows up on. This will be useful if you want to 
+see Serial output from your device.
 
 ```
 screen /dev/ttyUSB1 <baud rate>
