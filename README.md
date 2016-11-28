@@ -1,6 +1,6 @@
 # README #
 
-### Setup ###
+# Setup #
 
 ## Install Arduino ##
 
