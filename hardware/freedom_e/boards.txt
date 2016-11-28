@@ -20,6 +20,8 @@ freedom_e300_arty_devkit.menu.fp.no.build.mcu=RV32IMAC
 freedom_e300_arty_devkit.build.core=arduino
 # This sets a define for use in the compiled code.
 freedom_e300_arty_devkit.build.board=FREEDOM_E300_ARTY_DEVKIT
+freedom_e300_arty_devkit.build.boardenv=freedom-e300-arty
+freedom_e300_arty_devkit.build.extra_flags=-I $CINCO/bsp/env/freedom-e300-arty/
 freedom_e300_arty_devkit.build.sdata.size=4096
 #This selects the tool from "programmers.txt"
 freedom_e300_arty_devkit.program.tool=openocd
@@ -50,6 +52,8 @@ hifive1.build.core=arduino
 # This sets a define for use in the compiled code.
 #TODO: Use a different one.
 hifive1.build.board=FREEDOM_E300_HIFIVE1
+hifive1.build.boardenv=freedom-e300-hifive1
+freedom_e300_arty_devkit.build.extra_flags=-I $CINCO/bsp/env/freedom-e300-arty/
 hifive1.build.sdata.size=4096
 #This selects the tool from "programmers.txt"
 hifive1.program.tool=openocd

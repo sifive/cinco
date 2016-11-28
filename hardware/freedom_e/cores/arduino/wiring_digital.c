@@ -11,25 +11,25 @@ pinMode(uint32_t pin, uint32_t mode)
   if (pin >= variant_pin_map_size)
     return;
   
-  GPIO_REG(GPIO_out_xor)  &= ~digitalPinToBitMask(pin);
-  GPIO_REG(GPIO_iof_en)      &= ~digitalPinToBitMask(pin);
+  GPIO_REG(GPIO_OUTPUT_XOR)  &= ~digitalPinToBitMask(pin);
+  GPIO_REG(GPIO_IOF_EN)      &= ~digitalPinToBitMask(pin);
 //pwm_enabled_pin[pin] = 0;
   
   switch (mode) {
   case INPUT_PULLUP:
-    GPIO_REG(GPIO_input_en)  |=  digitalPinToBitMask(pin);
-    GPIO_REG(GPIO_output_en) &= ~digitalPinToBitMask(pin);
-    GPIO_REG(GPIO_pullup_en) |=  digitalPinToBitMask(pin);
+    GPIO_REG(GPIO_INPUT_EN)  |=  digitalPinToBitMask(pin);
+    GPIO_REG(GPIO_OUTPUT_EN) &= ~digitalPinToBitMask(pin);
+    GPIO_REG(GPIO_PULLUP_EN) |=  digitalPinToBitMask(pin);
     break;
   case INPUT:
-    GPIO_REG(GPIO_input_en)  |=  digitalPinToBitMask(pin);
-    GPIO_REG(GPIO_output_en) &= ~digitalPinToBitMask(pin);
-    GPIO_REG(GPIO_pullup_en) &= ~digitalPinToBitMask(pin);
+    GPIO_REG(GPIO_INPUT_EN)  |=  digitalPinToBitMask(pin);
+    GPIO_REG(GPIO_OUTPUT_EN) &= ~digitalPinToBitMask(pin);
+    GPIO_REG(GPIO_PULLUP_EN) &= ~digitalPinToBitMask(pin);
     break;
   case OUTPUT:
-    GPIO_REG(GPIO_input_en)  &= ~digitalPinToBitMask(pin);
-    GPIO_REG(GPIO_output_en) |=  digitalPinToBitMask(pin);
-    GPIO_REG(GPIO_pullup_en) &= ~digitalPinToBitMask(pin);
+    GPIO_REG(GPIO_INPUT_EN)  &= ~digitalPinToBitMask(pin);
+    GPIO_REG(GPIO_OUTPUT_EN) |=  digitalPinToBitMask(pin);
+    GPIO_REG(GPIO_PULLUP_EN) &= ~digitalPinToBitMask(pin);
     break;
   }
 }
@@ -42,9 +42,9 @@ digitalWrite(uint32_t pin, uint32_t val)
     return;
   
   if (val)
-    GPIO_REG(GPIO_port) |=  digitalPinToBitMask(pin);
+    GPIO_REG(GPIO_OUTPUT_VAL) |=  digitalPinToBitMask(pin);
   else
-    GPIO_REG(GPIO_port) &= ~digitalPinToBitMask(pin);
+    GPIO_REG(GPIO_OUTPUT_VAL) &= ~digitalPinToBitMask(pin);
 
 }
 
@@ -54,7 +54,7 @@ digitalRead(uint32_t pin)
 if (pin >= variant_pin_map_size)
   return 0;
 
-return ((GPIO_REG(GPIO_value) & digitalPinToBitMask(pin)) != 0);
+ return ((GPIO_REG(GPIO_INPUT_VAL) & digitalPinToBitMask(pin)) != 0);
 }
 
 __END_DECLS

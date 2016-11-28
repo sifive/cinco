@@ -19,11 +19,10 @@ SPIClass::SPIClass(uint32_t _id) :
 
 void SPIClass::begin() {
   
-  GPIO_REG(GPIO_iof_sel) &= ~SPI_IOF_MASK;
-  GPIO_REG(GPIO_iof_en)  |= SPI_IOF_MASK;
+  GPIO_REG(GPIO_IOF_SEL) &= ~SPI_IOF_MASK;
+  GPIO_REG(GPIO_IOF_EN)  |= SPI_IOF_MASK;
 
-  // Default speed set to ~1Mhz
-  setClockDivider(31);
+  //setClockDivider(F_CPU/1000000);
   setDataMode(SPI_MODE0);
   setBitOrder(MSBFIRST);
   
@@ -34,11 +33,11 @@ void SPIClass::begin(uint8_t _pin) {
   	
         // enable CS pin for selected channel/pin
         uint32_t iof_mask = digitalPinToBitMask(_pin);
-        GPIO_REG(GPIO_iof_sel)  &= ~iof_mask;
-        GPIO_REG(GPIO_iof_en)   |=  iof_mask;
+        GPIO_REG(GPIO_IOF_SEL)  &= ~iof_mask;
+        GPIO_REG(GPIO_IOF_EN)   |=  iof_mask;
 
 	// Default speed set to ~1Mhz
-	setClockDivider(_pin, 31);
+	//setClockDivider(_pin, F_CPU/1000000);
 	setDataMode(_pin, SPI_MODE0);
 	setBitOrder(_pin, MSBFIRST);
 
@@ -90,11 +89,11 @@ void SPIClass::endTransaction(void) {
 }
 
 void SPIClass::end(uint8_t _pin) {
-  GPIO_REG(GPIO_iof_en)  &= ~digitalPinToBitMask(_pin);    
+  GPIO_REG(GPIO_IOF_EN)  &= ~digitalPinToBitMask(_pin);    
 }
 
 void SPIClass::end() {
-  GPIO_REG(GPIO_iof_en)  &= ~SPI_IOF_MASK;
+  GPIO_REG(GPIO_IOF_EN)  &= ~SPI_IOF_MASK;
 }
 
 void SPIClass::setBitOrder(BitOrder _bitOrder) {
@@ -127,7 +126,6 @@ void SPIClass::setClockDivider(uint8_t _divider) {
 void SPIClass::setClockDivider(uint8_t _pin, uint8_t _divider) {
   uint32_t ch = SS_PIN_TO_CS_ID(_pin);
   divider[ch] = _divider;
-  // THis gets used later?
 }
 
 

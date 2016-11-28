@@ -1,4 +1,0 @@
-target extended-remote | /opt/openocd/bin/openocd -c "gdb_port pipe; log_output openocd.log" -f "/home/rimas/SiFive/fpga-work/openocd.cfg" -l /tmp/openocd.log
-monitor load_image /tmp/blink.elf
-set $pc = 0x80000000
-monitor resume

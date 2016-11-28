@@ -1,8 +1,6 @@
 #include <Arduino.h>
 #include <riscv/asm.h>
-//#include <riscv/cpuregs.h>
 #include <sys/isr.h>
-#include <dev/io.h>
 #include "wiring_private.h"
 
 __BEGIN_DECLS

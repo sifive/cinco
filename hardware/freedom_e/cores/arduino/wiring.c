@@ -26,8 +26,8 @@
  */
 
 #include "Arduino.h"
-#include "dev/io.h"
-#include <freedom_e300/platform/platform.h>
+#include "platform.h"
+#include "encoding.h"
 
 const struct variant_pin_map_s variant_pin_map[] = VARIANT_DIGITAL_PIN_MAP;
 const uint32_t variant_pin_map_size = sizeof(variant_pin_map) / sizeof(struct variant_pin_map_s);
@@ -40,63 +40,62 @@ static uint32_t tsc_hi, tsc_lo;
 static void
 update_tsc(void)
 {
-	uint32_t tsc;
-
-	RDTSC(tsc);
-
-	/* check for 32-bit overflow */
-	if (tsc < tsc_lo)
-		tsc_hi++;
-	tsc_lo = tsc;
+  
+  uint32_t tsc = read_csr(mcycle);
+  
+  /* check for 32-bit overflow */
+  if (tsc < tsc_lo)
+    tsc_hi++;
+  tsc_lo = tsc;
 }
 
 
 uint32_t
 millis(void)
 {
-	uint64_t tsc64;
-
-	update_tsc();
-	tsc64 = tsc_hi;
-	tsc64 <<= 32;
-	tsc64 += tsc_lo;
-	
-	return((tsc64 * 1000) / F_CPU);
+  uint64_t tsc64;
+  
+  update_tsc();
+  tsc64 = tsc_hi;
+  tsc64 <<= 32;
+  tsc64 += tsc_lo;
+  
+  return((tsc64 * 1000) / F_CPU);
 }
 
 
 uint32_t
 micros(void)
 {
-	uint64_t tsc64;
-
-	update_tsc();
-	tsc64 = tsc_hi;
-	tsc64 <<= 32;
-	tsc64 += tsc_lo;
-	
-	return((tsc64 * 1000000) / F_CPU);
+  uint64_t tsc64;
+  
+  update_tsc();
+  tsc64 = tsc_hi;
+  tsc64 <<= 32;
+  tsc64 += tsc_lo;
+  
+  return((tsc64 * 1000000) / F_CPU);
 }
 
 
 void
 delay(uint32_t ms)
 {
-	uint32_t current, later;
-
-	while (ms--) 
+  uint32_t current, later;
+  
+  while (ms--) 
+    {
+      current = read_csr(mcycle);
+      later = current + (F_CPU/1000);
+      if (later > current) // usual case
 	{
-		RDTSC(current);
-		later = current + (F_CPU/1000);
-		if (later > current) // usual case
-		{
-		  while (current < later)
-			RDTSC(current);
-		} else { // wrap
-			while (current < later)
-			    RDTSC(current);
-                        while (later > current)
-                             RDTSC(current);
-		}
-	}
+	  while (current < later)
+	    current = read_csr(mcycle);
+	} else { // wrap
+	while (current < later)
+	  current = read_csr(mcycle);
+	while (later > current)
+	  current = read_csr(mcycle);
+      }
+    }
 }
