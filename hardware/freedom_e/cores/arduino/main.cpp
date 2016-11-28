@@ -23,6 +23,7 @@
 #define ARDUINO_MAIN
 #include "Arduino.h"
 
+#define cmb() __asm__ __volatile__ ("" ::: "memory")
 
 uint32_t mtime_lo(void)
 {
@@ -39,7 +40,9 @@ static void freedom_e300_clock_setup () {
   if (PRCI_REG(PRCI_PLLCFG) & (PLL_SEL(1))) {
     //Make sure the HFROSC is running at its default setting
     PRCI_REG(PRCI_HFROSCCFG)  = ((ROSC_DIV(4)) | (ROSC_TRIM(16)) | (ROSC_EN(1)));
-    while ((PRCI_REG(PRCI_HFROSCCFG) & (ROSC_RDY(1))) == 0) {}
+    while ((PRCI_REG(PRCI_HFROSCCFG) & (ROSC_RDY(1))) == 0) {
+      cmb();
+    }
     PRCI_REG(PRCI_PLLCFG) &= ~(PLL_SEL(1));
   }
 
@@ -99,10 +102,15 @@ static void freedom_e300_clock_setup () {
     // RTC is running at 32kHz. 
     // So wait 4 ticks of RTC.
     uint32_t now = mtime_lo();
-    while ((mtime_lo() - now) <  4);
+    volatile uint32_t dummy;
+    while ((mtime_lo() - now) <  4){
+      cmb();
+    }
     
     // Now it is safe to check for PLL Lock
-    while ((PRCI_REG(PRCI_PLLCFG) & PLL_LOCK(1)) == 0);
+    while ((PRCI_REG(PRCI_PLLCFG) & PLL_LOCK(1)) == 0){
+      cmb();
+    }
 
   } else { // if (F_CPU == 16000000UL) TODO:  For all other frequencies, ignore the setting (for now).
 

@@ -15,13 +15,13 @@ compiler.objcopy.cmd=riscv32-unknown-elf-objcopy
 compiler.elf2hex.cmd=riscv32-unknown-elf-objcopy
 compiler.size.cmd=riscv32-unknown-elf-size
 
-compiler.c.flags=-c -O1 -m32 -march={build.mcu} -msoft-float -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -Wall -nostdinc "-I{build.system.path}/include" -include sys/param.h -include sys/stdint.h -I/home/megan/cinco//freedom-e-sdk/bsp/include -I /home/megan/cinco//freedom-e-sdk/bsp/env/ {build.extra_flags} -I/home/megan/cinco//freedom-e-sdk/bsp/env/ -I/home/megan/cinco//freedom-e-sdk/bsp/env/{build.boardenv}/ -g
+compiler.c.flags=-c -O3 -m32 -march={build.mcu} -msoft-float -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -Wall -nostdinc "-I{build.system.path}/include" -include sys/param.h -include sys/stdint.h -I{build.system.path}/../freedom-e-sdk/bsp/include -I {build.system.path}/../freedom-e-sdk/bsp/env/ {build.extra_flags} -I{build.system.path}/../freedom-e-sdk/bsp/env/ -I{build.system.path}/../freedom-e-sdk/bsp/env/{build.boardenv}/ -g
 
-compiler.cpp.flags=-c -O1 -m32 -march={build.mcu} -msoft-float -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -fpermissive -Wall -nostdinc "-I{build.system.path}/include" -include sys/param.h -fno-rtti  -fno-exceptions -include sys/stdint.h -I/home/megan/cinco//freedom-e-sdk/bsp/include -I/home/megan/cinco//freedom-e-sdk/bsp/env/ -I/home/megan/cinco//freedom-e-sdk/bsp/env/{build.boardenv}/ -g
+compiler.cpp.flags=-c -O3 -m32 -march={build.mcu} -msoft-float -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -fpermissive -Wall -nostdinc "-I{build.system.path}/include" -include sys/param.h -fno-rtti  -fno-exceptions -include sys/stdint.h -I{build.system.path}/../freedom-e-sdk/bsp/include -I{build.system.path}/../freedom-e-sdk/bsp/env/ -I{build.system.path}/../freedom-e-sdk/bsp/env/{build.boardenv}/ -g
 
 compiler.ld.flags=-T {build.ldscript} -N -EL -melf32lriscv --gc-sections "--library-path={build.system.path}/riscv/lib"
 
-compiler.S.flags=-c -g -x assembler-with-cpp -m32 -march={build.mcu} -I/home/megan/cinco//freedom-e-sdk/bsp/include -I/home/megan/cinco//freedom-e-sdk/bsp/env/ -I/home/megan/cinco//freedom-e-sdk/bsp/env/ -I/home/megan/cinco//freedom-e-sdk/bsp/env/{build.boardenv}/ -
+compiler.S.flags=-c -g -x assembler-with-cpp -m32 -march={build.mcu} -I{build.system.path}/../freedom-e-sdk/bsp/include -I{build.system.path}/../freedom-e-sdk/bsp/env/ -I{build.system.path}/../freedom-e-sdk/bsp/env/ -I{build.system.path}/../freedom-e-sdk/bsp/env/{build.boardenv}/ -
 
 compiler.ar.flags=rcs
 
@@ -77,11 +77,11 @@ recipe.size.regex=\s*[0-9]+\s+[0-9]+\s+[0-9]+\s+([0-9]+).*
 
 # Uploader tools
 # -------------------
-tools.openocd.path=/home/megan/cinco/
-tools.openocd.cmd.path=/home/megan/cinco//freedom-e-sdk/bsp/tools/openocd_upload.sh
+tools.openocd.path={runtime.platform.path}
+tools.openocd.cmd.path={runtime.platform.path}/freedom-e-sdk/bsp/tools/openocd_upload.sh
 tools.openocd.upload.params.verbose=-v
 tools.openocd.upload.params.quiet=-q
 tools.openocd.program.params.verbose=-v
 tools.openocd.program.params.quiet=-q
-tools.openocd.program.pattern="{cmd.path}" "{build.path}/{build.project_name}.elf" /home/megan/cinco//freedom-e-sdk/bsp/env/{build.boardenv}/openocd.cfg
-tools.openocd.upload.pattern="{cmd.path}" "{build.path}/{build.project_name}.elf" /home/megan/cinco//freedom-e-sdk/bsp/env/{build.boardenv}/openocd.cfg
+tools.openocd.program.pattern={cmd.path} "{build.path}/{build.project_name}.elf" {runtime.platform.path}/freedom-e-sdk/bsp/env/{build.boardenv}/openocd.cfg
+tools.openocd.upload.pattern={cmd.path} "{build.path}/{build.project_name}.elf" {runtime.platform.path}/freedom-e-sdk/bsp/env/{build.boardenv}/openocd.cfg
