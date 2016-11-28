@@ -1,6 +1,6 @@
 #include "Arduino.h"
 #include "wiring_analog.h"
-#include <freedom_e300/platform/platform.h>
+#include "platform.h"
 
 __BEGIN_DECLS
 
@@ -69,10 +69,10 @@ void analogWrite(uint32_t pin, uint32_t ulValue)
   }
   
   if (!pwm_enabled_pin[pin]) {
-    GPIO_REG(GPIO_pullup_en)  &= ~digitalPinToBitMask(pin);
-    GPIO_REG(GPIO_out_xor)    &= ~digitalPinToBitMask(pin);
-    GPIO_REG(GPIO_iof_sel)    |= digitalPinToBitMask(pin);
-    GPIO_REG(GPIO_iof_en)     |= digitalPinToBitMask(pin);
+    GPIO_REG(GPIO_PULLUP_EN)  &= ~digitalPinToBitMask(pin);
+    GPIO_REG(GPIO_OUTPUT_XOR)    &= ~digitalPinToBitMask(pin);
+    GPIO_REG(GPIO_IOF_SEL)    |= digitalPinToBitMask(pin);
+    GPIO_REG(GPIO_IOF_EN)     |= digitalPinToBitMask(pin);
     pwm_enabled_pin[pin] = 1;
   }
   

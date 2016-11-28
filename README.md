@@ -6,11 +6,6 @@
 
 Download and install Arduino IDE 1.6.12 tarball from the Arduino website. Unpack it in /opt and run their installation script.
 
-## Install RISC-V Tools ##
-
-You will at least need the 32-bit riscv-gnu-toolchain and openocd. You could
-install SiFive's Freedom E300 SDK to get all that you need.
-
 ## Install this Repo ###
 * clone this repo wherever you like, and then create a symlink:
 ```
@@ -18,23 +13,63 @@ cd /opt/arduino-1.6.12/hardware/
 ln -s path-to-this-repo/hardware sifive
 ```
 
-* Add variables to your path:
+## Install RISC-V Tools and OpenOCD ##
+
+```
+cd path-to-this-repo
+git submodule update --init --recursive
+cd freedom-e-sdk
+make tools
+```
+
+Add variables to your path:
 
 ```
 export CINCO=path-to-this-repo
-export PATH=path-to-riscv-toolschain-install:$PATH
-export PATH=path-to-openocd-install:$PATH
+export PATH=$CINCO/freedom-e-sdk/toolchain/bin:$PATH
 ```
 
-## Connect to the Board ##
+Make sure you have permissons to communicate with your USB
+devices. Generally this means adding yourself to the 'dialout' or
+'plugdev' group(s). 
 
-* Plug in two usb cables to micro usb connector on arty board and mini usb connector on FT2232H minimodule board.
+## Connecting to the HiFive1 Board
 
-* Make sure devices show up as /dev/ttyUSB0-3.  The ordering of these is nondeterministic based on when order that things get plugged in/etc but that only matters when you want to use serial console.  
+
+* Make sure a jumper is installed for IOREF, to either 3.3V or 5V, depending
+on the shield or other devices you want to communicate with.
+
+* Plug in one  USB micro cables to the micro USB connector on the HiFive1
+board.
+
+* The device will show up as FTDI Dual RS232. Determine which
+serial port to use, e.g. `/dev/ttyUSB0-3`.
+The ordering of these is nondeterministic based on when order that things
+get plugged in/etc but that only matters when you want to use serial console.  
+
+```
+screen /dev/ttyUSB1 <baud rate>
+```
+
+* You can optionally use an external 7-12V DC Power supply. The
+power supply will switch from USB automatically.
+
+## Connecting to the Freedom E300 Arty Dev Kit (with Olimex Debugger)
+
+* Connect one USB cables to the micro USB connector on the Arty board,
+and one USB cable to the Olimex. Follow the instructions at
+
+https://dev.sifive.com/develop/freeom-e00-arty-dev-kit
+
+to connect your Arty board to the Olimex debugger.
+
+* Determine where the devices show up as `/dev/ttyUSB0-3`.
+The ordering of these is nondeterministic based on when order that things
+get plugged in/etc but that only matters when you want to use serial console.  
+
 ```
 minicom -D /dev/ttyUSB1 (or sometimes ttyUSB3)
 ```
-when you connect to the right port, it will cause a reset of the CPU/FPGA.
 
 ## Select Your Programmer ##
 
@@ -42,14 +77,14 @@ Select the board (e.g. Freedom E300 Arty Dev Kit) on the Arduino Menu
 
 Tools->Board->Freedom E 300 Dev Kit
 
+Tools->Programmer->openocd
+
 ## Write & Upload Your Program ##
 
 Select an example program and modify it as usual.
-So far, I'm testing the "Fade" example.
 
-Arduino distinguishes between "Programming" and
-"Uploading". By default, you just program the memory.
-In our flow, it [will be] a menu item to select whether
-it is flashed or loaded into memory. The difference is just
-in how it is compiled, because the GDB loader does
-the right thing based on the memory map.
+For example, use the 'Blink' example, which needs
+no modifications.
+
+Hit the "Verify" button to test the program compiles,
+then "Upload" to program to the board.

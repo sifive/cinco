@@ -25,35 +25,29 @@
 
 static void freedom_e300_clock_setup () {
 
+  volatile uint64_t * mtime      = (volatile uint64_t*)  (CLINT_BASE_ADDR + CLINT_MTIME);
+
   // This is a very coarse parameterization. To revisit in the future
   // as more chips and boards are added.
 #ifdef FREEDOM_E300_HIFIVE1
-  volatile uint32_t * pllcfg     = (volatile uint32_t*)  (PRCI_BASE_ADDR + PRCI_pllcfg);
-  volatile uint32_t * plldiv     = (volatile uint32_t*)  (PRCI_BASE_ADDR + PRCI_plldiv);
-  volatile uint32_t * hfrosccfg  = (volatile uint32_t*)  (PRCI_BASE_ADDR + PRCI_hfrosccfg);
-  volatile uint32_t * lfrosccfg  = (volatile uint32_t*)  (AON_BASE_ADDR + AON_LFROSC);
-  volatile uint64_t * mtimecmp   = (volatile uint64_t*)  (CLINT_BASE_ADDR + CLINT_MTIMECMP_offset);
-  volatile uint64_t * mtime      = (volatile uint64_t*)  (CLINT_BASE_ADDR + CLINT_MTIME_offset);
-
 
   //Ensure that we aren't running off the PLL before we mess with it.
-  if (*pllcfg & (1 << PLL_SEL_offset)) {
+  if (PRCI_REG(PRCI_PLLCFG) & (PLL_SEL(1))) {
     //Make sure the HFROSC is running at its default setting
-    *hfrosccfg  = ((4 << ROSC_DIV_offset) | (16 << ROSC_TRIM_offset) | (1 << ROSC_EN_offset));
-    while ((*hfrosccfg & (1 << ROSC_RDY_offset)) == 0) {}
-    *pllcfg &= ~(1 << PLL_SEL_offset);
+    PRCI_REG(PRCI_HFROSCCFG)  = ((ROSC_DIV(4)) | (ROSC_TRIM(16)) | (ROSC_EN(1)));
+    while ((PRCI_REG(PRCI_HFROSCCFG) & (ROSC_RDY(1))) == 0) {}
+    PRCI_REG(PRCI_PLLCFG) &= ~(PLL_SEL(1));
   }
 
   // Set PLL Source to be HFXOSC if available.
   uint32_t config_value = 0;
   
-#ifdef HFXTAL					  
-  config_value |= (1<<PLL_REFSEL_offset);
+#if HAS_HFXOSC					  
+  config_value |= (PLL_REFSEL(1));
 #else
-  // TODO!!!: Setting trim of HFRSOC
+  // TODO!!!: Set trim of HFRSOC appropriately
+  // to 16Mhz
 #endif
-
-
 
   if (F_CPU == 256000000UL) {						  
 
@@ -74,26 +68,26 @@ static void freedom_e300_clock_setup () {
     // Set DIVR to divide-by-2 to get 8MHz frequency
     // (legal values of f_R are 6-12 MHz)
     
-    config_value |= (1<<PLL_BYPASS_offset);
-    config_value |= (0x1 << PLL_R_offset);
+    config_value |= (PLL_BYPASS(1));
+    config_value |= (PLL_R(0x1));
     
     // Set DIVF to get 512Mhz frequncy
     // There is an implied multiply-by-2, 16Mhz.
     // So need to write 32-1
     // (legal values of f_F are 384-768 MHz)
-    config_value |= (0x1F << PLL_F_offset);
+    config_value |= (PLL_F(0x1F));
     
     // Set DIVQ to divide-by-2 to get 256 MHz frequency
     // (legal values of f_Q are 50-400Mhz)
-    config_value |= (0x1 << PLL_Q_offset);
+    config_value |= (PLL_Q(0x1));
     
     // Set our Final output divide to divide-by-1:
-    *plldiv = (1 << PLL_FINAL_DIV_BY_1_offset | 0 << PLL_FINAL_DIV_offset);
+    PRCI_REG(PRCI_PLLDIV) = (PLL_FINAL_DIV_BY_1(1) | PLL_FINAL_DIV(0));
 
-    *pllcfg = config_value;
+    PRCI_REG(PRCI_PLLCFG) = config_value;
 
     // Un-Bypass the PLL.
-    *pllcfg &= ~(1 << PLL_BYPASS_offset );
+    PRCI_REG(PRCI_PLLCFG) &= ~(PLL_BYPASS(1) );
 
     // Wait for PLL Lock
     // Note that the Lock signal can be glitchy.
@@ -107,34 +101,34 @@ static void freedom_e300_clock_setup () {
     }
     
     // Now it is safe to check for PLL Lock
-    while ((*pllcfg & (1 << PLL_LOCK_offset)) == 0) {
+    while ((PRCI_REG(PRCI_PLLCFG) & (PLL_LOCK(1))) == 0) {
     }
 
   } else { // if (F_CPU == 16000000UL) TODO:  For all other frequencies, ignore the setting (for now).
 
     // Bypass
-    config_value |= (1<<PLL_BYPASS_offset);
+    config_value |= (PLL_BYPASS(1));
 
-    *pllcfg = config_value;
+    PRCI_REG(PRCI_PLLCFG) = config_value;
     
     // If we don't have an HFXTAL, this doesn't really matter.
     // Set our Final output divide to divide-by-1:
-    *plldiv = (1 << PLL_FINAL_DIV_BY_1_offset | 0 << PLL_FINAL_DIV_offset);
+    PRCI_REG(PRCI_PLLDIV) = (PLL_FINAL_DIV_BY_1(1) | PLL_FINAL_DIV(0));
     
  
   }
   
   // Switch over to PLL Clock source
-  *pllcfg |= (1 << PLL_SEL_offset);
+  PRCI_REG(PRCI_PLLCFG) |= (PLL_SEL(1));
   
-#ifdef HFXTAL
+#ifdef HAS_HFXOSC
   // Turn off the HFROSC
-   * hfrosccfg  &= ~(1 << ROSC_EN_offset);
+   PRCI_REG(PRCI_HFROSCCFG)  &= ~(ROSC_EN(1));
 #endif
    
-#ifdef LFCLKBYPASS
+#ifdef HAS_LFROSC_BYPASS
    // Turn off the LFROSC
-   * lfrosccfg &= ~(1 << ROSC_EN_offset);
+   AON_REG(AON_LFROSC) &= ~(ROSC_EN(1));
 #endif
 
 #endif

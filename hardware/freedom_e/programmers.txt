@@ -6,6 +6,7 @@ openocd.program.params.quiet=-q
 openocd.program.protocol=elf
 openocd.program.tool=openocd
 openocd.program.extra_params="somthing_else"
+#!!! TODO: fix the bootloader tool
 openocd.booloader.tool=openocd
 openocd.upload.tool=openocd
 openocd.upload.extra_params="something"

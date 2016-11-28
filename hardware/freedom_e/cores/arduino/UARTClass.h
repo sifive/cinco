@@ -19,7 +19,7 @@
 #ifndef _UART_CLASS_
 #define _UART_CLASS_
 
-#include <dev/io.h>
+#include "platform.h"
 #include "HardwareSerial.h"
 
 class UARTClass : public HardwareSerial
