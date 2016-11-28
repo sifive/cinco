@@ -23,9 +23,13 @@
 #define ARDUINO_MAIN
 #include "Arduino.h"
 
-static void freedom_e300_clock_setup () {
 
-  volatile uint64_t * mtime      = (volatile uint64_t*)  (CLINT_BASE_ADDR + CLINT_MTIME);
+uint32_t mtime_lo(void)
+{
+  return *(volatile uint32_t *)(CLINT_BASE_ADDR + CLINT_MTIME);
+}
+
+static void freedom_e300_clock_setup () {
 
   // This is a very coarse parameterization. To revisit in the future
   // as more chips and boards are added.
@@ -94,15 +98,11 @@ static void freedom_e300_clock_setup () {
     // Need to wait 100 us
     // RTC is running at 32kHz. 
     // So wait 4 ticks of RTC.
-    uint64_t now = *mtime;
-    uint64_t then = now + 4;
-
-    while ((*mtime) < then){ 
-    }
+    uint32_t now = mtime_lo();
+    while ((mtime_lo() - now) <  4);
     
     // Now it is safe to check for PLL Lock
-    while ((PRCI_REG(PRCI_PLLCFG) & (PLL_LOCK(1))) == 0) {
-    }
+    while ((PRCI_REG(PRCI_PLLCFG) & PLL_LOCK(1)) == 0);
 
   } else { // if (F_CPU == 16000000UL) TODO:  For all other frequencies, ignore the setting (for now).
 
