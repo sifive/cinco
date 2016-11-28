@@ -1,8 +1,21 @@
+# For HiFive, allow Clock Frequency selection
+menu.clksrc=CPU Clock Frequency
+menu.fp=HW Floating Point
+
 freedom_e300_arty_devkit.name=Freedom E300 Arty DevKit
-freedom_e300_arty_devkit.build.f_cpu=65000000L
 #Point to the file for ./variants/<variant>/pins_arduino.h
 freedom_e300_arty_devkit.build.variant=standard
-freedom_e300_arty_devkit.build.mcu=rv32imaf
+
+freedom_e300_arty_devkit.menu.clksrc.fpga=65MHz FPGA Clock
+freedom_e300_arty_devkit.menu.clksrc.fpga.build.f_cpu=65000000L
+
+freedom_e300_arty_devkit.menu.fp.yes=Yes
+freedom_e300_arty_devkit.menu.fp.no=No
+
+
+freedom_e300_arty_devkit.menu.fp.yes.build.mcu=RV32IMAFC
+freedom_e300_arty_devkit.menu.fp.no.build.mcu=RV32IMAC
+
 #"The 'core' file directory for this board, in ./cores
 freedom_e300_arty_devkit.build.core=arduino
 # This sets a define for use in the compiled code.
@@ -18,15 +31,25 @@ freedom_e300_arty_devkit.build.openocdcfg=freedom-e300-arty-devkit.cfg
 
 hifive1.name=HiFive 1
 #TODO: What frequency will we actually run at?
-hifive1.build.f_cpu=16000000L
+
+hifive1.menu.clksrc.hfxtal=16 MHz XTAL
+hifive1.menu.clksrc.pll=256 MHz PLL
+hifive1.menu.clksrc.hfxtal.build.f_cpu=16000000L
+hifive1.menu.clksrc.pll.build.f_cpu=256000000L
+
 #Point to the file for ./variants/<variant>/pins_arduino.h
 hifive1.build.variant=standard
-hifive1.build.mcu=rv32imaf
+
+hifive1.menu.fp.yes=Yes
+hifive1.menu.fp.no=No
+hifive1.menu.fp.yes.build.mcu=RV32IMAFC
+hifive1.menu.fp.no.build.mcu=RV32IMAC
+
 #"The 'core' file directory for this board, in ./cores
 hifive1.build.core=arduino
 # This sets a define for use in the compiled code.
 #TODO: Use a different one.
-hifive1.build.board=FREEDOM_E300_ARTY_DEVKIT
+hifive1.build.board=FREEDOM_E300_HIFIVE1
 hifive1.build.sdata.size=4096
 #This selects the tool from "programmers.txt"
 hifive1.program.tool=openocd

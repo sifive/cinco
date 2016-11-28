@@ -25,17 +25,21 @@
  * $Id$
  */
 
+#include "encoding.h"	
 
+	// To use this file for Cinco purposes:
+	// riscv32-unknown-elf-gcc -march=RV32IMAFC -m32 -c -o startf.o startf.S -I$CINCO/hardware/freedom_e/system/include/riscv/
+	// riscv32-unknown-elf-ar rcs libcrt0f.a startf.o
+	// cp libcrt0f.a $CINCO/hardware/freedom_e/system/riscv/lib/
+	
+	
 /*
  * Copy data, clear BSS, set small data index register and jump into main().
  *
- * Assumes that the loader has already properly:
- * 1) set stack pointer
- * 2) set return address
- * 3) invalidated caches
  */
 
-/* RIMAS : stack pointer isn't being set by bootloader ATM so set it here */
+	
+/* Stack pointer isn't being set by bootloader so set it here */
 
 	.section .init
 	.globl _start
@@ -80,5 +84,15 @@ ctor_loop:
 	jalr	a0
 ctor_loop_enter:
 	bne	s0, s1,	ctor_loop
+
+enable_fpu:
+
+	li t0, MSTATUS_FS
+	csrs mstatus, t0
+	csrr t1, mstatus
+	and t1, t1, t0
+	beqz t1, 1f
+	fssr x0
+1:	
 	move	ra, s2
 	j	main
