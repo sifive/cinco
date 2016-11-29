@@ -24,7 +24,7 @@
 #include <string.h>
 #include <math.h>
 #include <stdint.h>
-#include <sys/stdint.h>
+#include <stdbool.h>
 
 // some libraries and sketches depend on this
 // AVR stuff, assuming Arduino.h or WProgram.h
@@ -33,7 +33,6 @@
 //#include <avr/interrupt.h>
 
 #include "binary.h"
-#include "itoa.h"
 #include "pins_arduino.h"
 
 #ifdef __cplusplus
