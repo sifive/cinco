@@ -78,11 +78,9 @@ recipe.size.regex=\s*[0-9]+\s+[0-9]+\s+[0-9]+\s+([0-9]+).*
 
 # Uploader tools
 # -------------------
-tools.openocd.path={runtime.platform.path}
-tools.openocd.cmd.path={runtime.platform.path}/freedom-e-sdk/bsp/tools/openocd_upload.sh
-tools.openocd.upload.params.verbose=-v
-tools.openocd.upload.params.quiet=-q
+tools.openocd.path={runtime.tools.openocd.path}/bin/
+tools.openocd.cmd=openocd
 tools.openocd.program.params.verbose=-v
 tools.openocd.program.params.quiet=-q
-tools.openocd.program.pattern={cmd.path} "{build.path}/{build.project_name}.elf" {runtime.platform.path}/freedom-e-sdk/bsp/env/{build.boardenv}/openocd.cfg
-tools.openocd.upload.pattern={cmd.path} "{build.path}/{build.project_name}.elf" {runtime.platform.path}/freedom-e-sdk/bsp/env/{build.boardenv}/openocd.cfg
+tools.openocd.program.config={runtime.platform.path}/freedom-e-sdk/bsp/env/{build.boardenv}/openocd.cfg
+tools.openocd.program.pattern="{path}{cmd}" -f {program.config} -c "program {build.path}/{build.project_name}.elf; resume 0x20400000; exit"
