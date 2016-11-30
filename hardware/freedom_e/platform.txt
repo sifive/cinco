@@ -4,7 +4,7 @@ version=2.1.0
 # Compile variables
 # ----------------------
 
-compiler.path=
+compiler.path={runtime.tools.riscv32-unknown-elf-gcc.path}/bin/
 compiler.c.cmd=riscv32-unknown-elf-gcc
 compiler.cpp.cmd=riscv32-unknown-elf-g++
 compiler.ld.cmd=riscv32-unknown-elf-ld
