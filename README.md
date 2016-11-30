@@ -80,7 +80,7 @@ power supply will switch from USB automatically.
 * Connect one USB cables to the micro USB connector on the Arty board,
 and one USB cable to the Olimex. Follow the instructions at
 
-https://dev.sifive.com/develop/freeom-e00-arty-dev-kit
+https://dev.sifive.com/develop/freedom-e300-arty-dev-kit
 
 to connect your Arty board to the Olimex debugger.
 
