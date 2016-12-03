@@ -1,6 +1,5 @@
 # For HiFive, allow Clock Frequency selection
 menu.clksrc=CPU Clock Frequency
-menu.fp=HW Floating Point
 
 freedom_e300_arty_devkit.name=Freedom E300 Arty DevKit
 #Point to the file for ./variants/<variant>/pins_arduino.h
@@ -9,12 +8,7 @@ freedom_e300_arty_devkit.build.variant=standard
 freedom_e300_arty_devkit.menu.clksrc.fpga=65MHz FPGA Clock
 freedom_e300_arty_devkit.menu.clksrc.fpga.build.f_cpu=65000000L
 
-freedom_e300_arty_devkit.menu.fp.yes=Yes
-freedom_e300_arty_devkit.menu.fp.no=No
-
-
-freedom_e300_arty_devkit.menu.fp.yes.build.mcu=RV32IMAFC
-freedom_e300_arty_devkit.menu.fp.no.build.mcu=RV32IMAC
+freedom_e300_arty_devkit.build.mcu=RV32IMAC
 
 #"The 'core' file directory for this board, in ./cores
 freedom_e300_arty_devkit.build.core=arduino
@@ -41,10 +35,7 @@ hifive1.menu.clksrc.pll.build.f_cpu=256000000L
 #Point to the file for ./variants/<variant>/pins_arduino.h
 hifive1.build.variant=standard
 
-hifive1.menu.fp.yes=Yes
-hifive1.menu.fp.no=No
-hifive1.menu.fp.yes.build.mcu=RV32IMAFC
-hifive1.menu.fp.no.build.mcu=RV32IMAC
+hifive1.build.mcu=RV32IMAC
 
 #"The 'core' file directory for this board, in ./cores
 hifive1.build.core=arduino
