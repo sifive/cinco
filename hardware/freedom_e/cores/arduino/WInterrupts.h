@@ -21,9 +21,7 @@
 
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+__BEGIN_DECLS
 
 //      LOW 0
 //      HIGH 1
@@ -50,8 +48,6 @@ void attachInterrupt(uint32_t intnum, voidFuncPtr callback, uint32_t mode);
  */
 void detachInterrupt(uint32_t intnum);
 
-#ifdef __cplusplus
-}
-#endif
+__END_DECLS
 
 #endif
