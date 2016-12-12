@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2011-2012 Arduino.  All right reserved.
+  Copyright (c) 2015 Arduino LLC.  All right reserved.
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -8,7 +8,7 @@
 
   This library is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
   See the GNU Lesser General Public License for more details.
 
   You should have received a copy of the GNU Lesser General Public
@@ -19,39 +19,39 @@
 #ifndef _WIRING_INTERRUPTS_
 #define _WIRING_INTERRUPTS_
 
-#include "Arduino.h"
+#include <stdint.h>
 
-__BEGIN_DECLS
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-struct variant_icp_control_s
-{
-  uint32_t control_and;   // first and'ed to preserve bits
-  uint32_t control_or;    // last or'ed to set bits that enable this timer
-  uint32_t control_and_or;// 1-use and logic, 0-use or logic
-  uint32_t apply;
-  uint8_t icp_start;
-  uint8_t icp_stop;
-  uint32_t icp_ie;
-  uint32_t icp_if;
-  uint8_t icp_register;
-};
+//      LOW 0
+//      HIGH 1
+#define CHANGE 2
+#define FALLING 3
+#define RISING 4
 
-extern const struct variant_icp_control_s variant_icp_control[];
+#define DEFAULT 1
+#define EXTERNAL 0
 
-extern int timerInterval;
-void attachInterrupt(uint32_t pin, void (*callback)(void), uint32_t mode);
-void detachInterrupt(uint32_t pin);
-void icpFilter(uint32_t pin, uint32_t icp_start, uint32_t icp_stop);
+#define digitalPinToInterrupt(P) (INT_GPIO_BASE + variant_pin_map[P].bit_pos) 
 
-#ifdef __mips__
-#define __enable_irq() asm("ei")
-#define __disable_irq() asm("di")
-#endif // __mips__
-#ifdef __riscv__
-#define __enable_irq()
-#define __disable_irq()
-#endif // __riscv__
+  typedef void (*voidFuncPtr)(void);
 
-__END_DECLS
+/*
+ * \brief Specifies a named Interrupt Service Routine (ISR) to call when an interrupt occurs. Use digitalPinToInterrupt(pin) to get the correct intnum.
+ *        Other interrupt numbers are available, see platform.h.
+ *        Replaces any previous function that was attached to the interrupt.
+ */
+void attachInterrupt(uint32_t intnum, voidFuncPtr callback, uint32_t mode);
 
-#endif /* _WIRING_INTERRUPTS_ */
+/*
+ * \brief Turns off the given interrupt.
+ */
+void detachInterrupt(uint32_t intnum);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

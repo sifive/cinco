@@ -22,6 +22,9 @@
 
 #define ARDUINO_MAIN
 #include "Arduino.h"
+#include "encoding.h"
+
+extern uint32_t trap_entry;
 
 #define cmb() __asm__ __volatile__ ("" ::: "memory")
 
@@ -102,7 +105,6 @@ static void freedom_e300_clock_setup () {
     // RTC is running at 32kHz. 
     // So wait 4 ticks of RTC.
     uint32_t now = mtime_lo();
-    volatile uint32_t dummy;
     while ((mtime_lo() - now) <  4){
       cmb();
     }
@@ -146,6 +148,12 @@ static void freedom_e300_clock_setup () {
 void freedom_e300_specific_initialization(void)
 {
 
+  write_csr(mtvec, &trap_entry);
+  if (read_csr(misa) & (1 << ('F' - 'A'))) { // if F extension is present
+    write_csr(mstatus, MSTATUS_FS); // allow FPU instructions without trapping
+    write_csr(fcsr, 0); // initialize rounding mode, undefined at reset
+  }
+  
   freedom_e300_clock_setup();
   
 }

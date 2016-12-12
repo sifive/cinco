@@ -21,7 +21,6 @@ void analogWriteResolution(int res) {
 void analogWritePhase(uint32_t pin, uint32_t phase)
 {
   int8_t pwm_num;
-  volatile uint32_t *start, *stop;
   
   if(pin >= variant_pin_map_size)
     return;
