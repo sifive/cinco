@@ -78,7 +78,9 @@ static const uint32_t IOF_UART_MASK = IOF0_UART0_MASK;
 
 #define VARIANT_NUM_PIN (20)
 
-#define VARIANT_PWM_LIST {PWM0_BASE_ADDR, PWM1_BASE_ADDR, PWM2_BASE_ADDR}
+#define VARIANT_PWM_LIST {(volatile void *) PWM0_BASE_ADDR, \
+      (volatile void *) PWM1_BASE_ADDR, \
+      (volatile void *) PWM2_BASE_ADDR}
 
 #define VARIANT_NUM_PWM (3)
 #define VARIANT_NUM_SPI (1)
