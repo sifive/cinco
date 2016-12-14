@@ -20,7 +20,7 @@ compiler.c.flags=-c -O2 -march={build.mcu} -fpeel-loops -ffreestanding -ffunctio
 
 compiler.cpp.flags=-c -O2 -march={build.mcu} -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -fpermissive -Wall -fno-rtti -fno-exceptions {compiler.preproc.flags} -include sys/cdefs.h -g
 
-compiler.ld.flags=-T {build.ldscript} -nostartfiles -Wl,-N -Wl,--gc-sections
+compiler.ld.flags=-T {build.ldscript} -nostartfiles -Wl,-N -Wl,--gc-sections -Wl,--wrap=malloc -Wl,--wrap=free -Wl,--wrap=sbrk
 
 compiler.S.flags=-c -march={build.mcu} {compiler.preproc.flags} -g
 
@@ -63,7 +63,7 @@ recipe.cpp.o.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} -D
 recipe.ar.pattern="{compiler.path}{compiler.ar.cmd}" {compiler.ar.flags} {compiler.ar.extra_flags} "{archive_file_path}" "{object_file}"
 
 ## Link gc-sections, archives, and objects
-recipe.c.combine.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.ld.flags} -lm {build.extra_flags} {object_files} "{archive_file_path}" -o "{build.path}/{build.project_name}.elf"
+recipe.c.combine.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.ld.flags} {build.extra_flags} {object_files} -Wl,--start-group "{archive_file_path}" -lm -lstdc++ -lc -Wl,--end-group -o "{build.path}/{build.project_name}.elf"
 
 ## Create binary
 recipe.objcopy.eep.pattern="{compiler.path}{compiler.elf2hex.cmd}" {compiler.elf2hex.flags} -O binary "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.bin"

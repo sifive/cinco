@@ -8,7 +8,7 @@ freedom_e300_arty_devkit.build.variant=standard
 freedom_e300_arty_devkit.menu.clksrc.fpga=65MHz FPGA Clock
 freedom_e300_arty_devkit.menu.clksrc.fpga.build.f_cpu=65000000L
 
-freedom_e300_arty_devkit.build.mcu=RV32IMAC
+freedom_e300_arty_devkit.build.mcu=rv32imac
 
 #"The 'core' file directory for this board, in ./cores
 freedom_e300_arty_devkit.build.core=arduino
@@ -35,7 +35,7 @@ hifive1.menu.clksrc.pll.build.f_cpu=256000000L
 #Point to the file for ./variants/<variant>/pins_arduino.h
 hifive1.build.variant=standard
 
-hifive1.build.mcu=RV32IMAC
+hifive1.build.mcu=rv32imac
 
 #"The 'core' file directory for this board, in ./cores
 hifive1.build.core=arduino
