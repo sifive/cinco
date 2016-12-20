@@ -55,8 +55,8 @@ static void freedom_e300_clock_setup () {
 #if HAS_HFXOSC					  
   config_value |= (PLL_REFSEL(1));
 #else
-  // TODO!!!: Set trim of HFRSOC appropriately
-  // to 16Mhz
+  // TODO: Read HFROSC Trim and set it appropriately
+  // to achieve 16 MHz.
 #endif
 
   if (F_CPU == 256000000UL) {						  
@@ -65,6 +65,7 @@ static void freedom_e300_clock_setup () {
     // (which is quite likely) we need to
     // set the QSPI clock divider appropriately
     // before boosting the clock frequency.
+    // This is quite pessmistic.
 
     // Div = f_sck/2
     SPI0_REG(SPI_REG_SCKDIV) = 8;
@@ -114,7 +115,7 @@ static void freedom_e300_clock_setup () {
       cmb();
     }
 
-  } else { // if (F_CPU == 16000000UL) TODO:  For all other frequencies, ignore the setting (for now).
+  } else { // if (F_CPU == 16000000UL) TODO: Other frequencies.
 
     // Bypass
     config_value |= (PLL_BYPASS(1));

@@ -28,7 +28,8 @@ void analogWritePhase(uint32_t pin, uint32_t phase)
   pwm_num = variant_pin_map[pin].pwm_num;
   if(pwm_num > variant_pwm_size)
     {
-      //TODO!!! Whatever this is supposed to do.
+      //TODO -- Not sure what this function is supposed to
+      //        do exactly
     }
 }
       
@@ -74,13 +75,15 @@ void analogWrite(uint32_t pin, uint32_t ulValue)
     GPIO_REG(GPIO_IOF_EN)     |= digitalPinToBitMask(pin);
     pwm_enabled_pin[pin] = 1;
   }
-  
+
+  // On the FE300 Platform, the outputs are LOW until their comparator matches.
+  // So use the period subtracted from the specified value.
   *((volatile uint32_t*) (variant_pwm[pwm_num] + PWM_CMP0 + pwm_cmp_num*4)) =
-    (ulValue > pwm_period) ? pwm_period : ulValue;
+    (ulValue > pwm_period) ? 0 : (pwm_period -  ulValue);
 
 }
 
-//TODO!!!
+// FE300 Does not have analog inputs
 uint32_t analogRead(uint32_t pin)
 {
   return 0;

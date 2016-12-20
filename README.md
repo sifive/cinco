@@ -28,37 +28,38 @@ Use the Board Manager to search for and install the "SiFive" boards.
 
 ## Install this Repo Manually ##
 
-1. Clone this Repository ###
-* clone this repo wherever you like. Assume that you set an environment variable CINCO to that location.
+1. Clone this Repository
 
-```
-cd $CINCO
-git clone --recursive http://github.com/sifive/cinco.git
-```
+  Clone this repo wherever you like. Assume that you set an environment variable CINCO to that location.
+
+  ```
+  cd $CINCO
+  git clone --recursive http://github.com/sifive/cinco.git
+  ```
 
 2. Create a simlink from your Arduino install location:
 
-```
-cd /opt/arduino-1.6.12/hardware/
-ln -s $CINCO/hardware sifive
-```
+  ```
+  cd /opt/arduino-1.6.12/hardware/
+  ln -s $CINCO/hardware sifive
+  ```
 3. Install RISC-V Tools and OpenOCD
 
-If you have previously installed the Freedom E SDK, you do not need
-to do this step.
+  If you have previously installed the Freedom E SDK, you do not need
+  to do this step.
 
-```
-cd $CINCO
-git submodule update --init --recursive
-cd hardware/freedom_e/freedom-e-sdk
-make tools
-```
+  ```
+  cd $CINCO
+  git submodule update --init --recursive
+  cd hardware/freedom_e/freedom-e-sdk
+  make tools
+  ```
 
 4. Add the toolchain to your path
 
-```
-export PATH=$CINCO/hardware/freedom_e/freedom-e-sdk/toolchain/bin:$PATH
-```
+  ```
+  export PATH=$CINCO/hardware/freedom_e/freedom-e-sdk/toolchain/bin:$PATH
+  ```
 
 # Select Your Board #
 
@@ -88,7 +89,7 @@ If you installed the tools manually, select
 
 Select an example program and modify it as usual.
 
-For example, use the 'File->Examples->Blink' example, which needs
+For example, use the 'File->Examples->Basics->Blink' example, which needs
 no modifications.
 
 Hit the "Verify" button to test the program compiles,

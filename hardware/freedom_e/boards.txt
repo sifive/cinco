@@ -3,35 +3,33 @@
 menu.clksrc=CPU Clock Frequency
 menu.toolsloc=Tool Install Location
 
-freedom_e300_arty_devkit.menu.toolsloc.default=Default
-freedom_e300_arty_devkit.menu.toolsloc.manual=Manual
-freedom_e300_arty_devkit.menu.toolsloc.default.compiler.path={runtime.tools.riscv32-unknown-elf-gcc.path}/bin/
-freedom_e300_arty_devkit.menu.toolsloc.manual.compiler.path=
-freedom_e300_arty_devkit.menu.toolsloc.default.tools.openocd.path={runtime.tools.openocd.path}/bin/
-freedom_e300_arty_devkit.menu.toolsloc.manual.tools.openocd.path=
+freedom_e310_arty_devkit.menu.toolsloc.default=Default
+freedom_e310_arty_devkit.menu.toolsloc.manual=Manual
+freedom_e310_arty_devkit.menu.toolsloc.default.compiler.path={runtime.tools.riscv32-unknown-elf-gcc.path}/bin/
+freedom_e310_arty_devkit.menu.toolsloc.manual.compiler.path=
 
-freedom_e300_arty_devkit.name=Freedom E300 Arty DevKit
+freedom_e310_arty_devkit.name=Freedom E300 Arty DevKit
 #Point to the file for ./variants/<variant>/pins_arduino.h
-freedom_e300_arty_devkit.build.variant=standard
+freedom_e310_arty_devkit.build.variant=standard
 
-freedom_e300_arty_devkit.menu.clksrc.fpga=65MHz FPGA Clock
-freedom_e300_arty_devkit.menu.clksrc.fpga.build.f_cpu=65000000L
+freedom_e310_arty_devkit.menu.clksrc.fpga=65MHz FPGA Clock
+freedom_e310_arty_devkit.menu.clksrc.fpga.build.f_cpu=65000000L
 
-freedom_e300_arty_devkit.build.mcu=rv32imac
+freedom_e310_arty_devkit.build.mcu=rv32imac
 
 #"The 'core' file directory for this board, in ./cores
-freedom_e300_arty_devkit.build.core=arduino
+freedom_e310_arty_devkit.build.core=arduino
 # This sets a define for use in the compiled code.
-freedom_e300_arty_devkit.build.board=FREEDOM_E300_ARTY_DEVKIT
-freedom_e300_arty_devkit.build.boardenv=freedom-e300-arty
-freedom_e300_arty_devkit.build.sdata.size=4096
+freedom_e310_arty_devkit.build.board=FREEDOM_E300_ARTY_DEVKIT
+freedom_e310_arty_devkit.build.boardenv=freedom-e300-arty
+freedom_e310_arty_devkit.build.sdata.size=4096
 #This selects the tool from "programmers.txt"
-freedom_e300_arty_devkit.program.tool=openocd
-freedom_e300_arty_devkit.upload.tool=openocd
+freedom_e310_arty_devkit.program.tool=openocd
+freedom_e310_arty_devkit.upload.tool=openocd
 # Limit is the 128MB Flash. Assume half is used for something else.
-freedom_e300_arty_devkit.upload.maximum_size=67108864
-freedom_e300_arty_devkit.build.ldscript={compiler.sdk.path}/env/freedom-e300-hifive1/link.lds
-freedom_e300_arty_devkit.build.openocdcfg=freedom-e300-arty-devkit.cfg
+freedom_e310_arty_devkit.upload.maximum_size=8388608
+freedom_e310_arty_devkit.build.ldscript={compiler.sdk.path}/env/freedom-e300-hifive1/link.lds
+freedom_e310_arty_devkit.build.openocdcfg=freedom-e300-arty-devkit.cfg
 
 hifive1.name=HiFive 1
 
@@ -39,10 +37,6 @@ hifive1.menu.toolsloc.default=Default
 hifive1.menu.toolsloc.manual=Manual
 hifive1.menu.toolsloc.default.compiler.path={runtime.tools.riscv32-unknown-elf-gcc.path}/bin/
 hifive1.menu.toolsloc.manual.compiler.path=
-hifive1.menu.toolsloc.default.tools.openocd.path={runtime.tools.openocd.path}/bin/
-hifive1.menu.toolsloc.manual.tools.openocd.path=
-
-
 
 hifive1.menu.clksrc.hfxtal=16 MHz XTAL
 hifive1.menu.clksrc.pll=256 MHz PLL
@@ -64,8 +58,7 @@ hifive1.build.sdata.size=4096
 #This selects the tool from "programmers.txt"
 hifive1.program.tool=openocd
 hifive1.upload.tool=openocd
-# Limit is the 128MB Flash. Assume half is used for something else.
-hifive1.upload.maximum_size=67108864
+# Limit is the 128Mb Flash. Assume half is used for something else.
+hifive1.upload.maximum_size=8388608
 hifive1.build.ldscript={compiler.sdk.path}/env/freedom-e300-hifive1/link.lds
-freedom_e300_arty_devkit.build.openocdcfg=freedom-e300-hifive.cfg
 

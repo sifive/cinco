@@ -28,9 +28,6 @@ __BEGIN_DECLS
 extern void initVariant( void ) ;
 extern void init( void ) ;
 
-extern const volatile uint32_t *pintype2ioaddr[];
-extern const volatile uint32_t *pintype2ioaddr_in[];
-
 struct variant_pin_map_s {
   uint8_t io_port;
   uint8_t bit_pos;
@@ -78,8 +75,6 @@ extern void delay( uint32_t dwMs ) ;
  *
  * \param dwUs the number of microseconds to pause (uint32_t)
  */
-
-//TODO!!! USE 32kHz timer here instead.
 
 static inline void delayMicroseconds(uint32_t) __attribute__((always_inline, unused));
 static inline void delayMicroseconds(uint32_t usec){
