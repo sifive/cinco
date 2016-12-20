@@ -1,6 +1,14 @@
 # README #
 
-This repository allows you to program Freedom E300 boards using the Arduino IDE. Follow the instructions below to install the Board support package manually. Note that SiFive also supports downloading the tools in a precompiled state, or installing the Freedom E SDK seperately. Please see the Getting Started Guides for more information.
+This repository allows you to program Freedom E300 boards using the Arduino IDE.
+You can install this repository in two ways:
+
+* Using the Arduino Boards Manager (Currently only supported for Linux)
+* Manually compiling the tools (Works for Linux and Mac OSX).
+
+Follow the instructions below to install the Board support package.
+
+Please see the Getting Started Guides for more information on how to install and use the tools.
 
 [Freedom E310 Arty Dev Kit Getting Started Guide](https://dev.sifive.com/develop/freedom-e310-arty-dev-kit-v1-0/)
 
@@ -12,23 +20,32 @@ This repository allows you to program Freedom E300 boards using the Arduino IDE.
 
 Download and install Arduino IDE 1.6.12 tarball from the Arduino website. Unpack it and run their installation script as directed.
 
-## Install this Repo ###
+## Installing Through the Arduino IDE ##
 
+Add the [http://static.dev.sifive.com/bsp/arduino/package_sifive_index.json](http://static.dev.sifive.com/bsp/arduino/package_sifive_index.json) to the Additional Board URLs.
+
+Use the Board Manager to search for and install the "SiFive" boards.
+
+## Install this Repo Manually ##
+
+1. Clone this Repository ###
 * clone this repo wherever you like. Assume that you set an environment variable CINCO to that location.
 
 ```
 cd $CINCO
-git clone http://github.com/sifive/cinco.git
+git clone --recursive http://github.com/sifive/cinco.git
 ```
 
-* Create a simlink from your Arduino install location:
+2. Create a simlink from your Arduino install location:
 
 ```
 cd /opt/arduino-1.6.12/hardware/
 ln -s $CINCO/hardware sifive
 ```
+3. Install RISC-V Tools and OpenOCD
 
-## Install RISC-V Tools and OpenOCD ##
+If you have previously installed the Freedom E SDK, you do not need
+to do this step.
 
 ```
 cd $CINCO
@@ -37,13 +54,13 @@ cd hardware/freedom_e/freedom-e-sdk
 make tools
 ```
 
-Add the toolchain to your path:
+4. Add the toolchain to your path
 
 ```
 export PATH=$CINCO/hardware/freedom_e/freedom-e-sdk/toolchain/bin:$PATH
 ```
 
-## Select Your Board ##
+# Select Your Board #
 
 Restart and launch the Arduino IDE.
 
@@ -51,16 +68,28 @@ Select the board (e.g. Freedom E300 Arty Dev Kit) on the Arduino Menu
 
 Tools->Board->Freedom E 300 Dev Kit
 
-## Select OpenOCD as the  Programmer ##
+# Select Your Toolchain #
 
-Tools->Programmer->OpenOCD
+If you installed the tools using the Arduino Package Manager,
+select `Tools -> Tool Install Location -> Default`.
 
-## Write & Upload Your Program ##
+If you compiled the Freedom E SDK manually,
+select `Tools -> Tool Install Location -> Manual`.
+
+# Select OpenOCD as the  Programmer #
+
+If you installed the tools using the Arduino Package Manager,
+select `Tools->Programmer->SiFive OpenOCD`
+
+If you installed the tools manually, select
+`Tools->Programmer-> Manual SiFive OpenOCD`
+
+# Write & Upload Your Program #
 
 Select an example program and modify it as usual.
 
-For example, use the 'Blink' example, which needs
+For example, use the 'File->Examples->Blink' example, which needs
 no modifications.
 
 Hit the "Verify" button to test the program compiles,
-then "Upload" to program to the board. The green LED should blink.
+then "Upload" to program to your board. The green LED should blink.
