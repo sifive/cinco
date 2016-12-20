@@ -1,5 +1,14 @@
-# For HiFive, allow Clock Frequency selection
+# For HiFive1, allow Clock Frequency selection
+
 menu.clksrc=CPU Clock Frequency
+menu.toolsloc=Tool Install Location
+
+freedom_e300_arty_devkit.menu.toolsloc.default=Default
+freedom_e300_arty_devkit.menu.toolsloc.manual=Manual
+freedom_e300_arty_devkit.menu.toolsloc.default.compiler.path={runtime.tools.riscv32-unknown-elf-gcc.path}/bin/
+freedom_e300_arty_devkit.menu.toolsloc.manual.compiler.path=
+freedom_e300_arty_devkit.menu.toolsloc.default.tools.openocd.path={runtime.tools.openocd.path}/bin/
+freedom_e300_arty_devkit.menu.toolsloc.manual.tools.openocd.path=
 
 freedom_e300_arty_devkit.name=Freedom E300 Arty DevKit
 #Point to the file for ./variants/<variant>/pins_arduino.h
@@ -25,7 +34,15 @@ freedom_e300_arty_devkit.build.ldscript={compiler.sdk.path}/env/freedom-e300-hif
 freedom_e300_arty_devkit.build.openocdcfg=freedom-e300-arty-devkit.cfg
 
 hifive1.name=HiFive 1
-#TODO: What frequency will we actually run at?
+
+hifive1.menu.toolsloc.default=Default
+hifive1.menu.toolsloc.manual=Manual
+hifive1.menu.toolsloc.default.compiler.path={runtime.tools.riscv32-unknown-elf-gcc.path}/bin/
+hifive1.menu.toolsloc.manual.compiler.path=
+hifive1.menu.toolsloc.default.tools.openocd.path={runtime.tools.openocd.path}/bin/
+hifive1.menu.toolsloc.manual.tools.openocd.path=
+
+
 
 hifive1.menu.clksrc.hfxtal=16 MHz XTAL
 hifive1.menu.clksrc.pll=256 MHz PLL

@@ -13,6 +13,7 @@ compiler.objcopy.cmd=riscv32-unknown-elf-objcopy
 compiler.elf2hex.cmd=riscv32-unknown-elf-objcopy
 compiler.size.cmd=riscv32-unknown-elf-size
 
+
 compiler.sdk.path={runtime.platform.path}/freedom-e-sdk/bsp
 compiler.preproc.flags=-I{build.system.path}/include -I{compiler.sdk.path}/include -I{compiler.sdk.path}/env -I{compiler.sdk.path}/env/{build.boardenv}
 
@@ -84,3 +85,11 @@ tools.openocd.program.params.verbose=-v
 tools.openocd.program.params.quiet=-q
 tools.openocd.program.config={runtime.platform.path}/freedom-e-sdk/bsp/env/{build.boardenv}/openocd.cfg
 tools.openocd.program.pattern="{path}{cmd}" -f {program.config} -c "program {build.path}/{build.project_name}.elf; resume 0x20400000; exit"
+
+
+tools.manual_openocd.path=
+tools.manual_openocd.cmd=openocd
+tools.manual_openocd.program.params.verbose=-v
+tools.manual_openocd.program.params.quiet=-q
+tools.manual_openocd.program.config={runtime.platform.path}/freedom-e-sdk/bsp/env/{build.boardenv}/openocd.cfg
+tools.manual_openocd.program.pattern="{path}{cmd}" -f {program.config} -c "program {build.path}/{build.project_name}.elf; resume 0x20400000; exit"
