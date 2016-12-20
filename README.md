@@ -31,6 +31,18 @@ Add the toolchain to your path:
 export PATH=$CINCO/hardware/freedom_e/freedom-e-sdk/toolchain/bin:$PATH
 ```
 
+You may need to edit your udev rules in order to connect.
+
+```
+sudo nano /etc/udev/rules/99-openocd.rules
+TODO: Write the lines here that you need
+```
+
+Then your device should show up under `/dev/ttyUSB0` and `/dev/ttyUSB1`. You 
+will use the first interface to debug and program your board. You will use the 
+second interface to connect to the UART using `screen` or `minicom` or the
+Arduino Serial Console.
+
 Make sure you have permissons to communicate with your USB
 devices. Generally this means adding yourself to the 'dialout' or
 'plugdev' group(s). After plugging in the board you want to talk to, try the 
@@ -45,7 +57,7 @@ crw-rw-r-- 1 root plugdev 188, 1 Nov 28 12:53 /dev/ttyUSB1
 In the above example, I'd need to add myself to the 'plugdev' group.
 
 ```
-sudo useradd <name> -G plugdev
+sudo usermod -a -G plugdev <your_user_name>
 ```
 
 You probably have to log out and log back in, then check that you're now a member of the plugdev group:
