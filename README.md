@@ -48,18 +48,16 @@ Use the Board Manager to search for and install the "SiFive" boards.
   If you have previously installed the Freedom E SDK, you do not need
   to do this step.
 
-  ```
-  cd $CINCO
-  git submodule update --init --recursive
-  cd hardware/freedom_e/freedom-e-sdk
-  make tools
-  ```
+  Follow the instructions in the [https://github.com/sifive/freedom-e-sdk/blob/master/README.md](Freedom E SDK README) to install the SDK.
 
 4. Add the toolchain to your path
 
   ```
   export PATH=$CINCO/hardware/freedom_e/freedom-e-sdk/toolchain/bin:$PATH
   ```
+
+If you installed the Freedom E SDK some other way, use that installation
+location instead.
 
 # Select Your Board #
 
