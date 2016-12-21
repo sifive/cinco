@@ -22,6 +22,8 @@
 #ifndef TwoWire_h
 #define TwoWire_h
 
+#warning "Wire.h Is currently only a stub and is not functional. A SW I2C Library should be used (this will be added in the near future)."
+
 #include <inttypes.h>
 #include "Arduino.h"
 
