@@ -3,8 +3,8 @@
 This repository allows you to program Freedom E300 boards using the Arduino IDE.
 You can install this repository in two ways:
 
-* Using the Arduino Boards Manager (Currently only supported for Linux)
-* Manually compiling the tools (Works for Linux and Mac OSX).
+* Using the Arduino Boards Manager (Currently supported for Linux and macOS) to download precompiled binaries
+* Manually compiling the tools (Suggested for platforms not supported by the above).
 
 Follow the instructions below to install the Board support package.
 
