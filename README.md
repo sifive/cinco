@@ -20,13 +20,21 @@ Please see the Getting Started Guides for more information on how to install and
 
 Download and install Arduino IDE 1.6.12 tarball from the Arduino website. Unpack it and run their installation script as directed.
 
-## Installing Through the Arduino IDE ##
+## Install the SiFive Boards ##
+
+Use one of the following methods:
+
+### Option 1: Installing Through the Arduino IDE ###
+
+This is supported for macOS and Linux.
 
 Add the [http://static.dev.sifive.com/bsp/arduino/package_sifive_index.json](http://static.dev.sifive.com/bsp/arduino/package_sifive_index.json) to the Additional Board URLs.
 
 Use the Board Manager to search for and install the "SiFive" boards.
 
-## Install this Repo Manually ##
+### Option 2: Install this Repo Manually ###
+
+This is generally not supported. You can use this technique to install on platforms that aren't supported by the Board Manager, or if you want to work on the code in this repository.
 
 1. Clone this Repository
 
@@ -37,18 +45,19 @@ Use the Board Manager to search for and install the "SiFive" boards.
   git clone --recursive http://github.com/sifive/cinco.git
   ```
 
-2. Create a simlink from your Arduino install location:
+2. Create a simlink from your Arduino install location. 
 
   ```
   cd /opt/arduino-1.6.12/hardware/
   ln -s $CINCO/hardware sifive
   ```
+
 3. Install RISC-V Tools and OpenOCD
 
   If you have previously installed the Freedom E SDK, you do not need
   to do this step.
 
-  Follow the instructions in the [https://github.com/sifive/freedom-e-sdk/blob/master/README.md](Freedom E SDK README) to install the SDK.
+  Follow the instructions in the [https://github.com/sifive/freedom-e-sdk/blob/master/README.md](Freedom E SDK README) to install the SDK. You can use the version included in this repository or download and install it seperately.
 
 4. Add the toolchain to your path
 
