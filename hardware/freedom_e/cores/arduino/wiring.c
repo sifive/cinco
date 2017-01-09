@@ -35,67 +35,51 @@ const uint32_t variant_pin_map_size = sizeof(variant_pin_map) / sizeof(struct va
 const volatile void * variant_pwm[] = VARIANT_PWM_LIST;
 const uint32_t variant_pwm_size = sizeof(variant_pwm) / sizeof(uint32_t*);
 
-static uint32_t tsc_hi, tsc_lo;
-
-static void
-update_tsc(void)
+static uint64_t rdmcycle()
 {
-  
-  uint32_t tsc = read_csr(mcycle);
-  
-  /* check for 32-bit overflow */
-  if (tsc < tsc_lo)
-    tsc_hi++;
-  tsc_lo = tsc;
+  uint32_t lo, hi;
+  __asm__ __volatile__ ("csrr %0, mcycle\n\t"
+			"csrr %1, mcycleh\n\t"
+			: "=r" (lo), "=r" (hi));
+  return lo | ((uint64_t) hi << 32);
 }
-
-
-uint32_t
+  
+uint64_t
 millis(void)
 {
-  uint64_t tsc64;
-  
-  update_tsc();
-  tsc64 = tsc_hi;
-  tsc64 <<= 32;
-  tsc64 += tsc_lo;
-  
-  return((tsc64 * 1000) / F_CPU);
+
+  return((rdmcycle() * 1000) / F_CPU);
+
 }
 
 
-uint32_t
+uint64_t
 micros(void)
 {
-  uint64_t tsc64;
   
-  update_tsc();
-  tsc64 = tsc_hi;
-  tsc64 <<= 32;
-  tsc64 += tsc_lo;
-  
-  return((tsc64 * 1000000) / F_CPU);
+  return((rdmcycle() * 1000000) / F_CPU);
 }
 
 
 void
-delay(uint32_t ms)
+delay(uint64_t dwMs)
 {
-  uint32_t current, later;
-  
-  while (ms--) 
+  uint64_t current, later;
+  current = rdmcycle();
+  later = current + dwMs * (F_CPU/1000);
+  if (later > current) // usual case
     {
-      current = read_csr(mcycle);
-      later = current + (F_CPU/1000);
-      if (later > current) // usual case
-	{
-	  while (current < later)
-	    current = read_csr(mcycle);
-	} else { // wrap
-	while (current < later)
-	  current = read_csr(mcycle);
-	while (later > current)
-	  current = read_csr(mcycle);
+      while (later > current) {
+	current = rdmcycle();
+      }
+    }
+  else // wrap. Though this is unlikely to be hit w/ 64-bit mcycle
+    {
+      while (later < current) {
+	current = rdmcycle();
+      }
+      while (current < later) {
+	current = rdmcycle();
       }
     }
 }
