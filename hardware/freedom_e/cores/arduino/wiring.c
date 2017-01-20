@@ -34,52 +34,45 @@ const uint32_t variant_pin_map_size = sizeof(variant_pin_map) / sizeof(struct va
 
 const volatile void * variant_pwm[] = VARIANT_PWM_LIST;
 const uint32_t variant_pwm_size = sizeof(variant_pwm) / sizeof(uint32_t*);
-
-static uint64_t rdmcycle()
-{
-  uint32_t lo, hi;
-  __asm__ __volatile__ ("csrr %0, mcycle\n\t"
-			"csrr %1, mcycleh\n\t"
-			: "=r" (lo), "=r" (hi));
-  return lo | ((uint64_t) hi << 32);
-}
   
-uint64_t
+uint32_t
 millis(void)
 {
-
-  return((rdmcycle() * 1000) / F_CPU);
+  uint64_t x;
+  rdmcycle(&x);
+  return((x * 1000) / F_CPU);
 
 }
 
 
-uint64_t
+uint32_t 
 micros(void)
 {
-  
-  return((rdmcycle() * 1000000) / F_CPU);
+  uint64_t x;
+  rdmcycle(&x);
+  return (uint32_t) ((x * (1000000))/F_CPU);
 }
 
 
 void
-delay(uint64_t dwMs)
+delay(uint32_t dwMs)
 {
   uint64_t current, later;
-  current = rdmcycle();
+  rdmcycle(&current);
   later = current + dwMs * (F_CPU/1000);
   if (later > current) // usual case
     {
       while (later > current) {
-	current = rdmcycle();
+	rdmcycle(&current);
       }
     }
   else // wrap. Though this is unlikely to be hit w/ 64-bit mcycle
     {
       while (later < current) {
-	current = rdmcycle();
+	rdmcycle(&current);
       }
       while (current < later) {
-	current = rdmcycle();
+	rdmcycle(&current);
       }
     }
 }
