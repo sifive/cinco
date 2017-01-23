@@ -41,6 +41,19 @@ extern const uint32_t variant_pin_map_size;
 extern const volatile void* variant_pwm[];
 extern const uint32_t variant_pwm_size;
 
+typedef struct {
+  uint32_t n;
+  uint32_t mult;
+  uint32_t shift;
+} int_inverse ;
+
+extern int_inverse f_cpu_inv;
+
+void calc_inv(uint32_t n, int_inverse * res);
+
+uint32_t divide32_using_inverse(uint32_t n, int_inverse *inv);
+uint64_t divide64_using_inverse(uint64_t n, int_inverse *inv);
+
 #define rdmcycle(x)  {				       \
     uint32_t lo, hi, hi2;			       \
     __asm__ __volatile__ ("1:\n\t"		       \
@@ -57,7 +70,7 @@ extern const uint32_t variant_pwm_size;
  *
  * \return Number of milliseconds since the program started (uint32_t)
  */
-extern uint32_t millis( void ) ;
+extern uint32_t millis( uint64_t * cyc, uint64_t * x1000, uint64_t * result ) ;
 
 /**
  * \brief Returns the number of microseconds since the board began running the current program.
