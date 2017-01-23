@@ -47,7 +47,8 @@ typedef struct {
   uint32_t shift;
 } int_inverse ;
 
-extern int_inverse f_cpu_inv;
+extern int_inverse f_cpu_1000_inv;
+extern int_inverse f_cpu_1000000_inv;
 
 void calc_inv(uint32_t n, int_inverse * res);
 
@@ -70,7 +71,7 @@ uint64_t divide64_using_inverse(uint64_t n, int_inverse *inv);
  *
  * \return Number of milliseconds since the program started (uint32_t)
  */
-extern uint32_t millis( uint64_t * cyc, uint64_t * x1000, uint64_t * result ) ;
+extern uint32_t millis( void ) ;
 
 /**
  * \brief Returns the number of microseconds since the board began running the current program.

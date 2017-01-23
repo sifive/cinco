@@ -37,7 +37,8 @@ const uint32_t variant_pwm_size = sizeof(variant_pwm) / sizeof(uint32_t*);
 
 // Efficient divide routines provided by Bruce Hoult on forums.sifive.com
 
-int_inverse f_cpu_inv;
+int_inverse f_cpu_1000_inv;
+int_inverse f_cpu_1000000_inv;
 
 void calc_inv(uint32_t n, int_inverse * res){
   uint32_t one = ~0;
@@ -78,14 +79,11 @@ uint64_t divide64_using_inverse(uint64_t n, int_inverse *inv){
 
 
 uint32_t
-millis(uint64_t * cyc, uint64_t * x1000, uint64_t * result)
+millis()
 {
   uint64_t x;
   rdmcycle(&x);
-  *cyc = x;
-  *x1000 = x*1000;
-  x = divide64_using_inverse(x*1000, &f_cpu_inv);
-  *result = x;
+  x = divide64_using_inverse(x, &f_cpu_1000_inv);
   return((uint32_t) (x & 0xFFFFFFFF));
 }
 
@@ -94,7 +92,16 @@ micros(void)
 {
   uint64_t x;
   rdmcycle(&x);
-  x = divide64_using_inverse(x*1000000, &f_cpu_inv);
+  // For Power-of-two MHz F_CPU,
+  // this compiles into a simple shift,
+  // and is faster than the general solution.
+#ifeq F_CPU 16000000
+  x = x / (F_CPU / 1000000);
+#else ifeq F_CPU 256000000
+  x = x / (F_CPU / 1000000);
+#else
+  x = divide64_using_inverse(x, &f_cpu_1000000_inv);
+#endif
   return((uint32_t) (x & 0xFFFFFFFF));
 }
 

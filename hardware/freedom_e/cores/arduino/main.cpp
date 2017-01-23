@@ -165,8 +165,9 @@ void freedom_e300_specific_initialization(void)
 int main( void )
 {
   //	init();
-  // Compute F_CPU inverse, used for timing funcitons.
-  calc_inv(F_CPU, &f_cpu_inv);
+  // Compute F_CPU inverse, used for millis and micros functions.
+  calc_inv(F_CPU/1000, &f_cpu_1000_inv);
+  calc_inv(F_CPU/1000000, &f_cpu_1000000_inv);
   freedom_e300_specific_initialization();
   setup();
   
