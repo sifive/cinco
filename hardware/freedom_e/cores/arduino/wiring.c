@@ -95,12 +95,14 @@ micros(void)
   // For Power-of-two MHz F_CPU,
   // this compiles into a simple shift,
   // and is faster than the general solution.
-#ifeq F_CPU 16000000
-  x = x / (F_CPU / 1000000);
-#else ifeq F_CPU 256000000
+#if F_CPU==16000000
   x = x / (F_CPU / 1000000);
 #else
+#if  F_CPU==256000000
+  x = x / (F_CPU / 1000000);
+#elsex
   x = divide64_using_inverse(x, &f_cpu_1000000_inv);
+#endif
 #endif
   return((uint32_t) (x & 0xFFFFFFFF));
 }
