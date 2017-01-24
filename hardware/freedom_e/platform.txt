@@ -84,7 +84,7 @@ tools.openocd.cmd=openocd
 tools.openocd.program.params.verbose=-v
 tools.openocd.program.params.quiet=-q
 tools.openocd.program.config={runtime.platform.path}/freedom-e-sdk/bsp/env/{build.boardenv}/openocd.cfg
-tools.openocd.program.pattern="{path}{cmd}" -f {program.config} -c "flash protect 0 64 last off; flash program {build.path}/{build.project_name}.elf verify; resume 0x20400000; exit"
+tools.openocd.program.pattern="{path}{cmd}" -f {program.config} -c "flash protect 0 64 last off; program {build.path}/{build.project_name}.elf verify; resume 0x20400000; exit"
 
 
 tools.manual_openocd.path=
@@ -92,4 +92,4 @@ tools.manual_openocd.cmd=openocd
 tools.manual_openocd.program.params.verbose=-v
 tools.manual_openocd.program.params.quiet=-q
 tools.manual_openocd.program.config={runtime.platform.path}/freedom-e-sdk/bsp/env/{build.boardenv}/openocd.cfg
-tools.manual_openocd.program.pattern="{path}{cmd}" -f {program.config} -c "flash protect 0 64 last off; flash program {build.path}/{build.project_name}.elf verify; resume 0x20400000; exit"
+tools.manual_openocd.program.pattern="{path}{cmd}" -f {program.config} -c "flash protect 0 64 last off; program {build.path}/{build.project_name}.elf verify; resume 0x20400000; exit"

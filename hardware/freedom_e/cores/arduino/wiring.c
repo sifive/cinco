@@ -100,7 +100,7 @@ micros(void)
 #else
 #if  F_CPU==256000000
   x = x / (F_CPU / 1000000);
-#elsex
+#else
   x = divide64_using_inverse(x, &f_cpu_1000000_inv);
 #endif
 #endif
