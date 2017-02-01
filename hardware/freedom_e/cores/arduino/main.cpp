@@ -33,6 +33,8 @@ uint32_t mtime_lo(void)
   return *(volatile uint32_t *)(CLINT_BASE_ADDR + CLINT_MTIME);
 }
 
+
+
 static void freedom_e300_clock_setup () {
 
   // This is a very coarse parameterization. To revisit in the future
