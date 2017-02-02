@@ -41,8 +41,11 @@ hifive1.menu.toolsloc.manual.compiler.path=
 
 hifive1.menu.clksrc.hfxtal=16 MHz XTAL
 hifive1.menu.clksrc.pll=256 MHz PLL
+hifive1.menu.clksrc.hfrosc=~320 MHz HFROSC+PLL
+
 hifive1.menu.clksrc.hfxtal.build.f_cpu=16000000L
 hifive1.menu.clksrc.pll.build.f_cpu=256000000L
+hifive1.menu.clksrc.hfrosc.build.f_cpu=320000000L
 
 #Point to the file for ./variants/<variant>/pins_arduino.h
 hifive1.build.variant=standard

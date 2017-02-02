@@ -19,7 +19,7 @@
 #include "Arduino.h"
 #include "wiring_private.h"
 #include "encoding.h"
-#include "plic_driver.h"
+#include "drivers/plic/plic_driver.h"
 
 #include <string.h>
 
