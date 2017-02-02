@@ -3,12 +3,13 @@
 menu.clksrc=CPU Clock Frequency
 menu.toolsloc=Tool Install Location
 
+freedom_e310_arty_devkit.name=Freedom E300 Arty DevKit
+
 freedom_e310_arty_devkit.menu.toolsloc.default=Default
 freedom_e310_arty_devkit.menu.toolsloc.manual=Manual
 freedom_e310_arty_devkit.menu.toolsloc.default.compiler.path={runtime.tools.riscv32-unknown-elf-gcc.path}/bin/
 freedom_e310_arty_devkit.menu.toolsloc.manual.compiler.path=
 
-freedom_e310_arty_devkit.name=Freedom E300 Arty DevKit
 #Point to the file for ./variants/<variant>/pins_arduino.h
 freedom_e310_arty_devkit.build.variant=standard
 
@@ -40,8 +41,11 @@ hifive1.menu.toolsloc.manual.compiler.path=
 
 hifive1.menu.clksrc.hfxtal=16 MHz XTAL
 hifive1.menu.clksrc.pll=256 MHz PLL
+hifive1.menu.clksrc.hfrosc=~320 MHz HFROSC+PLL
+
 hifive1.menu.clksrc.hfxtal.build.f_cpu=16000000L
 hifive1.menu.clksrc.pll.build.f_cpu=256000000L
+hifive1.menu.clksrc.hfrosc.build.f_cpu=320000000L
 
 #Point to the file for ./variants/<variant>/pins_arduino.h
 hifive1.build.variant=standard

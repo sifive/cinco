@@ -41,27 +41,52 @@ extern const uint32_t variant_pin_map_size;
 extern const volatile void* variant_pwm[];
 extern const uint32_t variant_pwm_size;
 
+typedef struct {
+  uint32_t n;
+  uint32_t mult;
+  uint32_t shift;
+} int_inverse ;
+
+extern int_inverse f_cpu_1000_inv;
+extern int_inverse f_cpu_1000000_inv;
+
+void calc_inv(uint32_t n, int_inverse * res);
+
+uint32_t divide32_using_inverse(uint32_t n, int_inverse *inv);
+uint64_t divide64_using_inverse(uint64_t n, int_inverse *inv);
+
+#define rdmcycle(x)  {				       \
+    uint32_t lo, hi, hi2;			       \
+    __asm__ __volatile__ ("1:\n\t"		       \
+			  "csrr %0, mcycleh\n\t"       \
+			  "csrr %1, mcycle\n\t"	       \
+			  "csrr %2, mcycleh\n\t"       \
+			  "bne  %0, %2, 1b\n\t"			\
+			  : "=r" (hi), "=r" (lo), "=r" (hi2)) ;	\
+    *(x) = lo | ((uint64_t) hi << 32); 				\
+  }
+
 /**
  * \brief Returns the number of milliseconds since the board began running the current program.
  *
- * \return Number of milliseconds since the program started (uint64_t)
+ * \return Number of milliseconds since the program started (uint32_t)
  */
-extern uint64_t millis( void ) ;
+extern uint32_t millis( void ) ;
 
 /**
  * \brief Returns the number of microseconds since the board began running the current program.
  *
  * \note There are 1,000 microseconds in a millisecond and 1,000,000 microseconds in a second.
  */
-extern uint64_t micros( void ) ;
+extern uint32_t micros( void ) ;
 
 /**
  * \brief Pauses the program for the amount of time (in miliseconds) specified as parameter.
  * (There are 1000 milliseconds in a second.)
  *
- * \param dwMs the number of milliseconds to pause (uint64_t)
+ * \param dwMs the number of milliseconds to pause (uint32_t)
  */
-extern void delay( uint64_t dwMs ) ;
+extern void delay( uint32_t dwMs ) ;
 
 /**
  * \brief Pauses the program for the amount of time (in microseconds) specified as parameter.
@@ -70,15 +95,31 @@ extern void delay( uint64_t dwMs ) ;
  */
 
 static inline void delayMicroseconds(uint32_t) __attribute__((always_inline, unused));
-static inline void delayMicroseconds(uint32_t usec){
-  // This could be tuned to be more precise for short delays.
+static inline void delayMicroseconds(uint32_t usec) {
   if (usec == 0) {
     return;
   }
-  uint64_t endwait = micros() + usec;
-  while(micros() < endwait){
-  }
+  // TODO: Short delays at low frequencies.
+  uint64_t current, later;
+  rdmcycle(&current);
+  later = current + usec * (F_CPU/1000000);
+  if (later > current) // usual case
+    {
+      while (later > current) {
+	rdmcycle(&current);
+      }
+    }
+  else // wrap. Though this is unlikely to be hit w/ 64-bit mcycle
+    {
+      while (later < current) {
+	rdmcycle(&current);
+      }
+      while (current < later) {
+	rdmcycle(&current);
+      }
+    }
 }
+
 __END_DECLS
 
 #endif /* _WIRING_ */
