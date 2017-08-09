@@ -1,29 +1,29 @@
 name= SiFive Freedom E300 Boards
-version=1.0.1
+version=1.1.0
 
 # Compile variables
 # ----------------------
 
-compiler.path={runtime.tools.riscv32-unknown-elf-gcc.path}/bin/
-compiler.c.cmd=riscv32-unknown-elf-gcc
-compiler.cpp.cmd=riscv32-unknown-elf-g++
-compiler.ld.cmd=riscv32-unknown-elf-ld
-compiler.ar.cmd=riscv32-unknown-elf-ar
-compiler.objcopy.cmd=riscv32-unknown-elf-objcopy
-compiler.elf2hex.cmd=riscv32-unknown-elf-objcopy
-compiler.size.cmd=riscv32-unknown-elf-size
+compiler.path={runtime.tools.riscv64-unknown-elf-gcc.path}/bin/
+compiler.c.cmd=riscv64-unknown-elf-gcc
+compiler.cpp.cmd=riscv64-unknown-elf-g++
+compiler.ld.cmd=riscv64-unknown-elf-ld
+compiler.ar.cmd=riscv64-unknown-elf-ar
+compiler.objcopy.cmd=riscv64-unknown-elf-objcopy
+compiler.elf2hex.cmd=riscv64-unknown-elf-objcopy
+compiler.size.cmd=riscv64-unknown-elf-size
 
 
 compiler.sdk.path={runtime.platform.path}/freedom-e-sdk/bsp
 compiler.preproc.flags=-I{build.system.path}/include -I{compiler.sdk.path}/include -I{compiler.sdk.path}/env -I{compiler.sdk.path}/drivers -I{compiler.sdk.path}/env/{build.boardenv}
 
-compiler.c.flags=-c -O2 -march={build.mcu} -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -Wall {compiler.preproc.flags} -include sys/cdefs.h -g
+compiler.c.flags=-c -O2 -march={build.mcu} -mabi=ilp32 -mcmodel=medany -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -Wall {compiler.preproc.flags} -include sys/cdefs.h -g
 
-compiler.cpp.flags=-c -O2 -march={build.mcu} -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -fpermissive -Wall -fno-rtti -fno-exceptions {compiler.preproc.flags} -include sys/cdefs.h -g
+compiler.cpp.flags=-c -O2 -march={build.mcu} -mabi=ilp32 -mcmodel=medany -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -fpermissive -Wall -fno-rtti -fno-exceptions {compiler.preproc.flags} -include sys/cdefs.h -g
 
-compiler.ld.flags=-T {build.ldscript} -nostartfiles -Wl,-N -Wl,--gc-sections -Wl,--wrap=malloc -Wl,--wrap=free -Wl,--wrap=sbrk
+compiler.ld.flags=-T {build.ldscript} -march={build.mcu} -mabi=ilp32 -mcmodel=medany  -nostartfiles -Wl,-N -Wl,--gc-sections -Wl,--wrap=malloc -Wl,--wrap=free -Wl,--wrap=sbrk
 
-compiler.S.flags=-c -march={build.mcu} {compiler.preproc.flags} -g
+compiler.S.flags=-c -march={build.mcu} -mabi=ilp32 -mcmodel=medany {compiler.preproc.flags} -g
 
 compiler.ar.flags=rcs
 
