@@ -7,7 +7,7 @@ freedom_e310_arty_devkit.name=Freedom E300 Arty DevKit
 
 freedom_e310_arty_devkit.menu.toolsloc.default=Default
 freedom_e310_arty_devkit.menu.toolsloc.manual=Manual
-freedom_e310_arty_devkit.menu.toolsloc.default.compiler.path={runtime.tools.riscv32-unknown-elf-gcc.path}/bin/
+freedom_e310_arty_devkit.menu.toolsloc.default.compiler.path={runtime.tools.riscv64-unknown-elf-gcc.path}/bin/
 freedom_e310_arty_devkit.menu.toolsloc.manual.compiler.path=
 
 #Point to the file for ./variants/<variant>/pins_arduino.h
@@ -17,6 +17,8 @@ freedom_e310_arty_devkit.menu.clksrc.fpga=65MHz FPGA Clock
 freedom_e310_arty_devkit.menu.clksrc.fpga.build.f_cpu=65000000L
 
 freedom_e310_arty_devkit.build.mcu=rv32imac
+freedom_e310_arty_devkit.build.mabi=ilp32
+freedom_e310_arty_devkit.build.mcmodel=medany
 
 #"The 'core' file directory for this board, in ./cores
 freedom_e310_arty_devkit.build.core=arduino
@@ -36,7 +38,7 @@ hifive1.name=HiFive 1
 
 hifive1.menu.toolsloc.default=Default
 hifive1.menu.toolsloc.manual=Manual
-hifive1.menu.toolsloc.default.compiler.path={runtime.tools.riscv32-unknown-elf-gcc.path}/bin/
+hifive1.menu.toolsloc.default.compiler.path={runtime.tools.riscv64-unknown-elf-gcc.path}/bin/
 hifive1.menu.toolsloc.manual.compiler.path=
 
 hifive1.menu.clksrc.hfxtal=16 MHz XTAL
@@ -51,6 +53,8 @@ hifive1.menu.clksrc.hfrosc.build.f_cpu=320000000L
 hifive1.build.variant=standard
 
 hifive1.build.mcu=rv32imac
+hifive1.build.mabi=ilp32
+hifive1.build.mcmodel=medany
 
 #"The 'core' file directory for this board, in ./cores
 hifive1.build.core=arduino
