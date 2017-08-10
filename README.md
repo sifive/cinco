@@ -57,7 +57,7 @@ This is generally not supported. You can use this technique to install on platfo
   If you have previously installed the Freedom E SDK, you do not need
   to do this step.
 
-  Follow the instructions in the [https://github.com/sifive/freedom-e-sdk/blob/master/README.md](Freedom E SDK README) to install the SDK. You can use the version included in this repository or download and install it seperately.
+  Follow the instructions in the [Freedom E SDK README](https://github.com/sifive/freedom-e-sdk/blob/master/README.md) to install the SDK. You can use the version included in this repository or download and install it separately.
 
 4. Add the toolchain to your path
 
