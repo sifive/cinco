@@ -72,8 +72,10 @@ enum BitOrder {
 #define degrees(rad) ((rad)*RAD_TO_DEG)
 #define sq(x) ((x)*(x))
 
-#define interrupts() __enable_irq()
-#define noInterrupts() __disable_irq()
+#include <encoding.h>
+
+#define interrupts() set_csr(mie, MIP_MEIP)
+#define noInterrupts() clear_csr(mie, MIP_MEIP)
 
 #define lowByte(w) ((uint8_t) ((w) & 0xff))
 #define highByte(w) ((uint8_t) ((w) >> 8))
