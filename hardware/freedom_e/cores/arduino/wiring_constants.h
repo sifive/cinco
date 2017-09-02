@@ -74,8 +74,8 @@ enum BitOrder {
 
 #include <encoding.h>
 
-#define interrupts() set_csr(mie, MIP_MEIP)
-#define noInterrupts() clear_csr(mie, MIP_MEIP)
+#define interrupts() set_csr(mie, CSR_MSTATUS)
+#define noInterrupts() clear_csr(mie, CSR_MSTATUS)
 
 #define lowByte(w) ((uint8_t) ((w) & 0xff))
 #define highByte(w) ((uint8_t) ((w) >> 8))
