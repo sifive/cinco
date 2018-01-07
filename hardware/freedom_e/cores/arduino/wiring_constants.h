@@ -19,6 +19,8 @@
 #ifndef _WIRING_CONSTANTS_
 #define _WIRING_CONSTANTS_
 
+#include <sys/isr.h>
+
 __BEGIN_DECLS
 
 #define HIGH 0x1
