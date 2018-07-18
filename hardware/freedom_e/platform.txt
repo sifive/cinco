@@ -17,9 +17,9 @@ compiler.size.cmd=riscv64-unknown-elf-size
 compiler.sdk.path={runtime.platform.path}/freedom-e-sdk/bsp
 compiler.preproc.flags=-I{build.system.path}/include -I{compiler.sdk.path}/include -I{compiler.sdk.path}/env -I{compiler.sdk.path}/drivers -I{compiler.sdk.path}/env/{build.boardenv}
 
-compiler.c.flags=-c -O2 -march={build.mcu} -mabi={build.mabi} -mcmodel={build.mcmodel} -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -Wall {compiler.preproc.flags} -include sys/cdefs.h -g
+compiler.c.flags=-c -O2 -march={build.mcu} -mabi={build.mabi} -mcmodel={build.mcmodel} -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -MMD -Wall {compiler.preproc.flags} -include sys/cdefs.h -g
 
-compiler.cpp.flags=-c -O2 -march={build.mcu} -mabi={build.mabi} -mcmodel={build.mcmodel} -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -fpermissive -Wall -fno-rtti -fno-exceptions {compiler.preproc.flags} -include sys/cdefs.h -g
+compiler.cpp.flags=-c -O2 -march={build.mcu} -mabi={build.mabi} -mcmodel={build.mcmodel} -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -MMD -fpermissive -Wall -fno-rtti -fno-exceptions {compiler.preproc.flags} -include sys/cdefs.h -g
 
 compiler.ld.flags=-T {build.ldscript} -march={build.mcu} -mabi={build.mabi} -mcmodel={build.mcmodel} -nostartfiles -Wl,-N -Wl,--gc-sections -Wl,--wrap=malloc -Wl,--wrap=free -Wl,--wrap=sbrk
 
