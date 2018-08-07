@@ -21,7 +21,7 @@ compiler.c.flags=-c -O2 -march={build.mcu} -mabi={build.mabi} -mcmodel={build.mc
 
 compiler.cpp.flags=-c -O2 -march={build.mcu} -mabi={build.mabi} -mcmodel={build.mcmodel} -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -MMD -fpermissive -Wall -fno-rtti -fno-exceptions {compiler.preproc.flags} -include sys/cdefs.h
 
-compiler.ld.flags=-T {build.ldscript} -march={build.mcu} -mabi={build.mabi} -mcmodel={build.mcmodel} -nostartfiles -Wl,-N -Wl,--gc-sections -Wl,--wrap=malloc -Wl,--wrap=free -Wl,--wrap=sbrk
+compiler.ld.flags=-T {build.ldscript} -march={build.mcu} -mabi={build.mabi} -mcmodel={build.mcmodel} -nostartfiles -Xlinker -defsym=__stack_size=0x200 -Wl,-N -Wl,--gc-sections -Wl,--wrap=malloc -Wl,--wrap=free -Wl,--wrap=sbrk
 
 compiler.S.flags=-c -march={build.mcu} -mabi={build.mabi} -mcmodel={build.mcmodel} {compiler.preproc.flags}
 
