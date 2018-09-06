@@ -99,25 +99,64 @@ static inline void delayMicroseconds(uint32_t usec) {
   if (usec == 0) {
     return;
   }
-  // TODO: Short delays at low frequencies.
   uint64_t current, later;
-  rdmcycle(&current);
-  later = current + usec * (F_CPU/1000000);
-  if (later > current) // usual case
-    {
+#if F_CPU==16000000
+  if (usec <= 10) {
+    /**
+     * The rdmcycle() takes 10 cycles or ~630ns to complete at 16MHz CPU clk.
+     * Togeter with 64bit arithmetics it led to low accuracy and high jitter
+     * for below 10 usec delay values. Replacing the rdmcycle() polling with
+     * "nop" sequence solved the problem.
+     *
+     * Test results (excluding GPIO overhead of about 1.9us when measured
+     * with "GPIO_REG(GPIO_OUTPUT_VAL) ^= (1 << PIN_3_OFFSET)"):
+     *
+     * usec      "nop"        "rdmcycle()"
+     *  1         0.9          1.2 - 1.4
+     *  2         2            2.2 - 2.5
+     *  4         4            4.1 - 4.4
+     *  10        10.4         10.5
+     */
+    for (uint32_t i = 0; i < usec; i++) {
+      asm("nop");
+      asm("nop");
+      asm("nop");
+      asm("nop");
+      asm("nop");
+      asm("nop");
+      asm("nop");
+      asm("nop");
+      asm("nop");
+      asm("nop");
+      asm("nop");
+      asm("nop");
+      asm("nop");
+      asm("nop");
+      asm("nop");
+      asm("nop");
+      asm("nop");
+    }
+  } else {
+#endif
+    rdmcycle(&current);
+    later = current + usec * (F_CPU/1000000);
+    if (later > current) { // usual case
       while (later > current) {
-	rdmcycle(&current);
+        rdmcycle(&current);
       }
     }
-  else // wrap. Though this is unlikely to be hit w/ 64-bit mcycle
+    else // wrap. Though this is unlikely to be hit w/ 64-bit mcycle
     {
       while (later < current) {
-	rdmcycle(&current);
+        rdmcycle(&current);
       }
       while (current < later) {
-	rdmcycle(&current);
+        rdmcycle(&current);
       }
     }
+#if F_CPU==16000000
+  }
+#endif
 }
 
 __END_DECLS
