@@ -64,6 +64,31 @@ uint64_t divide64_using_inverse(uint64_t n, int_inverse *inv);
 }
 
 /**
+ * Use asm to prevent GCC from performing loop unrolling even though the flags
+ * corresponding to this behaviour explicitly say don't do so. Otherwise, innocent
+ * call to the inlined delayMicroseconds(10) is expressed in about 0.35KB of
+ * code size.
+ */
+#define usdelay16mz(usec) {                                   \
+  uint32_t cnt = usec;                                        \
+  __asm__ __volatile__ ("1:\n\t"                              \
+                       "nop\n\t"                              \
+                       "nop\n\t"                              \
+                       "nop\n\t"                              \
+                       "nop\n\t"                              \
+                       "nop\n\t"                              \
+                       "nop\n\t"                              \
+                       "nop\n\t"                              \
+                       "nop\n\t"                              \
+                       "nop\n\t"                              \
+                       "nop\n\t"                              \
+                       "nop\n\t"                              \
+                       "addi  %[cnt], %[cnt], -1\n\t"         \
+                       "bnez  %[cnt], 1b\n\t"                 \
+                        : [cnt] "+r" (cnt));                  \
+}
+
+/**
  * \brief Returns the number of milliseconds since the board began running the current program.
  *
  * \return Number of milliseconds since the program started (uint32_t)
@@ -98,45 +123,30 @@ static inline void delayMicroseconds(uint32_t usec) {
   }
   uint64_t current, later;
 #if F_CPU==16000000
-  if (usec <= 10) {
+  if (usec <= 4) {
     /**
      * The rdmcycle() takes 10 cycles or ~630ns to complete at 16MHz CPU clk.
-     * Togeter with 64bit arithmetics it led to low accuracy and high jitter
-     * for below 10 usec delay values. Replacing the rdmcycle() polling with
-     * "nop" sequence solved the problem.
+     * Together with 64bit arithmetics it led to low accuracy and high jitter
+     * for below 4 usec delay values. Replacing the rdmcycle() polling with
+     * "nop" sequence improved the situation.
      *
-     * Test results (excluding GPIO overhead of about 1.9us when measured
-     * with "GPIO_REG(GPIO_OUTPUT_VAL) ^= (1 << PIN_3_OFFSET)"):
+     * Test results (excluding GPIO overhead of about 1.3us x 2 when measured
+     * with "GPIO_REG(GPIO_OUTPUT_VAL) ^= (1 << PIN_3_OFFSET)")
      *
-     * usec      "nop"        "rdmcycle()"
-     *  1         0.9          1.2 - 1.4
-     *  2         2            2.2 - 2.5
-     *  4         4            4.1 - 4.4
-     *  10        10.4         10.5
+     * usec      "nop"        "rdmcycle()"    "rdmcycle() w/o overhead"
+     *  1         1.13         1.6 - 2.2        1.6 - 2.2
+     *  2         2.3          2.9 - 3.1        2.2 - 2.4
+     *  3         3.1          4.07             2.9 - 3.5
+     *  4         4            5.2              3.8 - 4
+     *  5         4.8          5.8              5.2
+     *  10        9            10.8             10.2
      */
-    for (uint32_t i = 0; i < usec; i++) {
-      asm("nop");
-      asm("nop");
-      asm("nop");
-      asm("nop");
-      asm("nop");
-      asm("nop");
-      asm("nop");
-      asm("nop");
-      asm("nop");
-      asm("nop");
-      asm("nop");
-      asm("nop");
-      asm("nop");
-      asm("nop");
-      asm("nop");
-      asm("nop");
-      asm("nop");
-    }
+     usdelay16mz(usec);
   } else {
 #endif
     rdmcycle(&current);
-    later = current + usec * (F_CPU/1000000);
+    // Minus 12 cycles to compensate rdmcycle() loop overhead
+    later = current + usec * (F_CPU/1000000) - 12;
     if (later > current) { // usual case
       while (later > current) {
         rdmcycle(&current);
