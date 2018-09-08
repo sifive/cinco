@@ -109,19 +109,6 @@ delay(uint32_t dwMs) {
   uint64_t current, later;
   rdmcycle(&current);
   later = current + dwMs * (F_CPU/1000);
-  if (later > current) // usual case
-    {
-      while (later > current) {
-        rdmcycle(&current);
-      }
-    }
-  else // wrap. Though this is unlikely to be hit w/ 64-bit mcycle
-    {
-      while (later < current) {
-        rdmcycle(&current);
-      }
-      while (current < later) {
-        rdmcycle(&current);
-      }
-    }
+  while (later > current)
+    rdmcycle(&current);
 }
