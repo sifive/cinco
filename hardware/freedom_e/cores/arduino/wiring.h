@@ -147,20 +147,8 @@ static inline void delayMicroseconds(uint32_t usec) {
     rdmcycle(&current);
     // Minus 12 cycles to compensate rdmcycle() loop overhead
     later = current + usec * (F_CPU/1000000) - 12;
-    if (__builtin_expect(!!(later > current), 1)) { // usual case
-      while (later > current) {
-        rdmcycle(&current);
-      }
-    }
-    else // wrap. Though this is unlikely to be hit w/ 64-bit mcycle
-    {
-      while (later < current) {
-        rdmcycle(&current);
-      }
-      while (current < later) {
-        rdmcycle(&current);
-      }
-    }
+    while (later > current)
+      rdmcycle(&current);
 #if F_CPU==16000000
   }
 #endif
