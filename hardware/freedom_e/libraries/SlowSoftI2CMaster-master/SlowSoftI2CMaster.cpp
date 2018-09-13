@@ -19,16 +19,21 @@
 
 #include <SlowSoftI2CMaster.h>
 
-SlowSoftI2CMaster::SlowSoftI2CMaster(uint8_t sda, uint8_t scl) {
+SlowSoftI2CMaster::SlowSoftI2CMaster(uint8_t sda, uint8_t scl, uint32_t clock) {
   _sda = sda;
   _scl = scl;
   _pullup = false;
+  _clock = clock;
+  // clock rate to microseconds
+  _delay = 1000 / _clock;
 }
 
-SlowSoftI2CMaster::SlowSoftI2CMaster(uint8_t sda, uint8_t scl, bool pullup) {
+SlowSoftI2CMaster::SlowSoftI2CMaster(uint8_t sda, uint8_t scl, bool pullup, uint32_t clock) {
   _sda = sda;
   _scl = scl;
   _pullup = pullup;
+  _clock = clock;
+  _delay = 1000 / _clock;
 }
 // Init function. Needs to be called once in the beginning.
 // Returns false if SDA or SCL are low, which probably means 
@@ -47,7 +52,7 @@ bool SlowSoftI2CMaster::i2c_init(void) {
 // Return: true if the slave replies with an "acknowledge", false otherwise
 bool SlowSoftI2CMaster::i2c_start(uint8_t addr) {
   setLow(_sda);
-  delayMicroseconds(DELAY);
+  delayMicroseconds(_delay);
   setLow(_scl);
   return i2c_write(addr);
 }
@@ -69,18 +74,18 @@ bool SlowSoftI2CMaster::i2c_start_wait(uint8_t addr) {
 bool SlowSoftI2CMaster::i2c_rep_start(uint8_t addr) {
   setHigh(_sda);
   setHigh(_scl);
-  delayMicroseconds(DELAY);
+  delayMicroseconds(_delay);
   return i2c_start(addr);
 }
 
 // Issue a stop condition, freeing the bus.
 void SlowSoftI2CMaster::i2c_stop(void) {
   setLow(_sda);
-  delayMicroseconds(DELAY);
+  delayMicroseconds(_delay);
   setHigh(_scl);
-  delayMicroseconds(DELAY);
+  delayMicroseconds(_delay);
   setHigh(_sda);
-  delayMicroseconds(DELAY);
+  delayMicroseconds(_delay);
 }
 
 // Write one byte to the slave chip that had been addressed
@@ -90,16 +95,16 @@ bool SlowSoftI2CMaster::i2c_write(uint8_t value) {
   for (uint8_t curr = 0X80; curr != 0; curr >>= 1) {
     if (curr & value) setHigh(_sda); else  setLow(_sda); 
     setHigh(_scl);
-    delayMicroseconds(DELAY);
+    delayMicroseconds(_delay);
     setLow(_scl);
   }
   // get Ack or Nak
   setHigh(_sda);
   setHigh(_scl);
-  delayMicroseconds(DELAY/2);
+  delayMicroseconds(_delay);
   uint8_t ack = digitalRead(_sda);
   setLow(_scl);
-  delayMicroseconds(DELAY/2);  
+  delayMicroseconds(_delay);  
   setLow(_sda);
   return ack == 0;
 }
@@ -111,16 +116,16 @@ uint8_t SlowSoftI2CMaster::i2c_read(bool last) {
   setHigh(_sda);
   for (uint8_t i = 0; i < 8; i++) {
     b <<= 1;
-    delayMicroseconds(DELAY);
+    delayMicroseconds(_delay);
     setHigh(_scl);
     if (digitalRead(_sda)) b |= 1;
     setLow(_scl);
   }
   if (last) setHigh(_sda); else setLow(_sda);
   setHigh(_scl);
-  delayMicroseconds(DELAY/2);
+  delayMicroseconds(_delay);
   setLow(_scl);
-  delayMicroseconds(DELAY/2);  
+  delayMicroseconds(_delay);  
   setLow(_sda);
   return b;
 }

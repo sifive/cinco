@@ -14,11 +14,11 @@
 
 #include <SlowSoftWire.h>
 
-SlowSoftWire::SlowSoftWire(uint8_t sda, uint8_t scl): 
-  si2c(sda, scl)  { }
+SlowSoftWire::SlowSoftWire(uint8_t sda, uint8_t scl, uint32_t clock): 
+  si2c(sda, scl, clock) { }
 
-SlowSoftWire::SlowSoftWire(uint8_t sda, uint8_t scl, bool internal_pullup): 
-  si2c(sda, scl, internal_pullup)  { }
+SlowSoftWire::SlowSoftWire(uint8_t sda, uint8_t scl, bool internal_pullup, uint32_t clock): 
+  si2c(sda, scl, internal_pullup, clock) { }
 
 void SlowSoftWire::begin(void) {
   rxBufferIndex = 0;

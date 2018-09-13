@@ -16,8 +16,8 @@ private:
   uint8_t error;
   SlowSoftI2CMaster si2c;
 public:
-  SlowSoftWire(uint8_t sda, uint8_t scl);
-  SlowSoftWire(uint8_t sda, uint8_t scl, bool internal_pullup);
+  SlowSoftWire(uint8_t sda, uint8_t scl, uint32_t clock = 250);
+  SlowSoftWire(uint8_t sda, uint8_t scl, bool internal_pullup, uint32_t clock = 250);
   void begin(void);
   void end(void);
   void setClock(uint32_t _);
