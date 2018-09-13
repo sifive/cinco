@@ -108,16 +108,7 @@ void
 delay(uint32_t dwMs) {
   uint64_t current, later;
   rdmcycle(&current);
-#if F_CPU==320000000
-  /**
-   * It turned out that ~320MHz is actually 306MHz, since the 1000 usec delay
-   * is expressed in 1046 usec measured by oscilloscope. This fix is a quick
-   * workaround until more appropriate solution will be found.
-   */
-  later = current + dwMs * 306000;
-#else
   later = current + dwMs * (F_CPU/1000);
-#endif
   while (later > current)
     rdmcycle(&current);
 }
