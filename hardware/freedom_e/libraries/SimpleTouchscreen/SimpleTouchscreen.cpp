@@ -93,8 +93,10 @@ void SimpleTouchscreen::read() {
 
   int sumx = 0, tmpx = 0;
   int sumy = 0, tmpy = 0;
-  int minx = 0x8000, maxx = 0;
-  int miny = 0x8000, maxy = 0;
+  int minx1 = 0x8000, maxx1 = 0;
+  int minx2 = 0x8000, maxx2 = 0;
+  int miny1 = 0x8000, maxy1 = 0;
+  int miny2 = 0x8000, maxy2 = 0;
   int samples = 0;
 
   SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
@@ -106,14 +108,30 @@ void SimpleTouchscreen::read() {
 
       sumx += tmpx;
       sumy += tmpy;
-      if (tmpx < minx)
-        minx = tmpx;
-      if (tmpx > maxx)
-        maxx = tmpx;
-      if (tmpy < miny)
-        miny = tmpy;
-      if (tmpy > maxy)
-        maxy = tmpy;
+      if (tmpx < minx1) {
+        minx2 = minx1;
+        minx1 = tmpx;
+      } else if (tmpx < minx2) {
+        minx2 = tmpx;
+      }
+      if (tmpx > maxx1) {
+        maxx2 = maxx1;
+        maxx1 = tmpx;
+      } else if (tmpx > maxx2) {
+        maxx2 = tmpx;
+      }
+      if (tmpy < miny1) {
+        miny2 = miny1;
+        miny1 = tmpy;
+      } else if (tmpy < miny2) {
+        miny2 = tmpy;
+      }
+      if (tmpy > maxy1) {
+        maxy2 = maxy1;
+        maxy1 = tmpy;
+      } else if (tmpy > maxy2) {
+        maxy2 = tmpy;
+      }
       samples++;
   }
   digitalWrite(_pinSS, HIGH);
@@ -122,8 +140,8 @@ void SimpleTouchscreen::read() {
   if (samples != SAMPLES)
     return;
 
-  _x = (sumx-minx-maxx) / GOOD_SAMPLES;
-  _y = (sumy-miny-maxy) / GOOD_SAMPLES;
+  _x = (sumx - minx1 - minx2 - maxx1 - maxx2) / GOOD_SAMPLES;
+  _y = (sumy - miny1 - miny2 - maxy1 - maxy2) / GOOD_SAMPLES;
 
   if (_calibrate)
     return;

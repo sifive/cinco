@@ -51,8 +51,8 @@ void setup() {
   ts.begin();
   setRotation(LANDSCAPE_270);
   lcd.fillScreen(ILI9341_BLACK);
-  bt.initButton(&lcd, 40, 25, 70, 40, ILI9341_YELLOW,
-                ILI9341_RED, ILI9341_WHITE, "Clear", 2);
+  bt.initButton(&lcd, 28, 20, 50, 30, ILI9341_YELLOW,
+                ILI9341_RED, ILI9341_WHITE, "Clr", 2);
   bt.drawButton();
 }
 
@@ -69,5 +69,3 @@ void loop() {
     }
   }
 }
-
-

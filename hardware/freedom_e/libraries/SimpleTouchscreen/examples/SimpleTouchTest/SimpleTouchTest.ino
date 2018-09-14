@@ -39,7 +39,6 @@ SimpleTouchscreen ts = SimpleTouchscreen(T_IRQ, T_SS);
 
 Adafruit_GFX_Button bt;
 
-byte screen = 1;
 word x, y;
 
 void setRotation (byte rotation) {
@@ -84,12 +83,12 @@ void loop() {
 void paintResults() {
   lcd.setTextColor(ILI9341_BLACK);
   lcd.setTextSize(2);
-  lcd.fillRoundRect(20, 200, 90, 25, 10, ILI9341_YELLOW);
-  lcd.setCursor(25, 205);
+  lcd.fillRoundRect(20, 120, 90, 25, 10, ILI9341_YELLOW);
+  lcd.setCursor(25, 125);
   lcd.print("x=");
   lcd.print(x);
-  lcd.fillRoundRect(120, 200, 90, 25, 10, ILI9341_YELLOW);
-  lcd.setCursor(125, 205);
+  lcd.fillRoundRect(120, 120, 90, 25, 10, ILI9341_YELLOW);
+  lcd.setCursor(125, 125);
   lcd.print("y=");
   lcd.print(y);
 }

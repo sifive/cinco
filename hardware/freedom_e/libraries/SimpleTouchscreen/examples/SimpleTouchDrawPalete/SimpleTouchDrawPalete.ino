@@ -37,11 +37,14 @@
 Adafruit_ILI9341 lcd = Adafruit_ILI9341(TFT_CS, TFT_DC);
 SimpleTouchscreen ts = SimpleTouchscreen(T_IRQ, T_SS);
 
-#define BUTTONS 5
+#define BUTTONS 7
 
-char btLabels[BUTTONS][4]  = {"Clr", "", "", "", "" };
-uint16_t btColors[BUTTONS] = { ILI9341_BLACK, ILI9341_RED, ILI9341_BLUE, ILI9341_YELLOW, ILI9341_CYAN, };
-Adafruit_GFX_Button bt[5];
+char btLabels[BUTTONS][4]  = { "Clr", "", "", "", "", "", "", };
+uint16_t btColors[BUTTONS] = { ILI9341_BLACK, ILI9341_RED,
+                               ILI9341_GREEN, ILI9341_BLUE,
+                               ILI9341_YELLOW, ILI9341_CYAN,
+                               ILI9341_MAGENTA, };
+Adafruit_GFX_Button bt[BUTTONS];
 
 int color = ILI9341_YELLOW;
 
@@ -61,8 +64,8 @@ void setup() {
   ts.begin();
   setRotation(LANDSCAPE_90);
   for (int i = 0; i < BUTTONS; i++)
-    bt[i].initButton(&lcd, 30, 25 + (i * 45), 50, 40, ILI9341_WHITE,
-                     btColors[i], ILI9341_WHITE, btLabels[i], 2);
+    bt[i].initButton(&lcd, 320 - 20, 15 + (i * 35), 40, 30,
+                     ILI9341_WHITE, btColors[i], ILI9341_WHITE, btLabels[i], 2);
   initScreen();
 }
 

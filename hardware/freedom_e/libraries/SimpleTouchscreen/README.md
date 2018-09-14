@@ -2,6 +2,9 @@
 
 The simple touch screen library for SPI "2.8 TFT SPI 240x320 V1.1" LCD display
 panel like [https://www.amazon.com/HiLetgo-240X320-Resolution-Display-ILI9341/dp/B073R7BH1B](https://www.amazon.com/HiLetgo-240X320-Resolution-Display-ILI9341/dp/B073R7BH1B)
+
+![alt text](DSC_0058.JPG)
+
 - Calibrated for SPI "2.8 TFT SPI 240x320 V1.1" ILI9341 LCD display panel bundled
 with XPT2046 touchscreen controller.
 - Returns raw (in touchscreen resolution) or normilized (in LCD  resolution) X and Y reading.

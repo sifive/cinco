@@ -74,8 +74,8 @@
 #define IS_LANDSCAPE(rotation) (rotation & 1)
 
 // Reading accuracy
-#define SAMPLES  6 // keep it power of 2 + 2
-#define GOOD_SAMPLES (SAMPLES - 2)
+#define SAMPLES 8 // keep it power of 2 + 4
+#define GOOD_SAMPLES (SAMPLES - 4)
 
 class SimpleTouchscreen {
   int16_t _x, _y;

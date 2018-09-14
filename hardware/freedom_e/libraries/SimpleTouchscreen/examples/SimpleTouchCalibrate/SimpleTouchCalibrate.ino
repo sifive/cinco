@@ -49,12 +49,12 @@ void setRotation (byte rotation) {
 void paintResults() {
   lcd.setTextColor(ILI9341_BLACK);
   lcd.setTextSize(2);
-  lcd.fillRoundRect(20, 200, 90, 25, 10, ILI9341_YELLOW);
-  lcd.setCursor(25, 205);
+  lcd.fillRoundRect(20, 100, 90, 25, 10, ILI9341_YELLOW);
+  lcd.setCursor(25, 105);
   lcd.print("x=");
   lcd.print(x);
-  lcd.fillRoundRect(120, 200, 90, 25, 10, ILI9341_YELLOW);
-  lcd.setCursor(125, 205);
+  lcd.fillRoundRect(120, 100, 90, 25, 10, ILI9341_YELLOW);
+  lcd.setCursor(125, 105);
   lcd.print("y=");
   lcd.print(y);
 }
@@ -75,4 +75,3 @@ void loop() {
     paintResults();
   }
 }
-
