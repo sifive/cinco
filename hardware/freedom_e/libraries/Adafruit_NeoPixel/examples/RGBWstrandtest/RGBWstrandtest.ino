@@ -259,3 +259,6 @@ uint8_t blue(uint32_t c) {
   return (c);
 }
 
+#if defined(FREEDOM_E300_HIFIVE1)
+void* __dso_handle;
+#endif // FREEDOM_E300_HIFIVE1

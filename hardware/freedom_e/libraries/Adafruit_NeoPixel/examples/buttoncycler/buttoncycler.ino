@@ -163,3 +163,7 @@ uint32_t Wheel(byte WheelPos) {
   WheelPos -= 170;
   return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
 }
+
+#if defined(FREEDOM_E300_HIFIVE1)
+void* __dso_handle;
+#endif // FREEDOM_E300_HIFIVE1

@@ -1969,6 +1969,86 @@ void Adafruit_NeoPixel::show(void) {
       first = 0;
     }
   }
+#elif defined(FREEDOM_E300_HIFIVE1)
+/*
+  Hifive1 implementation uses bit-banging on GPIO register
+  logic with timing approximated via nanosecond per cycle with
+  +/- timing offset introduced by delays from branching determined
+  by measuring off of scope.
+ */
+  uint8_t *p   = pixels,
+          *end = p + numBytes, pix, mask;
+
+#ifdef NEO_KHZ400 // 800 KHz check needed only if 400 KHz support enabled
+  if(is800KHz) {
+#endif
+
+// for WS2812B
+#if F_CPU == 256000000
+#define TIME1_HIGH (800 - 110)
+#define TIME1_LOW  (450 - 150)
+#define TIME0_HIGH (400 - 120)
+#define TIME0_LOW  (850 - 130)
+#elif F_CPU == 320000000
+#define TIME1_HIGH (800 - 120)
+#define TIME1_LOW  (450 - 120)
+#define TIME0_HIGH (400 - 120)
+#define TIME0_LOW  (850 - 150)
+#else
+/* It appears that the GPIO performance on HiFive1 may be the bottleneck
+   to make 16MHz clock speed working. When we use sw and amoxor instruction
+   to write to GPIO register, we can only write high and low on interval
+   ~600ns and with branch instructions it is too long to work reliably.
+ */
+#error "CPU SPEED NOT SUPPORTED DUE TO HARDWARE LIMITATION"
+#endif
+
+// for WS2812, commented out like NRF52
+//#if F_CPU == 256000000
+//#define TIME1_HIGH (700 - 110)
+//#define TIME1_LOW  (600 - 130)
+//#define TIME0_HIGH (350 - 120)
+//#define TIME0_LOW  (800 - 130)
+//#elif F_CPU == 320000000
+//#define TIME1_HIGH (700 - 120)
+//#define TIME1_LOW  (600 - 130)
+//#define TIME0_HIGH (350 - 120)
+//#define TIME0_LOW  (800 - 150)
+//#else
+//#error "CPU SPEED NOT SUPPORTED DUE TO HARDWARE LIMITATION"
+//#endif
+
+    const unsigned nsec_per_cycle = ((1000 + (F_CPU / 1000000) / 2) / (F_CPU / 1000000));
+
+    uint32_t t1h = TIME1_HIGH / nsec_per_cycle;
+    uint32_t t1l = TIME1_LOW / nsec_per_cycle;
+    uint32_t t0h = TIME0_HIGH / nsec_per_cycle;
+    uint32_t t0l = TIME0_LOW / nsec_per_cycle;
+
+    uint32_t pinBitMask = digitalPinToBitMask(pin);
+    while(p < end) {
+      pix = *p++;
+      for(mask = 0x80; mask; mask >>= 1) {
+        if(pix & mask) {
+          GPIO_REG(GPIO_OUTPUT_VAL) |= pinBitMask;
+          delayCycles(t1h);
+
+          GPIO_REG(GPIO_OUTPUT_VAL) &= ~(pinBitMask);
+          delayCycles(t1l);
+        } else {
+          GPIO_REG(GPIO_OUTPUT_VAL) |= pinBitMask;
+          delayCycles(t0h);
+
+          GPIO_REG(GPIO_OUTPUT_VAL) &= ~(pinBitMask);
+          delayCycles(t0l);
+        }
+      }
+    }
+#ifdef NEO_KHZ400
+  } else { // 400 kHz bitstream
+    // ToDo!
+  }
+#endif // NEO_KHZ400
 
 #else 
 #error Architecture not supported

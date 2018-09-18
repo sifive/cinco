@@ -45,3 +45,7 @@ void loop() {
 
   }
 }
+
+#if defined(FREEDOM_E300_HIFIVE1)
+void* __dso_handle;
+#endif // FREEDOM_E300_HIFIVE1

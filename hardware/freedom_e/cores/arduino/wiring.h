@@ -154,6 +154,33 @@ static inline void delayMicroseconds(uint32_t usec) {
 #endif
 }
 
+#define rdcyclelo() ({                        \
+  uint32_t lo;                                \
+  __asm__ __volatile__ ("csrr %0, mcycle\n\t" \
+                        : "=r" (lo));         \
+  lo;                                         \
+})
+
+static inline void delayCycles(uint32_t) __attribute__((always_inline, unused));
+static inline void delayCycles(uint32_t cycles) {
+  volatile uint32_t current;
+  uint32_t later;
+  current = rdcyclelo();
+  later = current + cycles;
+  if (later > current) { // usual case
+    while (later > current) {
+      current = rdcyclelo();
+    }
+  } else { // wrap around case
+    while (later < current) {
+      current = rdcyclelo();
+    }
+    while (current < later) {
+      current = rdcyclelo();
+    }
+  }
+}
+
 __END_DECLS
 
 #endif /* _WIRING_ */
