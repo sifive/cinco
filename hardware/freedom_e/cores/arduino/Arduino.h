@@ -68,6 +68,10 @@ typedef void (*voidFuncPtr)( void ) ;
 #include "HardwareSerial.h"
 #include "wiring_pulse.h"
 
+// Tone function prototypes
+void tone(uint8_t _pin, unsigned int frequency, unsigned long duration = 0);
+void noTone(uint8_t _pin);
+
 #endif // __cplusplus
 
 // Include board variant
