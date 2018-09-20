@@ -25,6 +25,8 @@
 // Modified by Shadi Kamal <shadi.kamal@wdc.com>, 2018
 //---------------------------------------------------------------------------
 
+static const uint8_t RX_BUFFER_SIZE = 64;  // power of 2 for optimal speeds
+static const uint8_t MAX_NUM_MUART = 20;
 
 class SoftwareSerial32 : public Stream
 {
@@ -34,6 +36,7 @@ class SoftwareSerial32 : public Stream
 public:
   SoftwareSerial32(uint8_t receivePin, uint8_t transmitPin)
   {
+    // TODO: Block generation of more than MAX_NUM_MUART UART instances
     rxPin = receivePin;
     txPin = transmitPin;
     _isr  = (isr_t) NULL;
@@ -56,6 +59,8 @@ public:
   void attachInterrupt( isr_t fn );
   void detachInterrupt() { attachInterrupt( (isr_t) NULL ); };
 
+          uint32_t bitTimes( uint32_t dt );
+
 private:
            uint8_t  rxPin, txPin;
   volatile uint32_t *rxPort;
@@ -63,15 +68,31 @@ private:
   uint32_t _baudRate;
   isr_t    _isr;
 
-  static void rxChar( uint8_t rx ); // buffer or dispatch one received character
+  void rxChar( uint8_t rx ); // buffer or dispatch one received character
 
   bool checkRxTime();
 
-  static void startChar();
+  void startChar();
+
+  // Member variables
+  SoftwareSerial32 *listener = (SoftwareSerial32 *) NULL;
+  uint32_t txBitWidth;
+  uint32_t rxWindowWidth;
+  uint32_t bitsPerTick;
+  uint8_t shiftScaler;
+  uint8_t rxState;  // 0: got start bit; >0: bits rcvd
+  uint64_t prev_t0; // mcycle is a 64-bit register which indicates the time t0 in cycles
+  uint8_t rxMask;   // bit mask for building received character
+  uint8_t rxValue;  // character being built
+  uint8_t rxBuffer[RX_BUFFER_SIZE];
+  uint8_t rxHead;   // buffer pointer input
+  uint8_t rxTail;   // buffer pointer output
+  uint32_t rxBitMask, txBitMask;
+  volatile uint32_t *txPort;  // Hifive1 has 32-bit registers
 
 public:
   // visible only so the ISRs can call it...
-  static void rxISR( uint32_t port_input_register );
+  static void rxISR( uint32_t pin_num );
 
   //#define NEOSWSERIAL_EXTERNAL_PCINT // uncomment to use your own PCINT ISRs
 };
