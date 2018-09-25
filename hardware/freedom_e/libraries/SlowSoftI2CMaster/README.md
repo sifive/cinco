@@ -18,6 +18,16 @@ This library has the following features:
 * **slow** (70 kHz on a Zero, 45 kHz on an UNO)
 * optional <code>Wire</code> library compatible interface
 * LGPL license
+* 
+* Updated 26/9/2018:
+* Added support for custom clock rates.
+* After testing on the RiscV based HiFive1 board by SiFive.
+* The max I2C clock rates and limitations are:
+* 	140 KHz at 320 MHz CPU Clock on HiFive1
+* 	110 KHz at 256 MHz CPU Clock on HiFive1
+* Higher rates than these currently aren't supported.
+*(These limitations were tested by using the HiFive1 board as a Master device
+* and using an Uno board as a hardware slave):
 
 ## Usage
 

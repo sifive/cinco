@@ -19,32 +19,50 @@
 
 #include <SlowSoftI2CMaster.h>
 
-SlowSoftI2CMaster::SlowSoftI2CMaster(uint8_t sda, uint8_t scl, uint32_t clock) {
-  _sda = sda;
-  _scl = scl;
-  _pullup = false;
-  _clock = clock;
-  // clock rate to microseconds
-  _delay = 1000 / _clock;
-}
+#if defined (FREEDOM_E300_HIFIVE1)
+  #if (F_CPU == 320000000)
+    #define SKEW 7
+  #elif (F_CPU == 256000000)
+    #define SKEW 9
+  #else
+    #define SKEW = 1
+  #endif
+#elif defined (__AVR_ATmega328P__)
+  #define SKEW 23
+#else
+  #define SKEW = 1
+#endif
 
-SlowSoftI2CMaster::SlowSoftI2CMaster(uint8_t sda, uint8_t scl, bool pullup, uint32_t clock) {
+SlowSoftI2CMaster::SlowSoftI2CMaster(uint8_t sda, uint8_t scl, bool pullup) {
   _sda = sda;
   _scl = scl;
   _pullup = pullup;
-  _clock = clock;
-  _delay = 1000 / _clock;
 }
+
 // Init function. Needs to be called once in the beginning.
 // Returns false if SDA or SCL are low, which probably means 
 // a I2C bus lockup or that the lines are not pulled up.
 bool SlowSoftI2CMaster::i2c_init(void) {
+  _delay = 2;
   digitalWrite(_sda, LOW);
   digitalWrite(_scl, LOW);
   setHigh(_sda);
   setHigh(_scl);
   if (digitalRead(_sda) == LOW || digitalRead(_scl) == LOW) return false;
   return true;
+}
+
+// Set clock functions: clock is in Hz.
+// The function is used for setting a custom clock.
+// SKEW is the deviation of the clock input from the desired clock.
+// If input clock is below max I2C clock rate then _delay = 2.
+// 2 is the lowest delay that doesn't produce errors during a stress test.
+void SlowSoftI2CMaster::setClock(uint32_t clock)
+{
+  if(clock < (1000000 / SKEW)) // Maximum possible I2C clock rate
+    _delay = (1000000 / clock) - SKEW;
+  else
+    _delay = 2;
 }
 
 // Start transfer function: <addr> is the 8-bit I2C address (including the R/W
@@ -147,4 +165,3 @@ void SlowSoftI2CMaster::setHigh(uint8_t pin) {
       pinMode(pin, INPUT);
     interrupts();
 }
-

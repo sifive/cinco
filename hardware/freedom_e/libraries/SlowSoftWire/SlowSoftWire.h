@@ -16,15 +16,13 @@ private:
   uint8_t error;
   SlowSoftI2CMaster si2c;
 public:
-  SlowSoftWire(uint8_t sda, uint8_t scl, uint32_t clock = 250);
-  SlowSoftWire(uint8_t sda, uint8_t scl, bool internal_pullup, uint32_t clock = 250);
+  SlowSoftWire(uint8_t sda, uint8_t scl, bool internal_pullup = false);
   void begin(void);
   void end(void);
-  void setClock(uint32_t _);
+  void setClock(uint32_t clock);
   void beginTransmission(uint8_t address);
   void beginTransmission(int address);
-  uint8_t endTransmission(uint8_t sendStop);
-  uint8_t endTransmission(void);
+  uint8_t endTransmission(uint8_t sendStop = true);
   size_t write(uint8_t data);
   size_t write(const uint8_t *data, size_t quantity);
   uint8_t requestFrom(uint8_t address, uint8_t quantity,

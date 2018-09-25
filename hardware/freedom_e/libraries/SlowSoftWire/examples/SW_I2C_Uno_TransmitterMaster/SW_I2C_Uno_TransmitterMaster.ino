@@ -1,4 +1,4 @@
-/* Hardware I2C Uno Stress Test Slave Recieve
+/* Hardware I2C Uno Transmitter Test Master
  * By Roy Weisfeld <roi.weisfeld@wdc.com>
  *
  * Example for basic I2C Transmitting using Software I2C Library with Uno board

@@ -29,9 +29,9 @@
 
 class SlowSoftI2CMaster {
  public:
-  SlowSoftI2CMaster(uint8_t sda, uint8_t scl, uint32_t clock = 250);
-  SlowSoftI2CMaster(uint8_t sda, uint8_t scl, bool internal_pullup, uint32_t clock = 250);
+  SlowSoftI2CMaster(uint8_t sda, uint8_t scl, bool internal_pullup = false);
   bool i2c_init(void);
+  void setClock(uint32_t clock);
   bool i2c_start(uint8_t addr);
   bool i2c_start_wait(uint8_t addr);
   bool i2c_rep_start(uint8_t addr);
@@ -45,7 +45,6 @@ class SlowSoftI2CMaster {
   void setLow(uint8_t pin);
   uint8_t _sda;
   uint8_t _scl;
-  uint32_t _clock; // in KHz
   uint32_t _delay; // in microseconds
   bool _pullup;
 };

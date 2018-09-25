@@ -14,11 +14,8 @@
 
 #include <SlowSoftWire.h>
 
-SlowSoftWire::SlowSoftWire(uint8_t sda, uint8_t scl, uint32_t clock): 
-  si2c(sda, scl, clock) { }
-
-SlowSoftWire::SlowSoftWire(uint8_t sda, uint8_t scl, bool internal_pullup, uint32_t clock): 
-  si2c(sda, scl, internal_pullup, clock) { }
+SlowSoftWire::SlowSoftWire(uint8_t sda, uint8_t scl, bool internal_pullup):
+  si2c(sda, scl, internal_pullup) { }
 
 void SlowSoftWire::begin(void) {
   rxBufferIndex = 0;
@@ -29,7 +26,8 @@ void SlowSoftWire::begin(void) {
   si2c.i2c_init();
 }
   
-void  SlowSoftWire::setClock(uint32_t _) {
+void  SlowSoftWire::setClock(uint32_t clock) {
+  si2c.setClock(clock);
 }
 
 void  SlowSoftWire::beginTransmission(uint8_t address) {
@@ -55,14 +53,6 @@ uint8_t  SlowSoftWire::endTransmission(uint8_t sendStop)
   }
   error = 0;
   return transError;
-}
-
-//	This provides backwards compatibility with the original
-//	definition, and expected behaviour, of endTransmission
-//
-uint8_t  SlowSoftWire::endTransmission(void)
-{
-  return endTransmission(true);
 }
 
 size_t  SlowSoftWire::write(uint8_t data) {

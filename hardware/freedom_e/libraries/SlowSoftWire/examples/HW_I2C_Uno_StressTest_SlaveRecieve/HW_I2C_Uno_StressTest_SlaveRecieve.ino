@@ -15,30 +15,33 @@
 
 #include <Wire.h>
 
+#define ITERATIONS 10 //Change value here for more itirations
+#define CHARS 256
+
 uint8_t temp;
-uint8_t success[256];
-uint8_t fails = 0;
+uint16_t success[256];
+uint16_t fails = 0;
 int counter = 0;
 int iteration = 0;
-#define ITERATIONS 10 //Change value here for more itirations
 
 void setup() {
   Wire.begin(8);
   Wire.onReceive(receiveEvent);
-  Serial.begin(9600);
-  Serial.print("Started Test");
-  Serial.println();
+  //Serial.begin(9600);
+  //Serial.print("Started Test");
+  //Serial.println();
 }
 
 void loop() {
-  if(count == ITERATIONS) { //Only starts printing results after defined itiration number
-    for(int j = 0; j < 256; j++) {
-        /*Serial.print(j); //Uncomment this block to check if you would like
+  if(iteration == ITERATIONS) { //Only starts printing results after defined itiration number
+    Serial.begin(9600);
+    for(int j = 0; j < CHARS; j++) {
+        Serial.print(j); //Uncomment this block to check if you would like
         Serial.print("\t|\t"); //To see a detailed list of where the test failed
         Serial.print(success[j]);
-        Serial.println();*/
+        Serial.println();
         if(success[j] < ITERATIONS) {
-            fails++;
+            fails +=  ITERATIONS - success[j];
           }
       }
       iteration++;
@@ -50,12 +53,12 @@ void loop() {
 }
 
 void receiveEvent(int howMany) {
-  if(count < ITERATIONS) {//Only stops reading test after defined itiration number
+  if(iteration < ITERATIONS) {//Only stops reading test after defined itiration number
     if (Wire.available() > 0) {
       temp = Wire.read();
       success[temp]++;
       counter++;
-      if(counter == 256) {
+      if(counter == CHARS) {
         iteration++;
         counter = 0;
       }
