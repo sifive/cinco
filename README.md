@@ -18,8 +18,7 @@ Please see the Getting Started Guides for more information on how to install and
 
 ## For Windows istallation ##
 
-Follow the insructions in the [https://raw.githubusercontent.com/westerndigitalcorporation/CincoWinPkg/master/README.md](https://raw.githubusercontent.com/westerndigitalcorporation/CincoWinPkg/master/README.md)
-
+Follow the insructions in the [https://github.com/westerndigitalcorporation/CincoWinPkg/blob/master/README.md](https://github.com/westerndigitalcorporation/CincoWinPkg/blob/master/README.md)
 ## For Linux and MacOS installation ##
 ### Install Arduino ###
 
