@@ -3,8 +3,8 @@
 This repository allows you to program Freedom E300 boards using the Arduino IDE.
 You can install this repository in two ways:
 
-* Using the Arduino Boards Manager (Currently supported for Linux and macOS) to download precompiled binaries
-* Manually compiling the tools (Suggested for platforms not supported by the above).
+* Using the Arduino Boards Manager to download precompiled binaries.
+* Manually compiling the tools.
 
 Follow the instructions below to install the Board support package.
 
@@ -16,25 +16,26 @@ Please see the Getting Started Guides for more information on how to install and
 
 # Setup #
 
-## Install Arduino ##
+## For Windows istallation ##
 
-Download and install Arduino IDE 1.6.12 tarball from the Arduino website. Unpack it and run their installation script as directed.
+Follow the insructions in the [https://github.com/westerndigitalcorporation/CincoWinPkg/blob/master/README.md](https://github.com/westerndigitalcorporation/CincoWinPkg/blob/master/README.md)
+## For Linux and MacOS installation ##
+### Install Arduino ###
 
-## Install the SiFive Boards ##
+Download and install Arduino IDE 1.6.12 or later tarball from the Arduino website. Unpack it and run their installation script as directed.
+
+### Install the SiFive Boards ###
 
 Use one of the following methods:
 
-### Option 1: Installing Through the Arduino IDE ###
+#### Option 1: Installing Through the Arduino IDE ####
 
-This is supported for macOS and Linux.
+Add the [https://raw.githubusercontent.com/westerndigitalcorporation/CincoWinPkg/master/package_sifive_index.json](https://raw.githubusercontent.com/westerndigitalcorporation/CincoWinPkg/master/package_sifive_index.json)
+to the Additional Boards Manager URLs in the `Preferences->Settings`.
 
-Add the [http://static.dev.sifive.com/bsp/arduino/package_sifive_index.json](http://static.dev.sifive.com/bsp/arduino/package_sifive_index.json) to the Additional Board URLs.
+#### Option 2: Install this Repo Manually ####
 
-Use the Board Manager to search for and install the "SiFive" boards.
-
-### Option 2: Install this Repo Manually ###
-
-This is generally not supported. You can use this technique to install on platforms that aren't supported by the Board Manager, or if you want to work on the code in this repository.
+** This is generally not supported. ** You can use this technique if you want to work on the code in this repository.
 
 1. Clone this Repository
 
@@ -68,31 +69,27 @@ This is generally not supported. You can use this technique to install on platfo
 If you installed the Freedom E SDK some other way, use that installation
 location instead.
 
-# Select Your Board #
+### Select Your board: ###
 
-Restart and launch the Arduino IDE.
+Select the board in the Arduino Menu `Tools->Board->HiFive1`
 
-Select the board (e.g. Freedom E300 Arty Dev Kit) on the Arduino Menu
-
-Tools->Board->Freedom E 300 Dev Kit
-
-# Select Your Toolchain #
+### Select Your Toolchain ###
 
 If you installed the tools using the Arduino Package Manager,
 select `Tools -> Tool Install Location -> Default`.
 
-If you compiled the Freedom E SDK manually,
-select `Tools -> Tool Install Location -> Manual`.
+If you compiled the Freedom E SDK manually, select
+`Tools -> Tool Install Location -> Manual`.
 
-# Select OpenOCD as the  Programmer #
+### Select OpenOCD as the Programmer ###
 
-If you installed the tools using the Arduino Package Manager,
-select `Tools->Programmer->SiFive OpenOCD`
+If you installed the tools using the Arduino Package Manager, select
+`Tools->Programmer->SiFive OpenOCD`
 
 If you installed the tools manually, select
 `Tools->Programmer-> Manual SiFive OpenOCD`
 
-# Write & Upload Your Program #
+### Write & Upload Your Program ###
 
 Select an example program and modify it as usual.
 
