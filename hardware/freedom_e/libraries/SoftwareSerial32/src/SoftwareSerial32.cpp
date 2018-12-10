@@ -381,6 +381,7 @@ void SoftwareSerial32::listen()
 #endif
 
   interrupts(); // For some reason this is turned off by default
+  set_csr(mstatus, MSTATUS_MIE);
 } // listen
 
 //----------------------------------------------------------------------------
