@@ -35,6 +35,7 @@
 //=============================================================================
 
 #include <SoftwareSerial32.h>
+//#define _SWSERIAL32_DBG
 
 #if F_CPU == 320000000L
   // 320 MHZ
@@ -82,7 +83,8 @@
   static const uint32_t CYCLES_PER_BIT_115200_256MHZ = 2222;
   static const uint32_t BITS_PER_TICK_115200_Q17_256MHZ = 59;
 
-  // TODO: Add 230400
+  static const uint32_t CYCLES_PER_BIT_230400_256MHZ    = 1111;
+  static const uint32_t BITS_PER_TICK_230400_Q10_256MHZ = 1;
 
   static const uint32_t CYCLES_PER_BIT_250000_256MHZ = 1024;
   static const uint32_t BITS_PER_TICK_250000_Q10_256MHZ = 1;
@@ -91,7 +93,7 @@
   static const uint32_t BITS_PER_TICK_500000_Q9_256MHZ = 1;
 
   static const uint32_t CYCLES_PER_BIT_1000000_256MHZ = 256;
-  static const uint32_t BUTS_PER_TICK_1000000_Q8_256MHZ = 1;
+  static const uint32_t BITS_PER_TICK_1000000_Q8_256MHZ = 1;
 
 #else
   // 16 MHZ
@@ -117,8 +119,6 @@
   static const uint32_t BITS_PER_TICK_115200_Q13_16MHZ = 59;
 
 #endif
-
-//#define _SWSERIAL32_DBG
 
 static const uint8_t WAITING_FOR_START_BIT = 0xFF;
 void attachPCINT( uint8_t );
@@ -174,7 +174,7 @@ void SoftwareSerial32::listen()
         txBitWidth = CYCLES_PER_BIT_9600_256MHZ;
         bitsPerTick = BITS_PER_TICK_9600_Q17_256MHZ;
         shiftScaler = 17;
-      #else // F_CPU == 16000000L
+      #else
         rxWindowWidth = CYCLES_PER_BIT_9600_16MHZ >> 1;
         txBitWidth = CYCLES_PER_BIT_9600_16MHZ;
         bitsPerTick = BITS_PER_TICK_9600_Q13_16MHZ;
@@ -277,6 +277,11 @@ void SoftwareSerial32::listen()
         txBitWidth = CYCLES_PER_BIT_230400_320MHZ;
         bitsPerTick = BITS_PER_TICK_230400_Q16_320MHZ;
         shiftScaler = 16;
+      #elif F_CPU == 256000000L
+        rxWindowWidth = CYCLES_PER_BIT_230400_256MHZ >> 1;
+        txBitWidth = CYCLES_PER_BIT_230400_256MHZ;
+        bitsPerTick = BITS_PER_TICK_230400_Q10_256MHZ;
+        shiftScaler = 10;
       #endif
       break;
     case 250000:
@@ -290,9 +295,17 @@ void SoftwareSerial32::listen()
     case 500000:
       #if F_CPU == 256000000L
         rxWindowWidth = CYCLES_PER_BIT_500000_256MHZ >> 1;
-        txBitWidth = CYCLES_PER_BIT_500000_256MHZ;
-        bitsPerTick = BITS_PER_TICK_500000_Q9_256MHZ;
-        shiftScaler = 9;
+        txBitWidth    = CYCLES_PER_BIT_500000_256MHZ;
+        bitsPerTick   = BITS_PER_TICK_500000_Q9_256MHZ;
+        shiftScaler   = 9;
+      #endif
+      break;
+    case 1000000:
+      #if F_CPU == 256000000L
+        rxWindowWidth = CYCLES_PER_BIT_1000000_256MHZ >> 1;
+        txBitWidth    = CYCLES_PER_BIT_1000000_256MHZ;
+        bitsPerTick   = BITS_PER_TICK_1000000_Q8_256MHZ;
+        shiftScaler   = 8;
       #endif
       break;
     default:
@@ -302,13 +315,17 @@ void SoftwareSerial32::listen()
   listener = this;
   SWUARTInstanceMap[rxPin] = this;
 
-  #if defined(_SWSERIAL32_DBG)
-  GPIO_REG(GPIO_OUTPUT_EN) |= (1 << RED_LED_OFFSET);
-  GPIO_REG(GPIO_INPUT_EN) &= ~(1 << RED_LED_OFFSET);
+#if defined(_SWSERIAL32_DBG)
+  GPIO_REG(GPIO_OUTPUT_EN)  |= (1 << RED_LED_OFFSET);
+  GPIO_REG(GPIO_INPUT_EN)   &= ~(1 << RED_LED_OFFSET);
   GPIO_REG(GPIO_OUTPUT_VAL) &= ~(1 << RED_LED_OFFSET);
-  GPIO_REG(GPIO_OUTPUT_EN) |= (1 << GREEN_LED_OFFSET);
-  GPIO_REG(GPIO_INPUT_EN) &= ~(1 << GREEN_LED_OFFSET);
-  GPIO_REG(GPIO_OUTPUT_VAL) |= (1 << GREEN_LED_OFFSET);
+  GPIO_REG(GPIO_OUTPUT_EN)  |= (1 << GREEN_LED_OFFSET);
+  GPIO_REG(GPIO_INPUT_EN)   &= ~(1 << GREEN_LED_OFFSET);
+  GPIO_REG(GPIO_OUTPUT_VAL) &= ~(1 << GREEN_LED_OFFSET);
+  GPIO_REG(GPIO_OUTPUT_EN)  |= (1 << BLUE_LED_OFFSET);
+  GPIO_REG(GPIO_INPUT_EN)   &= ~(1 << BLUE_LED_OFFSET);
+  GPIO_REG(GPIO_OUTPUT_VAL) &= ~(1 << BLUE_LED_OFFSET);
+
   Serial.println("SWUART Instance information:");
   Serial.print("\tlistener:\t");
   Serial.println((uint32_t)(listener), HEX);
@@ -328,15 +345,16 @@ void SoftwareSerial32::listen()
   Serial.println(rxMask);
   Serial.print("\trxValue:\t");
   Serial.println(rxValue);
+
   Serial.print("\trxBuffer:\t");
   Serial.print("[");
   for (int i = 0; i < RX_BUFFER_SIZE; i++) {
     Serial.print(rxBuffer[i], HEX);
-    if (i < RX_BUFFER_SIZE - 1) {
+    if (i < RX_BUFFER_SIZE - 1)
       Serial.print(", ");
-    }
   }
   Serial.println("]");
+
   Serial.print("\trxHead:\t\t");
   Serial.println(rxHead);
   Serial.print("\trxTail:\t\t");
@@ -353,14 +371,14 @@ void SoftwareSerial32::listen()
   Serial.println("=====SWUARTInstanceMap=====");
   for (int i = 0; i < MAX_NUM_MUART; i++) {
     Serial.print((uint32_t)(SWUARTInstanceMap[i]), HEX);
-    if (i < MAX_NUM_MUART - 1) {
+    if (i < MAX_NUM_MUART - 1)
       Serial.print(",\t");
-    }
-    if (i != 0 && i % 5 == 0) Serial.println();
+    if (i != 0 && i % 5 == 0)
+      Serial.println();
   }
   Serial.println();
   Serial.println();
-  #endif
+#endif
 
   interrupts(); // For some reason this is turned off by default
 } // listen
@@ -372,7 +390,8 @@ void SoftwareSerial32::ignore()
   if (listener) {
     noInterrupts();
     listener = (SoftwareSerial32 *) NULL;
-    ::detachInterrupt(digitalPinToInterrupt(rxPin)); // Call the globally defined PLIC handling detachInterrupt
+    // Call the globally defined PLIC handling detachInterrupt
+    ::detachInterrupt(digitalPinToInterrupt(rxPin));
     interrupts();
   }
 } // ignore
@@ -381,18 +400,17 @@ void SoftwareSerial32::ignore()
 
 void SoftwareSerial32::setBaudRate(uint32_t baudRate)
 {
-  if ((
-        ( baudRate ==  9600 )   ||
-        ( baudRate == 19200 )   ||
-        ( baudRate == 31250 )   ||
-        ( baudRate == 38400 )   ||
-        ( baudRate == 57600 )   ||
-        ( baudRate == 115200 )  ||
-        ( (baudRate == 250000) && (F_CPU >= 256000000L) ) ||
-        ( (baudRate == 500000) && (F_CPU >= 256000000L) ) ||
-        ( (baudRate == 1000000) && (F_CPU >= 256000000L ) )
-       )
-           &&
+  if (((baudRate ==  9600)         ||
+       (baudRate == 19200)         ||
+       (baudRate == 31250)         ||
+       (baudRate == 38400)         ||
+       (baudRate == 57600)         ||
+       (baudRate == 115200)        ||
+       ((F_CPU >= 256000000L)      &&
+         ((baudRate == 230400)     ||
+          (baudRate == 250000)     ||
+          (baudRate == 500000)     ||
+          (baudRate == 1000000)))) &&
       (_baudRate != baudRate)) {
 
     _baudRate = baudRate;
@@ -410,14 +428,12 @@ int SoftwareSerial32::available()
 
   if (avail == 0) {
     noInterrupts();
-    if (checkRxTime()) {
+    if (checkRxTime())
       avail = 1;
-    }
+
     interrupts();
   }
-
   return avail;
-
 } // available
 
 //----------------------------------------------------------------------------
@@ -454,11 +470,10 @@ void SoftwareSerial32::startChar()
 
 void SoftwareSerial32::rxISR( uint32_t pin )
 {
-  noInterrupts();
   #if defined(_SWSERIAL32_DBG)
     GPIO_REG(GPIO_OUTPUT_VAL) |= (1 << RED_LED_OFFSET);
   #endif
-
+  noInterrupts();
   uint64_t t0;
   rdmcycle(&t0);
 
@@ -470,8 +485,8 @@ void SoftwareSerial32::rxISR( uint32_t pin )
 
   if (context->rxState == WAITING_FOR_START_BIT) {
 
-    // If it looks like a start bit then initialize;
-    //   otherwise ignore the rising edge and exit.
+    // If it looks like a start bit then initialize,
+    // otherwise ignore the rising edge and exit.
 
     if (d != 0) return;   // it's high so not a start bit, exit
     context->startChar();
@@ -525,10 +540,10 @@ void SoftwareSerial32::rxISR( uint32_t pin )
   // by digitalPinToBitMask called by #::listen
   GPIO_REG(GPIO_FALL_IP) |= context->rxBitMask;
   GPIO_REG(GPIO_RISE_IP) |= context->rxBitMask;
+  interrupts();
   #if defined(_SWSERIAL32_DBG)
     GPIO_REG(GPIO_OUTPUT_VAL) &= ~(1 << RED_LED_OFFSET);
   #endif
-  interrupts();
 } // rxISR
 
 //----------------------------------------------------------------------------
@@ -675,60 +690,56 @@ void SoftwareSerial32::rxChar( uint8_t c )
 
 size_t SoftwareSerial32::write(uint8_t txChar)
 {
+  #if defined(_SWSERIAL32_DBG)
+    GPIO_REG(GPIO_OUTPUT_VAL) |= (1 << BLUE_LED_OFFSET);
+  #endif
+
   if (!txPort)
     return 0;
 
-  uint32_t width; // Cycles for one bit
   uint32_t txBit  = 0;
   uint32_t b      = 0;
   noInterrupts();
-  uint64_t t0;
+  uint64_t t0, t1;
   rdmcycle(&t0);
 
-  while (txBit++ < 9) {   // repeat for start bit + 8 data bits
-    if (b)      // if bit is set
-      *txPort |= txBitMask;     //   set TX line high
+  while (txBit++ < 9) {         // repeat for start bit + 8 data bits
+    if (b)                      // if bit is set
+      *txPort |= txBitMask;     // set TX line high
     else
-      *txPort &= ~txBitMask;    //   else set TX line low
-
-    width = txBitWidth;
+      *txPort &= ~txBitMask;    // else set TX line low
 
     // Hold the line for the bit duration
-    uint64_t t1;
-      rdmcycle(&t1);
-      while ((uint64_t)(t1 - t0) < width) {
-        // If a HW interrupt is pending while writing use rxISR to handle it 
-        // in order to be able to support the asynchronousity of a UART
-        if (read_csr(mip) & MIP_MEIP)
-        {
-          clear_csr(mip, MIP_MEIP);
-          uint8_t pin_offset = ((rxPin + 16) % 24);
-          if (pin_offset > 5)
-            pin_offset += 2;
-          pin_offset = (1 << pin_offset);
-          GPIO_REG(GPIO_FALL_IP) |= pin_offset;
-          GPIO_REG(GPIO_RISE_IP) |= pin_offset;
-          rxISR(*portInputRegister(digitalPinToPort(rxPin)));
-        } else {
-          checkRxTime();
-        }
-        rdmcycle(&t1);
+    rdmcycle(&t1);
+    while ((uint32_t)(t1 - t0) < txBitWidth) {
+      // If a HW interrupt is pending while writing use rxISR to handle it
+      // in order to be able to support the asynchronousity of a UART
+      if (read_csr(mip) & MIP_MEIP) {
+        clear_csr(mip, MIP_MEIP);
+        GPIO_REG(GPIO_FALL_IP) |= txBitMask;
+        GPIO_REG(GPIO_RISE_IP) |= txBitMask;
+        rxISR(rxPin);
+      } else {
+        checkRxTime();
       }
-    t0    += width;         // advance start time
+      rdmcycle(&t1);
+    }
+    t0    += txBitWidth;    // advance start time
     b      = txChar & 0x01; // get next bit in the character to send
     txChar = txChar >> 1;   // shift character to expose the following bit
-                 // Q: would a signed >> pull in a 1?
   }
 
   *txPort |= txBitMask;   // stop bit is high
-  uint64_t t1;
   rdmcycle(&t1);
   interrupts();
-  while ((uint64_t)(t1 - t0) < width) {
+  while ((uint32_t)(t1 - t0) < txBitWidth) {
     checkRxTime();
     rdmcycle(&t1);
   }
 
-  return 1;               // 1 character sent
+  #if defined(_SWSERIAL32_DBG)
+    GPIO_REG(GPIO_OUTPUT_VAL) &= ~(1 << BLUE_LED_OFFSET);
+  #endif
 
-} // write
+  return 1;               // 1 character sent
+}
