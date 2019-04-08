@@ -40,14 +40,14 @@ const uint32_t variant_pwm_size = sizeof(variant_pwm) / sizeof(uint32_t*);
 int_inverse f_cpu_1000_inv;
 int_inverse f_cpu_1000000_inv;
 
-void calc_inv(uint32_t n, int_inverse * res){
+void calc_inv(uint32_t n, int_inverse * res) {
   uint32_t one = ~0;
   uint32_t d = one/n;
   uint32_t r = one%n + 1;
   if (r >= n) ++d;
   if (d == 0) --d;
   uint32_t shift = 0;
-  while ((d & 0x80000000) == 0){
+  while ((d & 0x80000000) == 0) {
     d <<= 1;
     ++shift;
   }
@@ -56,7 +56,7 @@ void calc_inv(uint32_t n, int_inverse * res){
   res->shift = shift;
 }
 
-inline uint32_t divide32_using_inverse(uint32_t n, int_inverse *inv){
+inline uint32_t divide32_using_inverse(uint32_t n, int_inverse *inv) {
 
  uint32_t d =  (uint32_t)(((uint64_t)n * inv->mult) >> 32);
    d >>= inv->shift;
@@ -69,7 +69,7 @@ inline uint32_t divide32_using_inverse(uint32_t n, int_inverse *inv){
 // e.g. for divisors up to a million, n can have up to 45 bits
 // On RV32IM with divide32_using_inverse inlines this uses 5 multiplies,
 // 33 instructions, zero branches, 3 loads, 0 stores.
-uint64_t divide64_using_inverse(uint64_t n, int_inverse *inv){
+uint64_t divide64_using_inverse(uint64_t n, int_inverse *inv) {
   uint32_t preshift = (31 - inv->shift) & 31;
   uint64_t d = (uint64_t)divide32_using_inverse(n >> preshift, inv) << preshift;
   uint32_t r = n - d * inv->n;
@@ -78,18 +78,14 @@ uint64_t divide64_using_inverse(uint64_t n, int_inverse *inv){
 }
 
 
-uint32_t
-millis()
-{
+uint32_t millis() {
   uint64_t x;
   rdmcycle(&x);
   x = divide64_using_inverse(x, &f_cpu_1000_inv);
   return((uint32_t) (x & 0xFFFFFFFF));
 }
 
-uint32_t 
-micros(void)
-{
+uint32_t micros(void) {
   uint64_t x;
   rdmcycle(&x);
   // For Power-of-two MHz F_CPU,
@@ -98,7 +94,7 @@ micros(void)
 #if F_CPU==16000000
   x = x / (F_CPU / 1000000);
 #else
-#if  F_CPU==256000000
+#if F_CPU==256000000
   x = x / (F_CPU / 1000000);
 #else
   x = divide64_using_inverse(x, &f_cpu_1000000_inv);
@@ -109,24 +105,10 @@ micros(void)
 
 
 void
-delay(uint32_t dwMs)
-{
+delay(uint32_t dwMs) {
   uint64_t current, later;
   rdmcycle(&current);
   later = current + dwMs * (F_CPU/1000);
-  if (later > current) // usual case
-    {
-      while (later > current) {
-	rdmcycle(&current);
-      }
-    }
-  else // wrap. Though this is unlikely to be hit w/ 64-bit mcycle
-    {
-      while (later < current) {
-	rdmcycle(&current);
-      }
-      while (current < later) {
-	rdmcycle(&current);
-      }
-    }
+  while (later > current)
+    rdmcycle(&current);
 }

@@ -34,18 +34,17 @@ pinMode(uint32_t pin, uint32_t mode)
   }
 }
 
-
 void
 digitalWrite(uint32_t pin, uint32_t val)
 {
   if (pin >= variant_pin_map_size)
     return;
-  
-  if (val)
-    GPIO_REG(GPIO_OUTPUT_VAL) |=  digitalPinToBitMask(pin);
-  else
-    GPIO_REG(GPIO_OUTPUT_VAL) &= ~digitalPinToBitMask(pin);
 
+  uint32_t bitmask = digitalPinToBitMask(pin);
+  if (val)
+    GPIO_REG(GPIO_OUTPUT_VAL) |=  bitmask;
+  else
+    GPIO_REG(GPIO_OUTPUT_VAL) &= ~bitmask;
 }
 
 int

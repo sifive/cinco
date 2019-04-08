@@ -1,0 +1,27 @@
+#######################################
+# Syntax Coloring Map SimpleTouchscreen
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+SimpleTouchscreen	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+setRotation		KEYWORD2
+begin			KEYWORD2
+dataAvailable		KEYWORD2
+read			KEYWORD2
+getX			KEYWORD2
+getY			KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+PORTRATE_0		LITERAL1
+LANDSCAPE_90		LITERAL1
+PORTRATE_180		LITERAL1
+LANDSCAPE_270		LITERAL1

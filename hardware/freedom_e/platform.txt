@@ -1,29 +1,29 @@
 name= SiFive Freedom E300 Boards
-version=1.0.1
+version=1.1.0
 
 # Compile variables
 # ----------------------
 
-compiler.path={runtime.tools.riscv32-unknown-elf-gcc.path}/bin/
-compiler.c.cmd=riscv32-unknown-elf-gcc
-compiler.cpp.cmd=riscv32-unknown-elf-g++
-compiler.ld.cmd=riscv32-unknown-elf-ld
-compiler.ar.cmd=riscv32-unknown-elf-ar
-compiler.objcopy.cmd=riscv32-unknown-elf-objcopy
-compiler.elf2hex.cmd=riscv32-unknown-elf-objcopy
-compiler.size.cmd=riscv32-unknown-elf-size
+compiler.path={runtime.tools.riscv64-unknown-elf-gcc.path}/bin/
+compiler.c.cmd=riscv64-unknown-elf-gcc
+compiler.cpp.cmd=riscv64-unknown-elf-g++
+compiler.ld.cmd=riscv64-unknown-elf-ld
+compiler.ar.cmd=riscv64-unknown-elf-ar
+compiler.objcopy.cmd=riscv64-unknown-elf-objcopy
+compiler.elf2hex.cmd=riscv64-unknown-elf-objcopy
+compiler.size.cmd=riscv64-unknown-elf-size
 
 
 compiler.sdk.path={runtime.platform.path}/freedom-e-sdk/bsp
 compiler.preproc.flags=-I{build.system.path}/include -I{compiler.sdk.path}/include -I{compiler.sdk.path}/env -I{compiler.sdk.path}/drivers -I{compiler.sdk.path}/env/{build.boardenv}
 
-compiler.c.flags=-c -O2 -march={build.mcu} -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -Wall {compiler.preproc.flags} -include sys/cdefs.h -g
+compiler.c.flags=-c -O2 -march={build.mcu} -mabi={build.mabi} -mcmodel={build.mcmodel} -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -MMD -Wall {compiler.preproc.flags} -include sys/cdefs.h
 
-compiler.cpp.flags=-c -O2 -march={build.mcu} -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -fpermissive -Wall -fno-rtti -fno-exceptions {compiler.preproc.flags} -include sys/cdefs.h -g
+compiler.cpp.flags=-c -O2 -march={build.mcu} -mabi={build.mabi} -mcmodel={build.mcmodel} -fpeel-loops -ffreestanding -ffunction-sections -fdata-sections -MMD -fpermissive -Wall -fno-rtti -fno-exceptions {compiler.preproc.flags} -include sys/cdefs.h
 
-compiler.ld.flags=-T {build.ldscript} -nostartfiles -Wl,-N -Wl,--gc-sections -Wl,--wrap=malloc -Wl,--wrap=free -Wl,--wrap=sbrk
+compiler.ld.flags=-T {build.ldscript} -march={build.mcu} -mabi={build.mabi} -mcmodel={build.mcmodel} -nostartfiles -Xlinker -defsym=__stack_size=0x200 -Wl,-N -Wl,--gc-sections -Wl,--wrap=malloc -Wl,--wrap=free -Wl,--wrap=sbrk
 
-compiler.S.flags=-c -march={build.mcu} {compiler.preproc.flags} -g
+compiler.S.flags=-c -march={build.mcu} -mabi={build.mabi} -mcmodel={build.mcmodel} {compiler.preproc.flags}
 
 compiler.ar.flags=rcs
 
@@ -81,15 +81,15 @@ recipe.size.regex=\s*[0-9]+\s+[0-9]+\s+[0-9]+\s+([0-9]+).*
 # -------------------
 tools.openocd.path={runtime.tools.openocd.path}/bin/
 tools.openocd.cmd=openocd
-tools.openocd.program.params.verbose=-v
-tools.openocd.program.params.quiet=-q
+tools.openocd.program.params.verbose=-d2
+tools.openocd.program.params.quiet=-d0
 tools.openocd.program.config={runtime.platform.path}/freedom-e-sdk/bsp/env/{build.boardenv}/openocd.cfg
-tools.openocd.program.pattern="{path}{cmd}" -f {program.config} -c "flash protect 0 64 last off; program {build.path}/{build.project_name}.elf verify; resume 0x20400000; exit"
+tools.openocd.program.pattern="{path}{cmd}" -d0 -f {program.config} -c "flash protect 0 64 last off; program {{{build.path}/{build.project_name}.elf}} verify; resume 0x20400000; exit"
 
 
 tools.manual_openocd.path=
 tools.manual_openocd.cmd=openocd
-tools.manual_openocd.program.params.verbose=-v
-tools.manual_openocd.program.params.quiet=-q
+tools.manual_openocd.program.params.verbose=-d2
+tools.manual_openocd.program.params.quiet=-d0
 tools.manual_openocd.program.config={runtime.platform.path}/freedom-e-sdk/bsp/env/{build.boardenv}/openocd.cfg
-tools.manual_openocd.program.pattern="{path}{cmd}" -f {program.config} -c "flash protect 0 64 last off; program {build.path}/{build.project_name}.elf verify; resume 0x20400000; exit"
+tools.manual_openocd.program.pattern="{path}{cmd}" -d0 -f {program.config} -c "flash protect 0 64 last off; program {{{build.path}/{build.project_name}.elf}} verify; resume 0x20400000; exit"

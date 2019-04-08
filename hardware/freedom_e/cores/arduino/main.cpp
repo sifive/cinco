@@ -35,7 +35,6 @@ uint32_t mtime_lo(void)
 }
 
 
-
 static void freedom_e300_clock_setup () {
 
   // This is a very coarse parameterization. To revisit in the future
@@ -59,29 +58,38 @@ static void freedom_e300_clock_setup () {
   // We make no effort in this code to make the SPI
   // faster for a slow clock.
   
-  if (F_CPU == 256000000UL) {						  
-       
+  if (F_CPU == 320000000UL) {
+
     PRCI_use_pll(1,    //Use HFXTAL as the reference
-		 0,    // Bypass = 0, really use the PLL
-		 1,    // Set DIVR to divide-by-2 to get 8MHz frequency
-		 0x1F, // Set DIVF to get 512Mhz frequency
-		 1,    // Set DIVQ to divide-by-2 to get 256 MHz frequency
-		 1,    // Set final divider to div-by-1.
-		 -1,   // We don't care about HFROSC 
-		 -1);
-    
-    
-  }  else if (F_CPU == 16000000UL) {
-    
+                 0,    // Bypass = 0, really use the PLL
+                 1,    // Set DIVR to divide-by-2 to get 8MHz frequency
+                 0x27, // Set DIVF to get 640Mhz frequency
+                 1,    // Set DIVQ to divide-by-2 to get 320 MHz frequency
+                 1,    // Set final divider to div-by-1.
+                -1,    // We don't care about HFROSC
+                -1);
+
+  } else if (F_CPU == 256000000UL) {
+
+    PRCI_use_pll(1,    //Use HFXTAL as the reference
+                 0,    // Bypass = 0, really use the PLL
+                 1,    // Set DIVR to divide-by-2 to get 8MHz frequency
+                 0x1F, // Set DIVF to get 512Mhz frequency
+                 1,    // Set DIVQ to divide-by-2 to get 256 MHz frequency
+                 1,    // Set final divider to div-by-1.
+                -1,    // We don't care about HFROSC
+                -1);
+
+  } else if (F_CPU == 16000000UL) {
+
     PRCI_use_hfxosc(1);
- 
+
   } else {
 
     PRCI_set_hfrosctrim_for_f_cpu(F_CPU, PRCI_FREQ_CLOSEST);
 
   }
 #endif
-   
 }
 
 void freedom_e300_specific_initialization(void)
@@ -92,9 +100,9 @@ void freedom_e300_specific_initialization(void)
     write_csr(mstatus, MSTATUS_FS); // allow FPU instructions without trapping
     write_csr(fcsr, 0); // initialize rounding mode, undefined at reset
   }
-  
+
   freedom_e300_clock_setup();
-  
+
 }
 
 /*
@@ -108,12 +116,12 @@ int main( void )
   calc_inv(F_CPU/1000000, &f_cpu_1000000_inv);
   freedom_e300_specific_initialization();
   setup();
-  
+
   do {
     loop();
     if (serialEventRun)
       serialEventRun();
   } while (1);
-  
+
   return 0;
 }
