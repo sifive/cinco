@@ -19,6 +19,7 @@ typedef uint16_t prog_uint16_t;
 typedef int32_t prog_int32_t;
 typedef uint32_t prog_uint32_t;
 
+#define memcmp_P(dest, src, num) memcmp((dest), (src), (num))
 #define memcpy_P(dest, src, num) memcpy((dest), (src), (num))
 #define strcpy_P(dest, src) strcpy((dest), (src))
 #define strcat_P(dest, src) strcat((dest), (src))
